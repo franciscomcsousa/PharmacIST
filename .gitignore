@@ -34,3 +34,4 @@ google-services.json
 
 # Custom
 .venv
+secrets.properties

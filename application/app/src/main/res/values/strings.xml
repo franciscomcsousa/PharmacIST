@@ -1,4 +1,13 @@
 <resources>
     <string name="app_name">PharmacIST</string>
     <string name="title_activity_maps">MapsActivity</string>
+
+    <!-- Prompt/Hint messages -->
+    <string name="prompt_username">Username</string>
+    <string name="prompt_password">Password</string>
+
+    <!-- Button texts -->
+    <string name="btn_login">Login</string>
+    <string name="btn_guest">Login as Guest</string>
+
 </resources>

@@ -17,8 +17,9 @@ def register_user():
         
     
     if request.method == 'POST':
-        username = request.form.get("username")
-        password = request.form.get("password")
+        data = request.get_json()
+        username = data['username']
+        password = data['password']
         status = create_user(username, password)
         return make_response({"status":status}, status)
     

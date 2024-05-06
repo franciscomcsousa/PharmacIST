@@ -1,0 +1,1 @@
+sudo mariadb pharmacist < schema.sql

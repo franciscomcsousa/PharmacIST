@@ -22,10 +22,10 @@ and try again.
 ### Create admin user
 Open MariaDB ```sudo mariadb ```
 
-Create a new user with root privileges and password-based access: 
+Create a new user with root privileges and password-based access. For simplicity and test purposes, we will have a user named admin with a password crepes.
 
 ```sql
-GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION;
+GRANT ALL ON *.* TO 'admin'@'localhost' IDENTIFIED BY 'crepes' WITH GRANT OPTION;
 ```
 
 Update and exit:
@@ -51,3 +51,15 @@ However, to simplify, there will be a script in the database folder with the alt
 ``` bash
 bash insert_schemas.sql
 ```
+
+Tutorial [**Here.**](https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb)
+
+# Backend - Python flask
+
+## Install requirements
+
+(WSL) may need to install some missing libraries
+```
+sudo apt-get install libmariadb3 libmariadb-dev
+```
+Run requirements script: ```pip3 install -r requirements.txt```

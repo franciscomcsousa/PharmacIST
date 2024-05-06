@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.view.View
 import android.widget.EditText
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.OkHttpClient
@@ -29,11 +28,6 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
 
-        if (Build.VERSION.SDK_INT > 21) {
-            val policy = StrictMode.ThreadPolicy.Builder().permitAll().build()
-            StrictMode.setThreadPolicy(policy)
-        }
-
         /*
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -49,7 +43,7 @@ class LoginActivity : AppCompatActivity() {
         val username = findViewById<View>(R.id.username) as EditText
         val password = findViewById<View>(R.id.password) as EditText
 
-        RegisterUser(
+        registerUser(
             username.getText().toString(),
             password.getText().toString()
         )
@@ -64,7 +58,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    private fun RegisterUser(username: String, password: String) {
+    private fun registerUser(username: String, password: String) {
 
         // retrofit builder
         val retrofit = Retrofit.Builder()

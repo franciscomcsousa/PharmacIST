@@ -2,7 +2,7 @@ package pt.ulisboa.tecnico.pharmacist
 
 import android.os.Bundle
 import android.os.Handler
-import android.widget.Button
+import android.util.Log
 import android.widget.ImageButton
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -37,6 +37,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
+    private var pharmacies: MutableList<Pharmacy> = mutableListOf()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -67,9 +69,14 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        // Get the first batch of pharmacies from the backend
+        getPharmacies()
+        // TODO for now it sleeps to wait for the first batch of pharmacies, maybe change later
+        Thread.sleep(100)
+
         // Move the camera to Marquês de Pombal
         val location = LatLng(38.725387301488965, -9.150040089232286)
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f))
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f))
         mMap!!.setMinZoomPreference(0.0f)
         mMap!!.setMaxZoomPreference(30.0f)
 
@@ -96,45 +103,44 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     }
 
     private fun addPharmacies() {
-        val pharmacies = getPharmaciesTest()
+        getPharmacies()
+        println(pharmacies)
         for (pharmacy in pharmacies) {
             // Add a marker for each pharmacy
             mMap!!.addMarker(MarkerOptions()
-                .position(LatLng(pharmacy.latitude, pharmacy.longitude))
+                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
                 .title(pharmacy.name)
                 .snippet(pharmacy.address)
             )
         }
     }
 
-    private fun getPharmacies(): List<Pharmacy> {
-        // TODO Make a call to the backend to get the pharmacies
-        var pharmacies: List<Pharmacy> = emptyList()
+    private fun getPharmacies() {
+
+        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
         val location = Location(38.725387301488965, -9.150040089232286)
-        val call: Call<List<Pharmacy>?>? = retrofitAPI.getPharmacies(location)
-        call!!.enqueue(object : Callback<List<Pharmacy>?> {
-            override fun onResponse(call: Call<List<Pharmacy>?>, response: Response<List<Pharmacy>?>) {
+        val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
+        call.enqueue(object : Callback<PharmaciesResponse> {
+            override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
+                val statusCode = response.code()
                 if (response.isSuccessful) {
-                    println("Pharmacies received")
-                    pharmacies = response.body()!!
-                } else {
-                    println("Failed to get pharmacies")
+                    val pharmaciesList = response.body()!!.pharmacies
+                    for (pharmacy in pharmaciesList) {
+                        // transform pharmacies into a list of Pharmacy objects
+                        pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
+                            pharmacy[3].toString(), pharmacy[4].toString())
+                    }
+
+                    // update the pharmacies list
+                    pharmacies = pharmaciesFetched
                 }
             }
 
-            override fun onFailure(call: Call<List<Pharmacy>?>, t: Throwable) {
-                println("Failed to get pharmacies")
+            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                // we get error response from API.
+                Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
-        return pharmacies
-    }
-
-    private fun getPharmaciesTest(): List<Pharmacy> {
-        return listOf(
-            Pharmacy("Farmácia A", "Rua A", 38.728467, -9.148590),
-            Pharmacy("Farmácia B", "Rua B", 38.724075, -9.150967),
-            Pharmacy("Farmácia C", "Rua C", 38.725360, -9.148243),
-        )
     }
 
     private fun stopTimer() {

@@ -17,6 +17,7 @@ drop table if exists pharmacies;
 
 
 -- TODO maybe (?) - Path: database/data.sql
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Marquês', 'Rua do Marquês de Pombal 1, 1250-162 Lisboa', 38.728467, -9.148590);
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Bandeira', 'Rua Sá da Bandeira 1, 1250-162 Lisboa', 38.724075, -9.150967);
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Avenida', 'Avenida da Liberdade 1, 1250-162 Lisboa', 38.725360, -9.148243);
+insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Rossio', 'Rua Augusta 1, 1250-162 Lisboa', 38.712790, -9.137420);
+insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Marquês', 'Rua do Marquês de Pombal 1, 1251-162 Lisboa', 38.728467, -9.148590);
+insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Bandeira', 'Rua Sá da Bandeira 1, 1252-162 Lisboa', 38.724075, -9.150967);
+insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Avenida', 'Avenida da Liberdade 1, 1253-162 Lisboa', 38.725360, -9.148243);

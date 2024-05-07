@@ -64,5 +64,23 @@ def login_user():
     return make_response({"status":400}, 400)
 
 
+@app.route('/pharmacies', methods=['GET', 'POST'])
+def get_pharmacies():
+    if request.method == 'GET':
+        pass
+
+    # Get a list with the 3 closest pharmacies to the user location
+    if request.method == 'POST':
+        data = request.get_json()
+        latitude = data['latitude']
+        longitude = data['longitude']
+        pharmacies = get_closest_pharmacies(latitude, longitude)
+        print(pharmacies)
+
+        return make_response(jsonify({"pharmacies": pharmacies}), 200)
+    
+    return make_response({"status": 400}, 400)
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

@@ -52,3 +52,12 @@ def verify_user(username, password):
     finally:
         con.close()
     return USER_DOES_NOT_EXIST_STATUS
+
+def get_closest_pharmacies(latitude, longitude):
+    con = connect_db()
+    cur = con.cursor()
+    data = (latitude, longitude)
+    query = 'select * from pharmacies order by (latitude - %s) + (longitude - %s) limit 3'
+    cur.execute(query, data)
+    pharmacies = cur.fetchall()
+    return pharmacies

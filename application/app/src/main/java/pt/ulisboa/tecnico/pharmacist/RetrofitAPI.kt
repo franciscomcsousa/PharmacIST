@@ -14,6 +14,6 @@ interface RetrofitAPI {
     @POST("login")
     fun sendLogin(@Body user: User?): Call<SignInResponse>
 
-    @GET("pharmacies")
-    fun getPharmacies(@Body location: Location?): Call<List<Pharmacy>?>?
+    @POST("pharmacies")
+    fun getPharmacies(@Body location: Location?): Call<PharmaciesResponse>
 }

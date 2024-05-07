@@ -1,2 +1,2 @@
-mariadb==1.0.11
+mariadb
 flask

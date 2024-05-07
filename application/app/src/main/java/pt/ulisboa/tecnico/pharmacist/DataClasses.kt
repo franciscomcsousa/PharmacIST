@@ -12,3 +12,7 @@ data class Pharmacy(
     @SerializedName("address") val address: String,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double)
+
+data class Location(
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double)

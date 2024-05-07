@@ -21,6 +21,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageButton
+        android:id="@+id/current_loc"
+        android:layout_width="40sp"
+        android:layout_height="40sp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/blue_round_button"
+        android:src="@drawable/recenter_icon"
+        app:layout_constraintBottom_toBottomOf="@+id/map"
+        app:layout_constraintEnd_toEndOf="@+id/map" />
+
     <Button
         android:id="@+id/button2"
         android:layout_width="0dp"

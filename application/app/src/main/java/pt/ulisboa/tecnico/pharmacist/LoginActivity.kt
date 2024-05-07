@@ -70,7 +70,7 @@ class LoginActivity : AppCompatActivity() {
 
     // when clicking the guest button redirect to mapsActivity
     fun guestButtonClick(view: View?) {
-        val intent = Intent(this, MapsActivity::class.java)
+        val intent = Intent(this, HomeActivity::class.java)
         startActivity(intent)
     }
 

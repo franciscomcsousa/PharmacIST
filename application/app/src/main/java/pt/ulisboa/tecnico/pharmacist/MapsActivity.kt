@@ -69,9 +69,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
         // Move the camera to Marquês de Pombal
         val location = LatLng(38.725387301488965, -9.150040089232286)
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f))
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 13.0f))
         mMap!!.setMinZoomPreference(0.0f)
-        mMap!!.setMaxZoomPreference(16.0f)
+        mMap!!.setMaxZoomPreference(30.0f)
 
         // Add a blue marker in Marquês de Pombal
         mMap!!.addMarker(MarkerOptions()

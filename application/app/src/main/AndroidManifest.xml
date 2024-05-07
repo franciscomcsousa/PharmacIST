@@ -39,11 +39,12 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".MainActivity"
-            android:exported="true" />
-        <activity
             android:name=".MapsActivity"
             android:label="@string/title_activity_maps"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:label="HomeActivity"
             android:exported="false" />
     </application>
 

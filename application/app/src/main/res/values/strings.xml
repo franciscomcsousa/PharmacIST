@@ -8,6 +8,7 @@
 
     <!-- Button texts -->
     <string name="btn_login">Login</string>
+    <string name="btn_register">Register</string>
     <string name="btn_guest">Login as Guest</string>
 
 </resources>

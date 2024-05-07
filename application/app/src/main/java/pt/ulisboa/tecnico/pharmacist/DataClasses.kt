@@ -16,3 +16,8 @@ data class Pharmacy(
 data class Location(
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double)
+
+
+// Server Responses data types for RetrofitAPI
+// simplifies the way data is treated when received in onResponse
+data class SignInResponse(val token: String)

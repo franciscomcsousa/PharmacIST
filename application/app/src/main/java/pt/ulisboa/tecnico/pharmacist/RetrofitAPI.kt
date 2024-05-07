@@ -9,7 +9,10 @@ import retrofit2.http.POST
 interface RetrofitAPI {
 
     @POST("register")
-    fun sendRegister(@Body user: User?): Call<Int?>?
+    fun sendRegister(@Body user: User?): Call<SignInResponse>
+
+    @POST("login")
+    fun sendLogin(@Body user: User?): Call<SignInResponse>
 
     @GET("pharmacies")
     fun getPharmacies(@Body location: Location?): Call<List<Pharmacy>?>?

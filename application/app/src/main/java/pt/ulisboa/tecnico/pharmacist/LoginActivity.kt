@@ -4,11 +4,14 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.StrictMode
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -21,7 +24,6 @@ class LoginActivity : AppCompatActivity() {
 
     // for now contacts the localhost server
     private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
-    private val client = OkHttpClient()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -43,6 +45,21 @@ class LoginActivity : AppCompatActivity() {
         val username = findViewById<View>(R.id.username) as EditText
         val password = findViewById<View>(R.id.password) as EditText
 
+        loginUser(
+            username.getText().toString(),
+            password.getText().toString()
+        )
+        val intent = Intent(this, MapsActivity::class.java)
+        startActivity(intent)
+    }
+
+    fun registerButtonClick(view: View?) {
+
+        // send already encrypted for safety (?)
+        // get username and password from the EditText
+        val username = findViewById<View>(R.id.username) as EditText
+        val password = findViewById<View>(R.id.password) as EditText
+
         registerUser(
             username.getText().toString(),
             password.getText().toString()
@@ -57,7 +74,6 @@ class LoginActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-
     private fun registerUser(username: String, password: String) {
 
         // retrofit builder
@@ -70,26 +86,52 @@ class LoginActivity : AppCompatActivity() {
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
         val user = User(username, password)
-        // call method that receives an int -> status from the server
-        val call: Call<Int?>? = retrofitAPI.sendRegister(user)
-        println(retrofit.baseUrl())
-        call!!.enqueue(object : Callback<Int?> {
+
+        val call: Call<SignInResponse> = retrofitAPI.sendRegister(user)
+        call.enqueue(object : Callback<SignInResponse> {
             // when we get response
-            override fun onResponse(call: Call<Int?>, response: Response<Int?>){
-                //Toast.makeText(ctx, "Data posted to API", Toast.LENGTH_SHORT).show()
-                val status: Int? = response.body()
-                // TODO - still not printing the right code
-                //println("Status is:" + status)
+            override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
+                val statusCode = response.code()
+                val signInResponse = response.body()
+                val token = signInResponse?.token
+                // store in shared preferences
             }
 
-
-            override fun onFailure(call: Call<Int?>, t: Throwable) {
+            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
                 // we get error response from API.
-                println("Error found is : " + t.message)
+                Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
-
     }
 
+    private fun loginUser(username: String, password: String) {
+
+        // retrofit builder
+        val retrofit = Retrofit.Builder()
+            .baseUrl(url)
+            // json converter
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+
+        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+
+        val user = User(username, password)
+
+        val call: Call<SignInResponse> = retrofitAPI.sendLogin(user)
+        call.enqueue(object : Callback<SignInResponse> {
+            // when we get response
+            override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
+                val statusCode = response.code()
+                val signInResponse = response.body()
+                val token = signInResponse?.token
+                // store in shared preferences
+            }
+
+            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+                // we get error response from API.
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
+    }
 }
 

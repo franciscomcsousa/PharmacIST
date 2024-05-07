@@ -104,7 +104,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     private fun addPharmacies() {
         getPharmacies()
-        println(pharmacies)
         for (pharmacy in pharmacies) {
             // Add a marker for each pharmacy
             mMap!!.addMarker(MarkerOptions()

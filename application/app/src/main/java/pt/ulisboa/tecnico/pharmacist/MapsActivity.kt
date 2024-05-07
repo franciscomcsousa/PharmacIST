@@ -1,18 +1,26 @@
 package pt.ulisboa.tecnico.pharmacist
 
 import android.os.Bundle
+import android.os.Handler
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
+import java.util.Timer
+import java.util.TimerTask
 
 class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
     private var binding: ActivityMapsBinding? = null
+    private var timer: Timer? = null
+    private var timerTask: TimerTask? = null
+    private var handler: Handler? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -36,11 +44,59 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // Add a marker in Sydney and move the camera
-        val sydney = LatLng(38.725387301488965, -9.150040089232286)
-        mMap!!.addMarker(MarkerOptions().position(sydney).title("Marquês de Pombal"))
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLng(sydney))
-        mMap!!.setMinZoomPreference(10.0f)
-        mMap!!.setMaxZoomPreference(15.0f)
+        // Move the camera to Marquês de Pombal
+        val location = LatLng(38.725387301488965, -9.150040089232286)
+        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f))
+        mMap!!.setMinZoomPreference(0.0f)
+        mMap!!.setMaxZoomPreference(16.0f)
+
+        // Add a blue marker in Marquês de Pombal
+        mMap!!.addMarker(MarkerOptions()
+            .position(location)
+            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+            .title("Marquês de Pombal")
+            .snippet("I am here"))
+
+        // Make a call to the backend to get the pharmacies every 10 seconds in a new thread
+        timer = Timer()
+        timerTask = object : TimerTask() {
+            override fun run() {
+                handler = Handler(mainLooper)
+                handler!!.post {
+                    println("Updating pharmacies")
+                    addPharmacies()
+                    println("Pharmacies updated")
+                }
+            }
+        }
+        timer!!.schedule(timerTask, 0, 10000)
+    }
+
+    private fun addPharmacies() {
+        val pharmacies = getPharmacies()
+        for (pharmacy in pharmacies) {
+            // Add a marker for each pharmacy
+            mMap!!.addMarker(MarkerOptions()
+                .position(LatLng(pharmacy.latitude, pharmacy.longitude))
+                .title(pharmacy.name)
+                .snippet(pharmacy.address)
+            )
+        }
+    }
+
+    private fun getPharmacies(): List<Pharmacy> {
+        // TODO Make a call to the backend to get the pharmacies
+        return listOf(
+            Pharmacy("Farmácia A", "Rua A", 38.728467, -9.148590),
+            Pharmacy("Farmácia B", "Rua B", 38.724075, -9.150967),
+            Pharmacy("Farmácia C", "Rua C", 38.725360, -9.148243),
+        )
+    }
+
+    private fun stopTimer() {
+        if (timer != null) {
+            timer!!.cancel()
+            timer!!.purge()
+        }
     }
 }

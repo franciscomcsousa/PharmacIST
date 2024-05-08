@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.ImageButton
+import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -12,6 +13,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.material.bottomsheet.BottomSheetDialog
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import java.util.Timer
 import java.util.TimerTask
@@ -106,11 +108,19 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         getPharmacies()
         for (pharmacy in pharmacies) {
             // Add a marker for each pharmacy
-            mMap!!.addMarker(MarkerOptions()
+            val marker = mMap!!.addMarker(MarkerOptions()
                 .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
                 .title(pharmacy.name)
                 .snippet(pharmacy.address)
             )
+
+            marker?.tag = pharmacy // Store pharmacy data as a tag
+
+            mMap!!.setOnMarkerClickListener { clickedMarker ->
+                val clickedPharmacy = clickedMarker.tag as Pharmacy
+                showPharmacyDrawer(clickedPharmacy)
+                true // Return true to indicate that the listener has consumed the event
+            }
         }
     }
 
@@ -147,5 +157,20 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             timer!!.cancel()
             timer!!.purge()
         }
+    }
+
+    // TODO - possibly change it to be a fragment ?
+    // Information of pharmacy selected
+    // Bottom drawer
+    private fun showPharmacyDrawer(pharmacy: Pharmacy) {
+        val bottomDrawerView = layoutInflater.inflate(R.layout.pharmacy_drawer_layout, null)
+        // Update views with pharmacy information
+        // For example:
+        bottomDrawerView.findViewById<TextView>(R.id.pharmacy_name)?.text = pharmacy.name
+        bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
+
+        val bottomSheetDialog = BottomSheetDialog(this)
+        bottomSheetDialog.setContentView(bottomDrawerView)
+        bottomSheetDialog.show()
     }
 }

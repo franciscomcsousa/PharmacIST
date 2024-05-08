@@ -30,4 +30,8 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
+    <!-- Maps Texts -->
+    <string name="pharmacy_name">Pharmacy Name</string>
+    <string name="pharmacy_address">Pharmacy Address</string>
+
 </resources>

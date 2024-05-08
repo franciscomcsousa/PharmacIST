@@ -11,4 +11,23 @@
     <string name="btn_register">Register</string>
     <string name="btn_guest">Login as Guest</string>
 
+    <!-- Home texts -->
+    <string name="home_map_title">Maps</string>
+    <string name="home_map_subtitle">Nearby pharmacies</string>
+    <string name="home_pill_title">Medicine</string>
+    <string name="home_pill_subtitle">Check medicine stock</string>
+    <string name="home_placeholder_title">Title</string>
+    <string name="home_placeholder_subtitle">Subtitle</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
 </resources>

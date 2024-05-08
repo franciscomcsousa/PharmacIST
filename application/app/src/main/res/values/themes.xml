@@ -6,4 +6,13 @@
     </style>
 
     <style name="Theme.PharmacIST" parent="Base.Theme.PharmacIST" />
+
+    <style name="Theme.PharmacIST.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="Theme.PharmacIST.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="Theme.PharmacIST.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

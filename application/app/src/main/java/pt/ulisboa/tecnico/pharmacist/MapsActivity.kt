@@ -72,7 +72,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         // Get the first batch of pharmacies from the backend
         getPharmacies()
         // TODO for now it sleeps to wait for the first batch of pharmacies, maybe change later
-        Thread.sleep(100)
+        Thread.sleep(200)
 
         // Move the camera to Marquês de Pombal
         val location = LatLng(38.725387301488965, -9.150040089232286)

@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.ImageButton
 import android.widget.TextView
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -131,7 +132,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
         call.enqueue(object : Callback<PharmaciesResponse> {
             override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
-                val statusCode = response.code()
                 if (response.isSuccessful) {
                     val pharmaciesList = response.body()!!.pharmacies
                     for (pharmacy in pharmaciesList) {
@@ -152,18 +152,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         })
     }
 
-    private fun stopTimer() {
-        if (timer != null) {
-            timer!!.cancel()
-            timer!!.purge()
-        }
-    }
-
     // TODO - possibly change it to be a fragment ?
     // Information of pharmacy selected
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
         val bottomDrawerView = layoutInflater.inflate(R.layout.pharmacy_drawer_layout, null)
+
         // Update views with pharmacy information
         // For example:
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_name)?.text = pharmacy.name

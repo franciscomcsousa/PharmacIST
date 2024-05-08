@@ -7,12 +7,12 @@ import android.view.View
 import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-
 
 // possible change this to jetpack compose
 class LoginActivity : AppCompatActivity() {
@@ -20,10 +20,15 @@ class LoginActivity : AppCompatActivity() {
     // for now contacts the localhost server
     private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
 
+    private lateinit var viewModel: MainViewModel
+    private lateinit var dataStoreManager: DataStoreManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
+        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        dataStoreManager = DataStoreManager(this)
 
         /*
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -86,10 +91,18 @@ class LoginActivity : AppCompatActivity() {
         call.enqueue(object : Callback<SignInResponse> {
             // when we get response
             override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
-                val statusCode = response.code()
-                val signInResponse = response.body()
-                val token = signInResponse?.token
-                // store in shared preferences
+                if (response.isSuccessful) {
+                    val token = response.body()!!.token
+
+                    // store token in preferences datastore
+                    viewModel.setToken(token)
+
+                    // get the token from the datastore and print it
+                    // for testing purposes
+                    viewModel.getToken.observe(this@LoginActivity) { tokenDS ->
+                        Log.d("TOKEN", tokenDS)
+                    }
+                }
             }
 
             override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
@@ -116,10 +129,18 @@ class LoginActivity : AppCompatActivity() {
         call.enqueue(object : Callback<SignInResponse> {
             // when we get response
             override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
-                val statusCode = response.code()
-                val signInResponse = response.body()
-                val token = signInResponse?.token
-                // store in shared preferences
+                if (response.isSuccessful) {
+                    val token = response.body()!!.token
+
+                    // store token in preferences datastore
+                    viewModel.setToken(token)
+
+                    // get the token from the datastore and print it
+                    // for testing purposes
+                    viewModel.getToken.observe(this@LoginActivity) { tokenDS ->
+                        Log.d("TOKEN", tokenDS)
+                    }
+                }
             }
 
             override fun onFailure(call: Call<SignInResponse>, t: Throwable) {

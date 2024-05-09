@@ -81,6 +81,22 @@ def get_pharmacies():
     
     return make_response({"status": 400}, 400)
 
+@app.route('/upload_photo', methods=['GET', 'POST'])
+def upload_photo():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data['name']
+        image = data['image']
+
+        print(image)
+        save_photo(image, path="name.png")
+
+        return make_response({"status": 200}, 200)
+    
+    return make_response({"status": 400}, 400)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

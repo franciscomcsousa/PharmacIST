@@ -1,4 +1,5 @@
 import mariadb
+import base64
 from response_status import *
 
 # for now use local admin user
@@ -64,3 +65,10 @@ def get_closest_pharmacies(latitude, longitude):
         return pharmacies
     finally:
         con.close()
+
+def save_photo(image, path):
+    decoded_image = base64.b64decode(image)
+
+    with open(path, 'wb') as f:
+        f.write(decoded_image)
+    

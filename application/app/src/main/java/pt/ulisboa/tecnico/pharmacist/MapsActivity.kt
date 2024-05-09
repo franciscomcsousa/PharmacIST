@@ -1,15 +1,15 @@
 package pt.ulisboa.tecnico.pharmacist
 
-import android.content.Intent
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.provider.MediaStore
+import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
-import androidx.activity.result.ActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
@@ -27,7 +27,7 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.IOException
+import java.io.ByteArrayOutputStream
 import java.util.Timer
 import java.util.TimerTask
 
@@ -56,6 +56,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         // photo picker.
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
+            uploadPharmacyPhoto(uri)
         } else {
             Log.d("PhotoPicker", "No media selected")
         }
@@ -188,9 +189,40 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomSheetDialog.show()
     }
 
-    fun addPharmacyPhoto(view: View) {
+    fun choosePharmacyPhoto(view: View) {
         // Launch the photo picker and let the user choose only images.
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun uploadPharmacyPhoto(uri: Uri) {
+
+        // Get bitmap from URI
+        val inputStream = this.contentResolver.openInputStream(uri)
+        val bitmap = BitmapFactory.decodeStream(inputStream)
+        inputStream?.close()
+
+        println(bitmap)
+
+        // Encode bitmap into Base64
+        val byteArrayOutputStream = ByteArrayOutputStream()
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        val byteArray = byteArrayOutputStream.toByteArray()
+        val imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
+
+        val upload = UploadPhoto("Farmácia Bandeira", imageB64)
+        val call: Call<UploadPhotoResponse> = retrofitAPI.uploadPharmacyPhoto(upload)
+        call.enqueue(object : Callback<UploadPhotoResponse> {
+            override fun onResponse(call: Call<UploadPhotoResponse>, response: Response<UploadPhotoResponse>){
+                if (response.isSuccessful) {
+                    Log.d("serverResponse","Photo uploaded")
+                }
+            }
+
+            override fun onFailure(call: Call<UploadPhotoResponse>, t: Throwable) {
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        }
+        )
     }
 
 }

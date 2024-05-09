@@ -12,7 +12,6 @@ def connect_db():
                 database = "pharmacist"
                 )
 
-#print("Connected to database")
 
 # TODO encrypt passwords !
 def create_user(username,password):
@@ -53,6 +52,28 @@ def verify_user(username, password):
     finally:
         con.close()
     return USER_DOES_NOT_EXIST_STATUS
+
+def login_guest(username, password):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        # Verify if the user already exists
+        data = (username, password)
+        query = 'SELECT * FROM users WHERE username = %s AND password = %s'
+        cur.execute(query, data)
+        user = cur.fetchone()
+        if user:
+            return OK_STATUS
+        # if it doesn't exist, create new user
+        data = (username, password)
+        query = 'insert into users (username, password) values (%s, %s)'
+        cur.execute(query, data)
+        con.commit()
+        
+    finally:
+        con.close()
+    return OK_STATUS
+
 
 def get_closest_pharmacies(latitude, longitude):
     con = connect_db()

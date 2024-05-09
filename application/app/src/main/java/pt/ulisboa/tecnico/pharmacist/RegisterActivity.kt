@@ -5,71 +5,57 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
+import com.google.android.material.textfield.TextInputLayout
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
-import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-
-// possible change this to jetpack compose
-class LoginActivity : AppCompatActivity() {
-
-    // for now contacts the localhost server
+class RegisterActivity : AppCompatActivity() {
     private val url = "http://10.0.2.2:5000/"
     private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_login)
-        dataStore = DataStoreManager(this@LoginActivity)
+        setContentView(R.layout.activity_register)
+        dataStore = DataStoreManager(this@RegisterActivity)
     }
 
-    fun loginButtonClick(view: View?) {
+
+    fun registerButtonClick(view: View?) {
         val (username, password) = getUsernameAndPassword()
         val (formUsername, formPassword) = getFormLayouts()
         verifyForms(username, formUsername, password, formPassword) {
-            loginUser(username, password) {
-                navigateToNavigationDrawerActivity()
+            registerUser(username, password) {
+                startActivity(Intent(this, NavigationDrawerActivity::class.java))
             }
-            formUsername.error = "User or Password incorrect!"
+            // TODO - this is cursed, what if there are multiple causes?
+            formUsername.error = "User already exists!"
         }
     }
 
-    fun registerButtonClick(view: View?) {
-        startActivity(Intent(this, RegisterActivity::class.java))
-    }
-
-    fun guestButtonClick(view: View?) {
-        // whenever using the guest, uses the preferences of this registered user!
-
-        val randomNumber = (0..9999).random()
-        val guestName = "guest_$randomNumber"
-        loginUser(guestName, "") {
-            // also store the user name in preferences in order to reuse the same guest
-            navigateToNavigationDrawerActivity()
-        }
-
-        startActivity(Intent(this, NavigationDrawerActivity::class.java))
-    }
-
-    private fun loginUser(username: String, password: String, onSuccess: () -> Unit) {
+    private fun registerUser(username: String, password: String, onSuccess: () -> Unit) {
         val retrofit = buildRetrofit()
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
-        val call = retrofitAPI.sendLogin(user)
+        val call = retrofitAPI.sendRegister(user)
         handleResponse(call, onSuccess)
     }
 
     private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit) {
         call.enqueue(object : Callback<SignInResponse> {
-            override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
+            override fun onResponse(
+                call: Call<SignInResponse>,
+                response: Response<SignInResponse>
+            ) {
                 if (response.isSuccessful) {
                     val token = response.body()!!.token
                     // store token in preferences datastore
@@ -87,10 +73,6 @@ class LoginActivity : AppCompatActivity() {
                 Log.d("serverResponse", "FAILED: ${t.message}")
             }
         })
-    }
-
-    private fun navigateToNavigationDrawerActivity() {
-        startActivity(Intent(this, NavigationDrawerActivity::class.java))
     }
 
     private fun verifyForms(
@@ -134,6 +116,7 @@ class LoginActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
 
     suspend fun setUserToken(token: String) {
         // stores the token in the datastore

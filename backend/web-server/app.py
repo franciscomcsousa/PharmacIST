@@ -15,13 +15,13 @@ def home():
 
 # TODO 
 # add salt to passwords + encryption ?
-# verify here and on android if parameters are not null
+# verify here if parameters are not null
 @app.route('/register', methods=['GET', 'POST'])
 def register_user():
     if request.method == 'GET':
         return render_template('register.html') 
         
-    # verify if all data is correct
+    # TODO - verify if all data is correct
     if request.method == 'POST':
         data = request.get_json()
         username = data['username']
@@ -40,19 +40,27 @@ def register_user():
 
 
 # TODO 
-# verify here and on android if parameters are not null
+# verify here if parameters are not null
 @app.route('/login', methods=['GET', 'POST'])
 def login_user():
     if request.method == 'GET':
         pass
         
-    # verify if all data is correct
+    # TODO - verify if all data is correct
     if request.method == 'POST':
         data = request.get_json()
         username = data['username']
         password = data['password']
-        status = verify_user(username, password)
+        # in case of the guests logins: 
+        # if they dont exist, create a new one
+        # if they exist, simply login
+        if username.startswith("guest_"):
+            status = login_guest(username, password)
         
+        else:
+            status = verify_user(username, password)
+        
+        # TODO - is sendong token even if unsucessful
         # if register successful send token and user stays logged in!
         # maybe also use login_user(), but for simplicity tokens do the job
         token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 

@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-    private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
+    val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
 class DataStoreManager(val context: Context) {
 

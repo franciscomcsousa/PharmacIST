@@ -10,34 +10,31 @@ import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
-class DataStoreManager(context: Context) {
-
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
-    private val dataStore = context.dataStore
+
+class DataStoreManager(val context: Context) {
 
     companion object {
         val KEY_TOKEN = stringPreferencesKey("token")
     }
 
     suspend fun setToken(token: String) {
-        dataStore.edit { settings ->
+        context.dataStore.edit { settings ->
             settings[KEY_TOKEN] = token
         }
     }
 
-    fun getToken(): Flow<String> {
-        return dataStore.data
-            .catch { exception ->
-                if (exception is IOException) {
-                    emit(emptyPreferences())
-                } else {
-                    throw exception
-                }
-            }
-            .map { settings ->
-            settings[KEY_TOKEN] ?: ""
+    suspend fun getToken(): String? {
+        val values = context.dataStore.data.first()
+        return values[KEY_TOKEN]
+    }
+
+    suspend fun clearToken() {
+        context.dataStore.edit { settings ->
+            settings.remove(KEY_TOKEN)
         }
     }
 }

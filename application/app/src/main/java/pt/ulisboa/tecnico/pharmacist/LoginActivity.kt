@@ -8,6 +8,8 @@ import android.widget.EditText
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.launch
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -20,15 +22,13 @@ class LoginActivity : AppCompatActivity() {
     // for now contacts the localhost server
     private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
 
-    private lateinit var viewModel: MainViewModel
-    private lateinit var dataStoreManager: DataStoreManager
+    private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
-        viewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        dataStoreManager = DataStoreManager(this)
+        dataStore = DataStoreManager(this@LoginActivity)
 
         /*
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
@@ -95,12 +95,11 @@ class LoginActivity : AppCompatActivity() {
                     val token = response.body()!!.token
 
                     // store token in preferences datastore
-                    viewModel.setToken(token)
-
-                    // get the token from the datastore and print it
-                    // for testing purposes
-                    viewModel.getToken.observe(this@LoginActivity) { tokenDS ->
-                        Log.d("TOKEN", tokenDS)
+                    lifecycleScope.launch {
+                        setUserToken(token)
+                        // get the token from the datastore and print it
+                        // for testing purposes
+                        Log.d("TOKEN", getUserToken())
                     }
                 }
             }
@@ -133,12 +132,11 @@ class LoginActivity : AppCompatActivity() {
                     val token = response.body()!!.token
 
                     // store token in preferences datastore
-                    viewModel.setToken(token)
-
-                    // get the token from the datastore and print it
-                    // for testing purposes
-                    viewModel.getToken.observe(this@LoginActivity) { tokenDS ->
-                        Log.d("TOKEN", tokenDS)
+                    lifecycleScope.launch {
+                        setUserToken(token)
+                        // get the token from the datastore and print it
+                        // for testing purposes
+                        Log.d("TOKEN", getUserToken())
                     }
                 }
             }
@@ -148,6 +146,17 @@ class LoginActivity : AppCompatActivity() {
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
+    }
+
+    suspend fun setUserToken(token: String) {
+        // stores the token in the datastore
+        dataStore.setToken(token)
+    }
+
+    suspend fun getUserToken(): String {
+        // gets the token from the datastore
+        // returns "null" string if token is null
+        return dataStore.getToken().toString()
     }
 }
 

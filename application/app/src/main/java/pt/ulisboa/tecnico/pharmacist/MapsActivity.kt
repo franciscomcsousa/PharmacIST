@@ -39,6 +39,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var timerTask: TimerTask? = null
     private var handler: Handler? = null
 
+    private lateinit var dataStore: DataStoreManager
+
     // for now contacts the localhost server
     private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
 
@@ -66,6 +68,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
+        dataStore = DataStoreManager(this@MapsActivity)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager

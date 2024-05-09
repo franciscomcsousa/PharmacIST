@@ -35,4 +35,6 @@ class HomeFragment : Fragment() {
         super.onDestroyView()
         _binding = null
     }
+
+    fun mapsButtonClick(view: View) {}
 }

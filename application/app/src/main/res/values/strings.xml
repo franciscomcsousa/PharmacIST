@@ -33,5 +33,6 @@
     <!-- Maps Texts -->
     <string name="pharmacy_name">Pharmacy Name</string>
     <string name="pharmacy_address">Pharmacy Address</string>
+    <string name="add_photo">Add Photo</string>
 
 </resources>

@@ -49,7 +49,7 @@ class LoginActivity : AppCompatActivity() {
             username.getText().toString(),
             password.getText().toString()
         )
-        val intent = Intent(this, DrawerActivity::class.java)
+        val intent = Intent(this, NavigationDrawerActivity::class.java)
         startActivity(intent)
     }
 
@@ -64,13 +64,13 @@ class LoginActivity : AppCompatActivity() {
             username.getText().toString(),
             password.getText().toString()
         )
-        val intent = Intent(this, DrawerActivity::class.java)
+        val intent = Intent(this, NavigationDrawerActivity::class.java)
         startActivity(intent)
     }
 
     // when clicking the guest button redirect to mapsActivity
     fun guestButtonClick(view: View?) {
-        val intent = Intent(this, DrawerActivity::class.java)
+        val intent = Intent(this, NavigationDrawerActivity::class.java)
         startActivity(intent)
     }
 

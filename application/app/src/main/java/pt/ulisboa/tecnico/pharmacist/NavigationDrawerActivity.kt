@@ -15,7 +15,7 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityDrawerBinding
 
-class DrawerActivity : AppCompatActivity() {
+class NavigationDrawerActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityDrawerBinding

@@ -1,12 +1,18 @@
 package pt.ulisboa.tecnico.pharmacist
 
+import android.content.Intent
+import android.graphics.Bitmap
 import android.os.Bundle
 import android.os.Handler
+import android.provider.MediaStore
 import android.util.Log
+import android.view.View
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.PickVisualMediaRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
-import androidx.lifecycle.ViewModelProvider
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -16,13 +22,15 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
-import java.util.Timer
-import java.util.TimerTask
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.io.IOException
+import java.util.Timer
+import java.util.TimerTask
+
 
 class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
@@ -41,6 +49,17 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
+
+    // Registers a photo picker activity launcher in single-select mode.
+    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+        // Callback is invoked after the user selects a media item or closes the
+        // photo picker.
+        if (uri != null) {
+            Log.d("PhotoPicker", "Selected URI: $uri")
+        } else {
+            Log.d("PhotoPicker", "No media selected")
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,6 +109,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             .title("Marquês de Pombal")
             .snippet("I am here"))
 
+        // TODO - Not fetch again if in the same location: saves resources
         // Make a call to the backend to get the pharmacies every 10 seconds in a new thread
         timer = Timer()
         timerTask = object : TimerTask() {
@@ -97,7 +117,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 handler = Handler(mainLooper)
                 handler!!.post {
                     println("Updating pharmacies")
-                    addPharmacies()
+                    mapPharmacies()
                     println("Pharmacies updated")
                 }
             }
@@ -105,7 +125,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         timer!!.schedule(timerTask, 0, 10000)
     }
 
-    private fun addPharmacies() {
+    private fun mapPharmacies() {
         getPharmacies()
         for (pharmacy in pharmacies) {
             // Add a marker for each pharmacy
@@ -167,4 +187,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomSheetDialog.setContentView(bottomDrawerView)
         bottomSheetDialog.show()
     }
+
+    fun addPharmacyPhoto(view: View) {
+        // Launch the photo picker and let the user choose only images.
+        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
 }

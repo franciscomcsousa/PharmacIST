@@ -38,3 +38,6 @@ secrets.properties
 
 # Python
 **/__pycache__/
+
+# vsCode
+.vscode/

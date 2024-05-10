@@ -97,7 +97,7 @@ def login_user():
     
     return make_response({"status":400}, 400)
 
-@app.route('/authorized')
+@app.route('/authorized',  methods=['GET'])
 @login_required
 def auto_login():
     return make_response(jsonify({'status': 200}), 200)

@@ -28,6 +28,8 @@ data class UploadPhoto(
 // simplifies the way data is treated when received in onResponse
 data class SignInResponse(val token: String)
 
+data class StatusResponse(val status: Int)
+
 data class PharmaciesResponse(val pharmacies: List<List<Any>>)
 
 data class CreatePharmacyResponse(val status: Int)

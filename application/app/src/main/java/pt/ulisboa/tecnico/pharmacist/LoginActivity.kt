@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -29,16 +30,26 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
         dataStore = DataStoreManager(this@LoginActivity)
+
+        lifecycleScope.launch {
+            val storedToken = getUserToken()
+            if (storedToken.isNotEmpty()) {
+                // If a token is stored, attempt automatic login
+                autoLogin(storedToken) {
+                    navigateToNavigationDrawerActivity()
+                }
+            }
+        }
     }
 
     fun loginButtonClick(view: View?) {
         val (username, password) = getUsernameAndPassword()
         val (formUsername, formPassword) = getFormLayouts()
         verifyForms(username, formUsername, password, formPassword) {
-            loginUser(username, password) {
-                navigateToNavigationDrawerActivity()
-            }
-            formUsername.error = "User or Password incorrect!"
+            loginUser(username, password,
+                { navigateToNavigationDrawerActivity() },
+                { formUsername.error = "User or Password incorrect!" }
+            )
         }
     }
 
@@ -49,25 +60,26 @@ class LoginActivity : AppCompatActivity() {
     fun guestButtonClick(view: View?) {
         // whenever using the guest, uses the preferences of this registered user!
 
+        // does not do this if there is a username stored!
         val randomNumber = (0..9999).random()
         val guestName = "guest_$randomNumber"
-        loginUser(guestName, "") {
+        loginUser(guestName, "", {
             // also store the user name in preferences in order to reuse the same guest
             navigateToNavigationDrawerActivity()
-        }
+        } , { })
 
         startActivity(Intent(this, NavigationDrawerActivity::class.java))
     }
 
-    private fun loginUser(username: String, password: String, onSuccess: () -> Unit) {
+    private fun loginUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         val retrofit = buildRetrofit()
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
         val call = retrofitAPI.sendLogin(user)
-        handleResponse(call, onSuccess)
+        handleResponse(call, onSuccess, onFailure)
     }
 
-    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit) {
+    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
         call.enqueue(object : Callback<SignInResponse> {
             override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
                 if (response.isSuccessful) {
@@ -81,16 +93,39 @@ class LoginActivity : AppCompatActivity() {
                     }
                     onSuccess()
                 }
+                else {
+                    onFailure()
+                }
             }
 
             override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
                 Log.d("serverResponse", "FAILED: ${t.message}")
+                onFailure()
             }
         })
     }
 
     private fun navigateToNavigationDrawerActivity() {
         startActivity(Intent(this, NavigationDrawerActivity::class.java))
+    }
+
+    private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
+        val retrofit = buildRetrofit()
+        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+        Log.d("serverResponse", "TOKEN IS: $storedToken")
+        val response = retrofitAPI.getAuth(storedToken)
+        if (response.isSuccessful) {
+            onSuccess()
+        } else {
+            // Show toast message for error messages
+            /*val message = when(response.code()) {
+                600 -> "Token is missing."
+                601 -> "Token has expired."
+                602 -> "Invalid token."
+                else -> "An error occurred. Please try again later."
+            }*/
+            Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun verifyForms(

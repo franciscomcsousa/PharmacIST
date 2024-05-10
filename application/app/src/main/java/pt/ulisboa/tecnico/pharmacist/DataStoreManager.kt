@@ -19,6 +19,7 @@ class DataStoreManager(val context: Context) {
 
     companion object {
         val KEY_TOKEN = stringPreferencesKey("token")
+        val USERNAME = stringPreferencesKey("username")
     }
 
     suspend fun setToken(token: String) {
@@ -30,6 +31,17 @@ class DataStoreManager(val context: Context) {
     suspend fun getToken(): String? {
         val values = context.dataStore.data.first()
         return values[KEY_TOKEN]
+    }
+
+    suspend fun setUsername(username: String) {
+        context.dataStore.edit { settings ->
+            settings[USERNAME] = username
+        }
+    }
+
+    suspend fun getUsername(): String? {
+        val values = context.dataStore.data.first()
+        return values[USERNAME]
     }
 
     suspend fun clearToken() {

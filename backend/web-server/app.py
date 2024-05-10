@@ -1,12 +1,38 @@
 from flask import Flask, render_template, make_response, request, jsonify
 from datetime import datetime, timedelta
 from flask import json
+from functools import wraps
 from models import *
 import jwt
+
+# Decorator to require login
+# Token verification in headers
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        print(token)
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), TOKEN_IS_MISSING
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            # TODO - maybe in the future also add user
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), TOKEN_AS_EXPIRED
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), INVALID_TOKEN
+
+        return f(*args, **kwargs)
+
+    return decorated
 
 app = Flask(__name__)
 # used to encrypt the Jtokens, for simplicity is now here
 app.config['SECRET_KEY'] = 'manteiga de amendoim'
+
 
 @app.route('/')
 def home():
@@ -30,10 +56,12 @@ def register_user():
         
         # if register successful send token and user stays logged in!
         # maybe also use login_user(), but for simplicity tokens do the job
-        token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
-                            + timedelta(days=1)}, app.config['SECRET_KEY'])
-        token = token_encode.decode('UTF-8')
         
+        #token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
+        #                    + timedelta(days=1)}, app.config['SECRET_KEY'])
+        
+        token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
+                
         return make_response(jsonify({'token': token}), status)
     
     return make_response({"status":400}, 400)
@@ -63,13 +91,16 @@ def login_user():
         # TODO - is sendong token even if unsucessful
         # if register successful send token and user stays logged in!
         # maybe also use login_user(), but for simplicity tokens do the job
-        token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
-                            + timedelta(days=1)}, app.config['SECRET_KEY'])
-        token = token_encode.decode('UTF-8')
+        token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
         
         return make_response(jsonify({'token': token}), status)
     
     return make_response({"status":400}, 400)
+
+@app.route('/authorized')
+@login_required
+def auto_login():
+    return make_response(jsonify({'status': 200}), 200)
 
 
 @app.route('/pharmacies', methods=['GET', 'POST'])
@@ -109,6 +140,7 @@ def create_pharmacy():
 
 
 # TODO - Extra feature (i swear this was made on purpose and its not a bad interpretation of requirements turned into a feature, help :C)
+#@login_required
 @app.route('/upload_photo', methods=['GET', 'POST'])
 def upload_photo():
     if request.method == 'GET':

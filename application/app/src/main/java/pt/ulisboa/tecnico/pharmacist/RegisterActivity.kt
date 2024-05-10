@@ -34,23 +34,23 @@ class RegisterActivity : AppCompatActivity() {
         val (username, password) = getUsernameAndPassword()
         val (formUsername, formPassword) = getFormLayouts()
         verifyForms(username, formUsername, password, formPassword) {
-            registerUser(username, password) {
-                startActivity(Intent(this, NavigationDrawerActivity::class.java))
-            }
-            // TODO - this is cursed, what if there are multiple causes?
-            formUsername.error = "User already exists!"
+            registerUser(username, password,
+            { startActivity(Intent(this, NavigationDrawerActivity::class.java)) },
+            { formUsername.error = "User already exists!" }
+            )
         }
     }
 
-    private fun registerUser(username: String, password: String, onSuccess: () -> Unit) {
+
+    private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         val retrofit = buildRetrofit()
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
         val call = retrofitAPI.sendRegister(user)
-        handleResponse(call, onSuccess)
+        handleResponse(call, onSuccess, onFailure)
     }
 
-    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit) {
+    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
         call.enqueue(object : Callback<SignInResponse> {
             override fun onResponse(
                 call: Call<SignInResponse>,
@@ -67,10 +67,14 @@ class RegisterActivity : AppCompatActivity() {
                     }
                     onSuccess()
                 }
+                else {
+                    onFailure()
+                }
             }
 
             override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
                 Log.d("serverResponse", "FAILED: ${t.message}")
+                onFailure()
             }
         })
     }
@@ -116,7 +120,6 @@ class RegisterActivity : AppCompatActivity() {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
-
 
     suspend fun setUserToken(token: String) {
         // stores the token in the datastore

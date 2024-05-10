@@ -28,4 +28,7 @@ interface RetrofitAPI {
 
     @POST("pharmacy_image")
     fun pharmacyImage(@Body name: String): Call<PharmacyImageResponse>
+
+    @POST("medicine")
+    fun getMedicine(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 }

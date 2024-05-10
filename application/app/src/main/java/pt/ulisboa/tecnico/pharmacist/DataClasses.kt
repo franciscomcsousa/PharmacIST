@@ -14,6 +14,11 @@ data class Pharmacy(
     @SerializedName("longitude") val longitude: String,
     @SerializedName("image") val image: String)
 
+data class MedicineLocation(
+    @SerializedName("name") val name: String,
+    @SerializedName("latitude") val latitude: Double,
+    @SerializedName("longitude") val longitude: Double)
+
 data class Location(
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double)
@@ -29,3 +34,5 @@ data class PharmaciesResponse(val pharmacies: List<List<Any>>)
 data class CreatePharmacyResponse(val status: Int)
 
 data class PharmacyImageResponse(val image: String)
+
+data class MedicineResponse(val medicine: String)

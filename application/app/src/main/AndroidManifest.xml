@@ -70,6 +70,10 @@
             android:name=".AddPharmacyActivity"
             android:exported="false"
             android:label="@string/title_add_pharmacy" />
+        <activity
+            android:name=".MedicineActivity"
+            android:exported="false"
+            android:label="MedicineActivity" />
     </application>
 
 </manifest>

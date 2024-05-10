@@ -33,7 +33,7 @@ class LoginActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             val storedToken = getUserToken()
-            if (storedToken.isNotEmpty()) {
+            if (storedToken.isNotEmpty() && storedToken != "null") {
                 // If a token is stored, attempt automatic login
                 autoLogin(storedToken) {
                     navigateToNavigationDrawerActivity()

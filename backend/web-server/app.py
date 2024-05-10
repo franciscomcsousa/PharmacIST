@@ -150,5 +150,32 @@ def create_pharmacy():
     
     return make_response({"status": 400}, 400)
 
+@app.route('/medicine', methods=['GET', 'POST'])
+def get_medicine():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data['name']
+        latitude = data['latitude']
+        longitude = data['longitude']
+
+        # verify if medicine exists
+        ##status = verify_medicine(name)
+        status = MEDICINE_DOES_NOT_EXIST_STATUS
+        if status == MEDICINE_DOES_NOT_EXIST_STATUS:
+            return make_response({"status": MEDICINE_DOES_NOT_EXIST_STATUS}, MEDICINE_DOES_NOT_EXIST_STATUS)
+        
+        # get the medicine info and also the nearest pharmacy that has it
+        #medicine = get_medicine(name)
+        #pharmacy = get_closest_pharmacy_with_medicine(name, latitude, longitude)
+
+        #return make_response(jsonify({"medicine": medicine, "pharmacy": pharmacy}), 200)
+        # TODO change the code
+        return make_response(jsonify({"status": 453}), 453)
+    
+    return make_response({"status": 400}, 400)
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

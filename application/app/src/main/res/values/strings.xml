@@ -15,7 +15,7 @@
     <string name="home_map_title">Maps</string>
     <string name="home_map_subtitle">Nearby pharmacies</string>
     <string name="home_pill_title">Medicine</string>
-    <string name="home_pill_subtitle">Check medicine stock</string>
+    <string name="home_pill_subtitle">Find medicines</string>
     <string name="home_add_pharmacy_title">Add Pharmacy</string>
     <string name="home_add_pharmacy_subtitle">Create new Pharmacy</string>
     <string name="home_placeholder_title">Title</string>
@@ -39,6 +39,8 @@
     <string name="pharmacy_longitude">Longitude</string>
     <string name="add_photo">Add Photo</string>
     <string name="create_pharmacy">Create Pharmacy</string>
+    <string name="search_for_a_medicine">Search for a medicine</string>
+    <string name="search">Search</string>
 
 
 </resources>

@@ -108,6 +108,43 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
     finally:
         con.close()
 
+def verify_medicine(name):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (name,)
+        query = 'SELECT * FROM medicines WHERE name = %s'
+        cur.execute(query, data)
+        medicine = cur.fetchone()
+        if medicine:
+            return OK_STATUS
+    finally:
+        con.close()
+    return MEDICINE_DOES_NOT_EXIST_STATUS
+
+def get_medicine(name):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (name,)
+        query = 'SELECT * FROM medicines WHERE name = %s'
+        cur.execute(query, data)
+        medicine = cur.fetchone()
+        return medicine
+    finally:
+        con.close()
+
+def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (medicine_name, latitude, longitude)
+        query = 'SELECT * FROM pharmacies WHERE id IN (SELECT pharmacy_id FROM pharmacy_medicine WHERE medicine_id IN (SELECT id FROM medicines WHERE name = %s) AND quantity > 0) ORDER BY ABS((latitude - %s)) + ABS((longitude - %s)) ASC LIMIT 1'
+        cur.execute(query, data)
+        pharmacy = cur.fetchone()
+        return pharmacy
+    finally:
+        con.close()
 
 
 def save_image(image, name):

@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         dataStore = DataStoreManager(this@LoginActivity)
 
-        /*lifecycleScope.launch {
+        lifecycleScope.launch {
             val storedToken = getUserToken()
             if (storedToken.isNotEmpty()) {
                 // If a token is stored, attempt automatic login
@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     navigateToNavigationDrawerActivity()
                 }
             }
-        }*/
+        }
     }
 
     fun loginButtonClick(view: View?) {
@@ -60,13 +60,14 @@ class LoginActivity : AppCompatActivity() {
     fun guestButtonClick(view: View?) {
         // whenever using the guest, uses the preferences of this registered user!
 
+        // TODO - uncomment this
         // does not do this if there is a username stored!
-        val randomNumber = (0..9999).random()
+        /*val randomNumber = (0..9999).random()
         val guestName = "guest_$randomNumber"
         loginUser(guestName, "", {
             // also store the user name in preferences in order to reuse the same guest
             navigateToNavigationDrawerActivity()
-        } , { })
+        } , { })*/
 
         startActivity(Intent(this, NavigationDrawerActivity::class.java))
     }

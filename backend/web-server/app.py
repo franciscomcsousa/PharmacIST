@@ -5,33 +5,34 @@ from functools import wraps
 from models import *
 import jwt
 
-# Decorator to require login
-# Token verification in headers
-# def login_required(f):
-#     @wraps(f)
-#     def decorated(*args, **kwargs):
-#         token = request.headers.get('Authorization')
-        
-#         print(token)
-
-#         if not token:
-#             return jsonify({'error': 'Token is missing'}), TOKEN_IS_MISSING
-
-#         try:
-#             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-#             # TODO - maybe in the future also add user
-#         except jwt.ExpiredSignatureError:
-#             return jsonify({'error': 'Token has expired'}), TOKEN_AS_EXPIRED
-#         except jwt.InvalidTokenError:
-#             return jsonify({'error': 'Invalid token'}), INVALID_TOKEN
-
-#         return f(*args, **kwargs)
-
-#     return decorated
-
 app = Flask(__name__)
 # used to encrypt the Jtokens, for simplicity is now here
 app.config['SECRET_KEY'] = 'manteiga de amendoim'
+
+
+# Decorator to require login
+# Token verification in headers
+def login_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        token = request.headers.get('Authorization')
+        
+        print(token)
+
+        if not token:
+            return jsonify({'error': 'Token is missing'}), TOKEN_IS_MISSING
+
+        try:
+            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
+            # TODO - maybe in the future also add user
+        except jwt.ExpiredSignatureError:
+            return jsonify({'error': 'Token has expired'}), TOKEN_AS_EXPIRED
+        except jwt.InvalidTokenError:
+            return jsonify({'error': 'Invalid token'}), INVALID_TOKEN
+
+        return f(*args, **kwargs)
+
+    return decorated
 
 
 @app.route('/')
@@ -97,10 +98,10 @@ def login_user():
     
     return make_response({"status":400}, 400)
 
-#@app.route('/authorized',  methods=['GET'])
-#@login_required
-#def auto_login():
-#    return make_response(jsonify({'status': 200}), 200)
+@app.route('/authorized')
+@login_required
+def auto_login():
+    return make_response(jsonify({'status': 200}), 200)
 
 
 @app.route('/pharmacies', methods=['GET', 'POST'])

@@ -52,18 +52,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
 
-    // Registers a photo picker activity launcher in single-select mode.
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-        // Callback is invoked after the user selects a media item or closes the
-        // photo picker.
-        if (uri != null) {
-            Log.d("PhotoPicker", "Selected URI: $uri")
-            uploadPharmacyPhoto(uri)
-        } else {
-            Log.d("PhotoPicker", "No media selected")
-        }
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -178,7 +166,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                     for (pharmacy in pharmaciesList) {
                         // transform pharmacies into a list of Pharmacy objects
                         pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
-                            pharmacy[3].toString(), pharmacy[4].toString(), pharmacy[5].toString())
+                            pharmacy[3].toString(), pharmacy[4].toString(), "")
                     }
 
                     // update the pharmacies list
@@ -191,42 +179,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
-    }
-
-    fun choosePharmacyPhoto(view: View) {
-        // Launch the photo picker and let the user choose only images.
-        pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-    }
-
-    private fun uploadPharmacyPhoto(uri: Uri) {
-
-        // Get bitmap from URI
-        val inputStream = this.contentResolver.openInputStream(uri)
-        val bitmap = BitmapFactory.decodeStream(inputStream)
-        inputStream?.close()
-
-        println(bitmap)
-
-        // Encode bitmap into Base64
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-        val imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
-
-        val upload = UploadPhoto("Farmácia Bandeira", imageB64)
-        val call: Call<UploadPhotoResponse> = retrofitAPI.uploadPharmacyPhoto(upload)
-        call.enqueue(object : Callback<UploadPhotoResponse> {
-            override fun onResponse(call: Call<UploadPhotoResponse>, response: Response<UploadPhotoResponse>){
-                if (response.isSuccessful) {
-                    Log.d("serverResponse","Photo uploaded")
-                }
-            }
-
-            override fun onFailure(call: Call<UploadPhotoResponse>, t: Throwable) {
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        }
-        )
     }
 
 }

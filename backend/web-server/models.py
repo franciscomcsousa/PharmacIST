@@ -87,7 +87,7 @@ def get_closest_pharmacies(latitude, longitude):
     finally:
         con.close()
 
-def serialize_pharmacy(name, address, longitude, latitude, image):
+def serialize_pharmacy(name, address, latitude, longitude, image):
     con = connect_db()
     try:
         # TODO - check if pharmacy is repeated (and perhaps other safety stuff)

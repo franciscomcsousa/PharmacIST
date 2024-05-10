@@ -115,11 +115,22 @@ def get_pharmacies():
         latitude = data['latitude']
         longitude = data['longitude']
         pharmacies = get_closest_pharmacies(latitude, longitude)
-        print(pharmacies)
 
         return make_response(jsonify({"pharmacies": pharmacies}), 200)
     
     return make_response({"status": 400}, 400)
+
+@app.route('/pharmacy_image', methods=['GET', 'POST'])
+def get_pharmacy_image():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data
+        image = get_image(name=base64.b64encode(name.encode('utf-8')).decode())
+
+    return make_response(jsonify({"image": base64.b64encode(image).decode()}), 200)
 
 @app.route('/create_pharmacy', methods=['GET', 'POST'])
 def create_pharmacy():
@@ -134,26 +145,6 @@ def create_pharmacy():
         longitude = data['longitude']
         image = data['image']
         serialize_pharmacy(name, address, latitude, longitude, image)
-
-        return make_response({"status": 200}, 200)
-    
-    return make_response({"status": 400}, 400)
-
-
-# TODO - Extra feature (i swear this was made on purpose and its not a bad interpretation of requirements turned into a feature, help :C)
-#@login_required
-@app.route('/upload_photo', methods=['GET', 'POST'])
-def upload_photo():
-    if request.method == 'GET':
-        pass
-
-    if request.method == 'POST':
-        data = request.get_json()
-        name = data['name']
-        image = data['image']
-
-        print(image)
-        save_image(image, path="name.png")
 
         return make_response({"status": 200}, 200)
     

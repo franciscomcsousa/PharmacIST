@@ -93,21 +93,16 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
         # TODO - check if pharmacy is repeated (and perhaps other safety stuff)
         cur = con.cursor()
         data = (name, address, latitude, longitude)
-        print("WE ARE HERE WOOO!")
         query = 'INSERT INTO pharmacies (name, address, latitude, longitude) VALUES (%s, %s, %s, %s)'
-        print(query)
-        print(data)
         cur.execute(query, data)
         con.commit()
 
+        if image == "":
+            return OK_STATUS
+
         # Save image of pharmacy in base64 encode of its name
         name_b64 = base64.b64encode(name.encode('utf-8'))
-        save_image(image, path=name_b64)
-        return OK_STATUS
-    
-    except Exception as e:
-        con.rollback()  # Rollback changes if an error occurs
-        print("Database error:", e)  # Print the database error message for debugging
+        save_image(image, name=name_b64.decode())
         return OK_STATUS
     
     finally:
@@ -115,11 +110,19 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
 
 
 
-def save_image(image, path):
+def save_image(image, name):
     decoded_image = base64.b64decode(image)
     # TODO - create images dir if it doesn't exist
-    realPath = f"images/{path.decode()}.png"
+    path = f"images/{name}.png"
 
-    with open(realPath, 'wb') as f:
+    with open(path, 'wb') as f:
         f.write(decoded_image)
-    
+
+def get_image(name):
+    path = f"images/{name}.png"
+
+    # TODO - check if file exists
+    with open(path, 'rb') as f:
+        image = f.read()
+
+    return image

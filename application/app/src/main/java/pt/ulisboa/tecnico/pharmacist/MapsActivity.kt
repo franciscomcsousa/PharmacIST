@@ -2,16 +2,14 @@ package pt.ulisboa.tecnico.pharmacist
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
-import android.view.View
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.result.PickVisualMediaRequest
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.FragmentActivity
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -27,7 +25,6 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
-import java.io.ByteArrayOutputStream
 import java.util.Timer
 import java.util.TimerTask
 
@@ -51,6 +48,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
+
+    // TODO - Later create a cache to store this images
+    private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -143,11 +143,13 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
         val bottomDrawerView = layoutInflater.inflate(R.layout.pharmacy_drawer_layout, null)
+        pharmacyImage(pharmacy.name)
 
         // Update views with pharmacy information
         // For example:
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_name)?.text = pharmacy.name
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
+        bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
 
         val bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(bottomDrawerView)
@@ -171,12 +173,41 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
                     // update the pharmacies list
                     pharmacies = pharmaciesFetched
+                    // TODO - this might waste too much resources
+                    // Only way to correctly preview image
+                    for (pharmacy in pharmacies) {
+                        pharmacyImage(pharmacy.name)
+                    }
+
                 }
             }
 
             override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
                 // we get error response from API.
                 Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
+    }
+
+    private fun pharmacyImage(name: String) {
+
+        var b64Image = ""
+        val call: Call<PharmacyImageResponse> = retrofitAPI.pharmacyImage(name)
+        call.enqueue(object : Callback<PharmacyImageResponse> {
+            override fun onResponse(
+                call: Call<PharmacyImageResponse>,
+                response: Response<PharmacyImageResponse>
+            ) {
+                if (response.isSuccessful) {
+                    b64Image = response.body()!!.image
+                    val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
+                    pharmacyImages[name] = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                    Log.d("serverResponse", "Pharmacy image retrieved")
+                }
+            }
+
+            override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: " + t.message)
             }
         })
     }

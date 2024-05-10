@@ -1,15 +1,34 @@
-# Database - MariaDB
+# PharmacIST
 
-## Install
+### Authors
+- [Francisco Sousa](https://github.com/franciscomcsousa)
+- [Miguel Porfírio](https://github.com/miguelporfirio19)
+- [Sara Aguincha](https://github.com/SaraAguincha)
 
-(WSL2)
+## Used Technologies
+
+- [Flask](https://flask.palletsprojects.com/en/3.0.x/)
+- [MariaDB](https://mariadb.org/)
+- [Android Studio](https://developer.android.com/studio)
+
+## Application - Android Studio
+
+To run the application, simply build the project with ````gradle build``
+
+For the application to work as intended, for now, its required that the [web server](#web-server---python-flask) is running.
+
+## Database - MariaDB
+
+### Install
+
+(Debian)
 ``` bash
 sudo apt install mariadb-server
 sudo /etc/init.d/mysql start
 sudo /etc/init.d/mysql status
 sudo mysql_secure_installation
 ```
-If it does not work, because WSL is bad:
+If it does not work:
 ```bash
 sudo apt remove --purge *mysql*
 sudo apt remove --purge *mariadb*
@@ -19,7 +38,7 @@ sudo apt autoclean
 ```
 and try again.
 
-### Create admin user
+#### Create admin user
 Open MariaDB ```sudo mariadb ```
 
 Create a new user with root privileges and password-based access. For simplicity and test purposes, we will have a user named admin with a password crepes.
@@ -35,7 +54,7 @@ exit
 ```
 Tutorial [**Here.**](https://www.digitalocean.com/community/tutorials/how-to-install-mariadb-on-ubuntu-20-04)
 
-## Importing databases
+### Importing databases
 
 Login as an admin user and create a new database if necessary. 
 ```
@@ -54,12 +73,14 @@ bash insert_schemas.sql
 
 Tutorial [**Here.**](https://www.digitalocean.com/community/tutorials/how-to-import-and-export-databases-in-mysql-or-mariadb)
 
-# Backend - Python flask
+## Web Server - Python flask
 
-## Install requirements
+### Install requirements
 
-(WSL) may need to install some missing libraries
+(Debian) may need to install some missing libraries
 ```
 sudo apt-get install libmariadb3 libmariadb-dev
 ```
 Run requirements script: ```pip3 install -r requirements.txt```
+
+**To run the webserver:** ```python3 app.py```

@@ -87,9 +87,39 @@ def get_closest_pharmacies(latitude, longitude):
     finally:
         con.close()
 
-def save_photo(image, path):
-    decoded_image = base64.b64decode(image)
+def serialize_pharmacy(name, address, longitude, latitude, image):
+    con = connect_db()
+    try:
+        # TODO - check if pharmacy is repeated (and perhaps other safety stuff)
+        cur = con.cursor()
+        data = (name, address, latitude, longitude)
+        print("WE ARE HERE WOOO!")
+        query = 'INSERT INTO pharmacies (name, address, latitude, longitude) VALUES (%s, %s, %s, %s)'
+        print(query)
+        print(data)
+        cur.execute(query, data)
+        con.commit()
 
-    with open(path, 'wb') as f:
+        # Save image of pharmacy in base64 encode of its name
+        name_b64 = base64.b64encode(name.encode('utf-8'))
+        save_image(image, path=name_b64)
+        return OK_STATUS
+    
+    except Exception as e:
+        con.rollback()  # Rollback changes if an error occurs
+        print("Database error:", e)  # Print the database error message for debugging
+        return OK_STATUS
+    
+    finally:
+        con.close()
+
+
+
+def save_image(image, path):
+    decoded_image = base64.b64decode(image)
+    # TODO - create images dir if it doesn't exist
+    realPath = f"images/{path.decode()}.png"
+
+    with open(realPath, 'wb') as f:
         f.write(decoded_image)
     

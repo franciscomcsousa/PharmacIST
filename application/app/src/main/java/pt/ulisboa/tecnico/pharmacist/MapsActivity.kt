@@ -149,32 +149,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         }
     }
 
-    private fun getPharmacies() {
-
-        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-        val location = Location(38.725387301488965, -9.150040089232286)
-        val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
-        call.enqueue(object : Callback<PharmaciesResponse> {
-            override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
-                if (response.isSuccessful) {
-                    val pharmaciesList = response.body()!!.pharmacies
-                    for (pharmacy in pharmaciesList) {
-                        // transform pharmacies into a list of Pharmacy objects
-                        pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
-                            pharmacy[3].toString(), pharmacy[4].toString())
-                    }
-
-                    // update the pharmacies list
-                    pharmacies = pharmaciesFetched
-                }
-            }
-
-            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
-                // we get error response from API.
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
-    }
 
     // TODO - possibly change it to be a fragment ?
     // Information of pharmacy selected
@@ -190,6 +164,33 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         val bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(bottomDrawerView)
         bottomSheetDialog.show()
+    }
+
+    private fun getPharmacies() {
+
+        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
+        val location = Location(38.725387301488965, -9.150040089232286)
+        val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
+        call.enqueue(object : Callback<PharmaciesResponse> {
+            override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
+                if (response.isSuccessful) {
+                    val pharmaciesList = response.body()!!.pharmacies
+                    for (pharmacy in pharmaciesList) {
+                        // transform pharmacies into a list of Pharmacy objects
+                        pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
+                            pharmacy[3].toString(), pharmacy[4].toString(), pharmacy[5].toString())
+                    }
+
+                    // update the pharmacies list
+                    pharmacies = pharmaciesFetched
+                }
+            }
+
+            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                // we get error response from API.
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
     }
 
     fun choosePharmacyPhoto(view: View) {

@@ -66,6 +66,10 @@
             android:name=".MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
+        <activity
+            android:name=".AddPharmacyActivity"
+            android:exported="false"
+            android:label="@string/title_add_pharmacy" />
     </application>
 
 </manifest>

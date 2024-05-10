@@ -58,5 +58,10 @@ class NavigationDrawerActivity : AppCompatActivity() {
         val intent = Intent(this, MapsActivity::class.java)
         startActivity(intent)
     }
+
+    fun addPharmacyButtonClick(view: View?) {
+        val intent = Intent(this, AddPharmacyActivity::class.java)
+        startActivity(intent)
+    }
     
 }

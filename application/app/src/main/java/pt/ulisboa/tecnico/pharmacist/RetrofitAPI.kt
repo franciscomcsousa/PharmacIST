@@ -16,6 +16,9 @@ interface RetrofitAPI {
     @POST("pharmacies")
     fun getPharmacies(@Body location: Location?): Call<PharmaciesResponse>
 
+    @POST("create_pharmacy")
+    fun createPharmacy(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
+
     @POST("upload_photo")
     fun uploadPharmacyPhoto(@Body uploadPhoto: UploadPhoto): Call<UploadPhotoResponse>
 }

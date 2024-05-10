@@ -89,6 +89,26 @@ def get_pharmacies():
     
     return make_response({"status": 400}, 400)
 
+@app.route('/create_pharmacy', methods=['GET', 'POST'])
+def create_pharmacy():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        data = request.get_json()
+        name = data['name']
+        address = data['address']
+        latitude = data['latitude']
+        longitude = data['longitude']
+        image = data['image']
+        serialize_pharmacy(name, address, latitude, longitude, image)
+
+        return make_response({"status": 200}, 200)
+    
+    return make_response({"status": 400}, 400)
+
+
+# TODO - Extra feature (i swear this was made on purpose and its not a bad interpretation of requirements turned into a feature, help :C)
 @app.route('/upload_photo', methods=['GET', 'POST'])
 def upload_photo():
     if request.method == 'GET':
@@ -100,7 +120,7 @@ def upload_photo():
         image = data['image']
 
         print(image)
-        save_photo(image, path="name.png")
+        save_image(image, path="name.png")
 
         return make_response({"status": 200}, 200)
     

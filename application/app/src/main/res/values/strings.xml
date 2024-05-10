@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">PharmacIST</string>
     <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_add_pharmacy">AddPharmacyActivity</string>
 
     <!-- Login Texts -->
     <string name="prompt_username">Username</string>
@@ -15,6 +16,8 @@
     <string name="home_map_subtitle">Nearby pharmacies</string>
     <string name="home_pill_title">Medicine</string>
     <string name="home_pill_subtitle">Check medicine stock</string>
+    <string name="home_add_pharmacy_title">Add Pharmacy</string>
+    <string name="home_add_pharmacy_subtitle">Create new Pharmacy</string>
     <string name="home_placeholder_title">Title</string>
     <string name="home_placeholder_subtitle">Subtitle</string>
     <string name="title_activity_drawer">DrawerActivity</string>
@@ -29,9 +32,13 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
 
-    <!-- Maps Texts -->
-    <string name="pharmacy_name">Pharmacy Name</string>
-    <string name="pharmacy_address">Pharmacy Address</string>
+    <!-- Pharmacy Texts -->
+    <string name="pharmacy_name">Name</string>
+    <string name="pharmacy_address">Address</string>
+    <string name="pharmacy_latitude">Latitude</string>
+    <string name="pharmacy_longitude">Longitude</string>
     <string name="add_photo">Add Photo</string>
+    <string name="create_pharmacy">Create Pharmacy</string>
+
 
 </resources>

@@ -31,7 +31,7 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         dataStore = DataStoreManager(this@LoginActivity)
 
-        lifecycleScope.launch {
+        /*lifecycleScope.launch {
             val storedToken = getUserToken()
             if (storedToken.isNotEmpty()) {
                 // If a token is stored, attempt automatic login
@@ -39,7 +39,7 @@ class LoginActivity : AppCompatActivity() {
                     navigateToNavigationDrawerActivity()
                 }
             }
-        }
+        }*/
     }
 
     fun loginButtonClick(view: View?) {

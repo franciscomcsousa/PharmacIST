@@ -95,6 +95,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/pharmacy_longitude"
             android:inputType="text|textPersonName" />
+
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -109,7 +110,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.734" />
+        app:layout_constraintVertical_bias="0.802" />
 
     <Button
         android:id="@+id/create_pharmacy"
@@ -124,7 +125,19 @@
         app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.900" />
+        app:layout_constraintVertical_bias="0.942" />
+
+    <ImageView
+        android:id="@+id/add_photo_preview"
+        android:layout_width="96dp"
+        android:layout_height="68dp"
+        android:scaleType="fitXY"
+        app:layout_constraintBottom_toTopOf="@+id/add_photo"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/formLongitude"
+        app:layout_constraintVertical_bias="0.78" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

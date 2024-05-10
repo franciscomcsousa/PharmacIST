@@ -9,6 +9,7 @@ import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -41,7 +42,7 @@ class AddPharmacyActivity : AppCompatActivity() {
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             currentUri = uri
-            //uploadPharmacyPhoto(uri)
+            previewAddedPhoto(currentUri)
         } else {
             Log.d("PhotoPicker", "No media selected")
         }
@@ -54,6 +55,10 @@ class AddPharmacyActivity : AppCompatActivity() {
 
     fun choosePhoto(view: View){
         pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+    }
+
+    private fun previewAddedPhoto(uri: Uri?) {
+        findViewById<ImageView>(R.id.add_photo_preview).setImageURI(uri)
     }
 
     private fun getFields(): List<String> {

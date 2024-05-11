@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.pharmacist
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -50,7 +51,12 @@ class MedicineActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val medicineResponse = response.body()!!.medicine
                     Log.d("serverResponse", "Medicine found: $medicineResponse")
-                    //displayMedicine(medicineResponse)
+                    val medicine = Medicine(medicineResponse[0][1].toString(), medicineResponse[0][2].toString())
+                    val pharmacy = Pharmacy(medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
+                        medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
+
+                    // Display the medicine and pharmacy in a new activity
+                    navigateToMedicineDetailsActivity(medicine, pharmacy)
                 }
                 else if (response.code() == 453) {
                     Log.d("serverResponse","Medicine not found")
@@ -70,5 +76,16 @@ class MedicineActivity : AppCompatActivity() {
             formMedicineName.error = null
             callback()
         }
+    }
+
+    private fun navigateToMedicineDetailsActivity(medicine: Medicine, pharmacy: Pharmacy) {
+        val intent = Intent(this, MedicineDetailsActivity::class.java)
+        intent.putExtra("medicineName", medicine.name)
+        intent.putExtra("medicinePurpose", medicine.purpose)
+        intent.putExtra("pharmacyName", pharmacy.name)
+        intent.putExtra("pharmacyAddress", pharmacy.address)
+        intent.putExtra("pharmacyImage", pharmacy.image)
+
+        startActivity(intent)
     }
 }

@@ -74,6 +74,10 @@
             android:name=".MedicineActivity"
             android:exported="false"
             android:label="MedicineActivity" />
+        <activity
+            android:name=".MedicineDetailsActivity"
+            android:exported="false"
+            android:label="MedicineDetailsActivity" />
     </application>
 
 </manifest>

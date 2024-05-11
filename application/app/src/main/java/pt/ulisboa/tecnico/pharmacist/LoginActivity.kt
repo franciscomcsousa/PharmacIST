@@ -88,9 +88,6 @@ class LoginActivity : AppCompatActivity() {
                     // store token in preferences datastore
                     lifecycleScope.launch {
                         setUserToken(token)
-                        // get the token from the datastore and print it
-                        // for testing purposes
-                        Log.d("TOKEN", getUserToken())
                     }
                     onSuccess()
                 }
@@ -113,7 +110,6 @@ class LoginActivity : AppCompatActivity() {
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
         val retrofit = buildRetrofit()
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
-        Log.d("serverResponse", "TOKEN IS: $storedToken")
         val response = retrofitAPI.getAuth(storedToken)
         if (response.isSuccessful) {
             onSuccess()

@@ -41,6 +41,12 @@
     <string name="create_pharmacy">Create Pharmacy</string>
     <string name="search_for_a_medicine">Search for a medicine</string>
     <string name="search">Search</string>
+    <string name="closest_pharmacy">Closest pharmacy:</string>
 
+    <!-- Placeholder Text -->
+    <string name="placeholder_1">Placeholder 1</string>
+    <string name="placeholder_2">Placeholder 2</string>
+    <string name="placeholder_3">Placeholder 3</string>
+    <string name="placeholder_4">Placeholder 4</string>
 
 </resources>

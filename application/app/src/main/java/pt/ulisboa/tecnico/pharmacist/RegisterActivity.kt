@@ -61,9 +61,6 @@ class RegisterActivity : AppCompatActivity() {
                     // store token in preferences datastore
                     lifecycleScope.launch {
                         setUserToken(token)
-                        // get the token from the datastore and print it
-                        // for testing purposes
-                        Log.d("TOKEN", getUserToken())
                     }
                     onSuccess()
                 }

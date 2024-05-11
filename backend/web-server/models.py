@@ -113,7 +113,7 @@ def verify_medicine(name):
     try:
         cur = con.cursor()
         data = (name,)
-        query = 'SELECT * FROM medicines WHERE name = %s'
+        query = 'SELECT * FROM medicine WHERE name = %s'
         cur.execute(query, data)
         medicine = cur.fetchone()
         if medicine:
@@ -122,12 +122,12 @@ def verify_medicine(name):
         con.close()
     return MEDICINE_DOES_NOT_EXIST_STATUS
 
-def get_medicine(name):
+def get_requested_medicine(name):
     con = connect_db()
     try:
         cur = con.cursor()
         data = (name,)
-        query = 'SELECT * FROM medicines WHERE name = %s'
+        query = 'SELECT * FROM medicine WHERE name = %s'
         cur.execute(query, data)
         medicine = cur.fetchone()
         return medicine
@@ -139,7 +139,7 @@ def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
     try:
         cur = con.cursor()
         data = (medicine_name, latitude, longitude)
-        query = 'SELECT * FROM pharmacies WHERE id IN (SELECT pharmacy_id FROM pharmacy_medicine WHERE medicine_id IN (SELECT id FROM medicines WHERE name = %s) AND quantity > 0) ORDER BY ABS((latitude - %s)) + ABS((longitude - %s)) ASC LIMIT 1'
+        query = 'SELECT * FROM pharmacies WHERE pharmacy_id IN (SELECT pharmacy_id FROM medicine_stock WHERE medicine_id IN (SELECT medicine_id FROM medicine WHERE name = %s) AND quantity > 0) ORDER BY ABS((latitude - %s)) + ABS((longitude - %s)) ASC LIMIT 1'
         cur.execute(query, data)
         pharmacy = cur.fetchone()
         return pharmacy

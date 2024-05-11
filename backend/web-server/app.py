@@ -16,9 +16,6 @@ def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization')
-        
-        print(token)
-
         if not token:
             return jsonify({'error': 'Token is missing'}), TOKEN_IS_MISSING
 
@@ -162,18 +159,16 @@ def get_medicine():
         longitude = data['longitude']
 
         # verify if medicine exists
-        ##status = verify_medicine(name)
-        status = MEDICINE_DOES_NOT_EXIST_STATUS
+        status = verify_medicine(name)
         if status == MEDICINE_DOES_NOT_EXIST_STATUS:
-            return make_response({"status": MEDICINE_DOES_NOT_EXIST_STATUS}, MEDICINE_DOES_NOT_EXIST_STATUS)
+            return make_response({"status": status}, status)
         
         # get the medicine info and also the nearest pharmacy that has it
-        #medicine = get_medicine(name)
-        #pharmacy = get_closest_pharmacy_with_medicine(name, latitude, longitude)
+        medicine = get_requested_medicine(name)
+        pharmacy = get_closest_pharmacy_with_medicine(name, latitude, longitude)
+        response = (medicine, pharmacy)
 
-        #return make_response(jsonify({"medicine": medicine, "pharmacy": pharmacy}), 200)
-        # TODO change the code
-        return make_response(jsonify({"status": 453}), 453)
+        return make_response(jsonify({"medicine": response}), 200)
     
     return make_response({"status": 400}, 400)
 

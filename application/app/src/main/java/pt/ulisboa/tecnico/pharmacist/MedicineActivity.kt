@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
@@ -42,7 +43,10 @@ class MedicineActivity : AppCompatActivity() {
         }
     }
 
-    private fun getMedicine(medicineName: String) {
+    private fun getMedicine(name: String) {
+        // If the name is in lowercase, capitalize the first letter for user friendliness
+        val medicineName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+
         // Call the server to get the medicine
         val medicineLocation = MedicineLocation(medicineName, 38.725387301488965, -9.150040089232286)
         val call: Call<MedicineResponse> = retrofitAPI.getMedicine(medicineLocation)
@@ -59,6 +63,7 @@ class MedicineActivity : AppCompatActivity() {
                     navigateToMedicineDetailsActivity(medicine, pharmacy)
                 }
                 else if (response.code() == 453) {
+                    Toast.makeText(this@MedicineActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
                     Log.d("serverResponse","Medicine not found")
                 }
             }

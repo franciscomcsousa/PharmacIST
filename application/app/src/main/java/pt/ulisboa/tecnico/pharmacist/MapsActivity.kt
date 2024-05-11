@@ -1,5 +1,9 @@
 package pt.ulisboa.tecnico.pharmacist
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
@@ -7,18 +11,23 @@ import android.os.Handler
 import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.suspendCancellableCoroutine
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -36,6 +45,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var timerTask: TimerTask? = null
     private var handler: Handler? = null
 
+    private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
+    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var dataStore: DataStoreManager
 
     // for now contacts the localhost server
@@ -57,19 +68,15 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
         dataStore = DataStoreManager(this@MapsActivity)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
                 .findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
 
-        val recenterButton = findViewById<ImageButton>(R.id.current_loc)
-        recenterButton.setOnClickListener {
-            // Move the camera to Marquês de Pombal (for now)
-            val location = LatLng(38.725387301488965, -9.150040089232286)
-            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f))
-        }
     }
+
 
     /**
      * Manipulates the map once available.
@@ -83,23 +90,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
+        requestPermissions()
+
         // Get the first batch of pharmacies from the backend
         getPharmacies()
         // TODO for now it sleeps to wait for the first batch of pharmacies, maybe change later
         Thread.sleep(200)
-
-        // Move the camera to Marquês de Pombal
-        val location = LatLng(38.725387301488965, -9.150040089232286)
-        mMap!!.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 15.0f))
-        mMap!!.setMinZoomPreference(0.0f)
-        mMap!!.setMaxZoomPreference(30.0f)
-
-        // Add a blue marker in Marquês de Pombal
-        mMap!!.addMarker(MarkerOptions()
-            .position(location)
-            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
-            .title("Marquês de Pombal")
-            .snippet("I am here"))
 
         // TODO - Not fetch again if in the same location: saves resources
         // Make a call to the backend to get the pharmacies every 10 seconds in a new thread
@@ -159,34 +155,38 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private fun getPharmacies() {
 
         val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-        val location = Location(38.725387301488965, -9.150040089232286)
-        val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
-        call.enqueue(object : Callback<PharmaciesResponse> {
-            override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
-                if (response.isSuccessful) {
-                    val pharmaciesList = response.body()!!.pharmacies
-                    for (pharmacy in pharmaciesList) {
-                        // transform pharmacies into a list of Pharmacy objects
-                        pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
-                            pharmacy[3].toString(), pharmacy[4].toString(), "")
+        getUserLocation { location ->
+            // sometimes it might not be able to fetch
+            // TODO - maybe when null use the last non-null value
+            if (location != null) {
+                val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
+                call.enqueue(object : Callback<PharmaciesResponse> {
+                    override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
+                        if (response.isSuccessful) {
+                            val pharmaciesList = response.body()!!.pharmacies
+                            for (pharmacy in pharmaciesList) {
+                                // transform pharmacies into a list of Pharmacy objects
+                                pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
+                                    pharmacy[3].toString(), pharmacy[4].toString(), "")
+                            }
+
+                            // update the pharmacies list
+                            pharmacies = pharmaciesFetched
+                            // TODO - this might waste too much resources
+                            // Only way to correctly preview image
+                            for (pharmacy in pharmacies) {
+                                pharmacyImage(pharmacy.name)
+                            }
+                        }
                     }
 
-                    // update the pharmacies list
-                    pharmacies = pharmaciesFetched
-                    // TODO - this might waste too much resources
-                    // Only way to correctly preview image
-                    for (pharmacy in pharmacies) {
-                        pharmacyImage(pharmacy.name)
+                    override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                        // we get error response from API.
+                        Log.d("serverResponse","FAILED: "+ t.message)
                     }
-
-                }
+                })
             }
-
-            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
-                // we get error response from API.
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
+        }
     }
 
     private fun pharmacyImage(name: String) {
@@ -210,6 +210,71 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 Log.d("serverResponse", "FAILED: " + t.message)
             }
         })
+    }
+
+    // User Location and Permissions Logic
+    @SuppressLint("MissingPermission")  // IDE does not consider how this function is called
+    private fun enableUserLocation() {
+        mMap?.isMyLocationEnabled = true
+
+    }
+
+    @SuppressLint("MissingPermission")  // IDE does not consider how this function is called
+    private fun getUserLocation(callback: (Location?) -> Unit) {
+        val locationTask = fusedLocationProviderClient.lastLocation
+        locationTask.addOnSuccessListener { location ->
+            // Check if location is not null before using it
+            val userLocation = location?.let {
+                Location(it.latitude, it.longitude)
+            }
+            callback(userLocation)
+        }
+    }
+    private fun centerUserLocation() {
+        getUserLocation { location ->
+            location?.let {
+                val latLng = LatLng(location.latitude, location.longitude)
+                mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+            }
+        }
+    }
+
+    private fun requestPermissions() {
+        // verify permissions
+        if (ContextCompat.checkSelfPermission(
+                this@MapsActivity,
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Permission is granted
+            enableUserLocation()
+            centerUserLocation()
+        } else {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(
+                this@MapsActivity,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                PERMISSION_REQUEST_ACCESS_LOCATION_CODE
+            )
+        }
+    }
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == PERMISSION_REQUEST_ACCESS_LOCATION_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, proceed with your location-related tasks
+                enableUserLocation()
+                centerUserLocation()
+            } else {
+                // Permission denied, redirect to NavigationDrawer activity
+                // TODO - maybe show dialogue message
+                startActivity(Intent(this@MapsActivity, NavigationDrawerActivity::class.java))
+            }
+        }
     }
 
 }

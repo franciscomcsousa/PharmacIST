@@ -13,6 +13,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
@@ -60,7 +61,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
 
-    // TODO - Later create a cache to store this images
+    // TODO - Later create a cache to store these images
     private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -77,16 +78,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
     }
 
-
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
@@ -95,7 +86,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         // Get the first batch of pharmacies from the backend
         getPharmacies()
         // TODO for now it sleeps to wait for the first batch of pharmacies, maybe change later
-        Thread.sleep(200)
+        Thread.sleep(300)
 
         // TODO - Not fetch again if in the same location: saves resources
         // Make a call to the backend to get the pharmacies every 10 seconds in a new thread
@@ -169,7 +160,6 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                                 pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
                                     pharmacy[3].toString(), pharmacy[4].toString(), "")
                             }
-
                             // update the pharmacies list
                             pharmacies = pharmaciesFetched
                             // TODO - this might waste too much resources
@@ -271,7 +261,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 centerUserLocation()
             } else {
                 // Permission denied, redirect to NavigationDrawer activity
-                // TODO - maybe show dialogue message
+                Toast.makeText(this@MapsActivity, "Permission denied", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@MapsActivity, NavigationDrawerActivity::class.java))
             }
         }

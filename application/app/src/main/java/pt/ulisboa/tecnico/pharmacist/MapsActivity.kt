@@ -25,10 +25,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.tasks.Task
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.suspendCancellableCoroutine
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -37,11 +34,14 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Timer
 import java.util.TimerTask
+import kotlin.math.abs
 
 
 class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
     private var binding: ActivityMapsBinding? = null
+    private var previousLocation: Location? = null
+    private var needNewMarkers = false
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
     private var handler: Handler? = null
@@ -83,44 +83,41 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
         requestPermissions()
 
-        // Get the first batch of pharmacies from the backend
-        getPharmacies()
-        // TODO for now it sleeps to wait for the first batch of pharmacies, maybe change later
-        Thread.sleep(300)
-
-        // TODO - Not fetch again if in the same location: saves resources
-        // Make a call to the backend to get the pharmacies every 10 seconds in a new thread
         timer = Timer()
         timerTask = object : TimerTask() {
             override fun run() {
                 handler = Handler(mainLooper)
                 handler!!.post {
-                    println("Updating pharmacies")
                     mapPharmacies()
-                    println("Pharmacies updated")
                 }
             }
         }
-        timer!!.schedule(timerTask, 0, 10000)
+        timer!!.schedule(timerTask, 0, 2000)
     }
 
     private fun mapPharmacies() {
+        // Fetch pharmacies from the server
         getPharmacies()
-        for (pharmacy in pharmacies) {
-            // Add a marker for each pharmacy
-            val marker = mMap!!.addMarker(MarkerOptions()
-                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
-                .title(pharmacy.name)
-                .snippet(pharmacy.address)
-            )
 
-            marker?.tag = pharmacy // Store pharmacy data as a tag
+        // Only add markers if new pharmacies were fetched
+        if (needNewMarkers) {
+            for (pharmacy in pharmacies) {
+                // Add a marker for each pharmacy
+                val marker = mMap!!.addMarker(MarkerOptions()
+                    .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                    .title(pharmacy.name)
+                    .snippet(pharmacy.address)
+                )
 
-            mMap!!.setOnMarkerClickListener { clickedMarker ->
-                val clickedPharmacy = clickedMarker.tag as Pharmacy
-                showPharmacyDrawer(clickedPharmacy)
-                true // Return true to indicate that the listener has consumed the event
+                marker?.tag = pharmacy // Store pharmacy data as a tag
+
+                mMap!!.setOnMarkerClickListener { clickedMarker ->
+                    val clickedPharmacy = clickedMarker.tag as Pharmacy
+                    showPharmacyDrawer(clickedPharmacy)
+                    true // Return true to indicate that the listener has consumed the event
+                }
             }
+            needNewMarkers = false
         }
     }
 
@@ -144,12 +141,14 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
     }
 
     private fun getPharmacies() {
-
-        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
         getUserLocation { location ->
             // sometimes it might not be able to fetch
             // TODO - maybe when null use the last non-null value
-            if (location != null) {
+            // Fetch pharmacies only if the location has changed significantly
+            if (location != null  && (previousLocation == null ||
+                abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
+                abs(location.longitude - previousLocation!!.longitude) > 0.0001)) {
+                val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
                 val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
                 call.enqueue(object : Callback<PharmaciesResponse> {
                     override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
@@ -162,6 +161,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                             }
                             // update the pharmacies list
                             pharmacies = pharmaciesFetched
+                            Log.d("serverResponse", "Pharmacies retrieved")
+
                             // TODO - this might waste too much resources
                             // Only way to correctly preview image
                             for (pharmacy in pharmacies) {
@@ -175,6 +176,8 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                         Log.d("serverResponse","FAILED: "+ t.message)
                     }
                 })
+                previousLocation = location
+                needNewMarkers = true
             }
         }
     }
@@ -266,5 +269,4 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             }
         }
     }
-
 }

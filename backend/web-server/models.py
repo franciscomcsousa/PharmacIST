@@ -1,3 +1,4 @@
+import os
 import mariadb
 import base64
 from response_status import *
@@ -158,8 +159,13 @@ def save_image(image, name):
 def get_image(name):
     path = f"images/{name}.png"
 
-    # TODO - check if file exists
-    with open(path, 'rb') as f:
-        image = f.read()
 
-    return image
+    # TODO - make default image be loaded in the app by default
+    if not os.path.exists(path=path):
+        with open("images/default.png", 'rb') as f:
+            image = f.read()
+            return image
+    else:
+        with open(path, 'rb') as f:
+            image = f.read()
+            return image

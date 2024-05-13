@@ -149,7 +149,7 @@ class AddPharmacyActivity : AppCompatActivity() {
         formLatitude: TextInputLayout,
         longitude: String,
         formLongitude: TextInputLayout,
-        uri: Uri?, // TODO - uri can't be empty
+        uri: Uri?, // TODO - uri can't be empty?
         onSuccess: () -> Unit
     ) {
         formName.error = null

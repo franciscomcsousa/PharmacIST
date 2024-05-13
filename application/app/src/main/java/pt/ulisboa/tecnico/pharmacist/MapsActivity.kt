@@ -14,9 +14,11 @@ import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -26,6 +28,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -135,6 +138,16 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
         bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
 
+        val toggleButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
+
+        // Set click listener for the toggle button
+        toggleButton.setOnClickListener {
+            // sends updated information to backend
+            lifecycleScope.launch {
+                handleFavoriteButton(pharmacy.id.toString())
+            }
+        }
+
         val bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(bottomDrawerView)
         bottomSheetDialog.show()
@@ -156,7 +169,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                             val pharmaciesList = response.body()!!.pharmacies
                             for (pharmacy in pharmaciesList) {
                                 // transform pharmacies into a list of Pharmacy objects
-                                pharmaciesFetched += Pharmacy(pharmacy[1].toString(), pharmacy[2].toString(),
+                                pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),
                                     pharmacy[3].toString(), pharmacy[4].toString(), "")
                             }
                             // update the pharmacies list
@@ -201,6 +214,27 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
             override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
                 Log.d("serverResponse", "FAILED: " + t.message)
+            }
+        })
+    }
+
+    private suspend fun handleFavoriteButton(id: String) {
+        val username = getUsername()
+        val favoritePharmacy = FavoritePharmacy(username,id)
+        val call: Call<StatusResponse> = retrofitAPI.pharmacyFavorite(favoritePharmacy)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                // TODO - may not be necessary, delete
+                if (response.isSuccessful) {
+                    Log.d("serverResponse", "UPDATED: ${response.code()}")
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: ${t.message}")
             }
         })
     }
@@ -269,4 +303,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             }
         }
     }
+
+    private suspend fun getUsername(): String {
+        // returns "null" string if token is null
+        return dataStore.getUsername().toString()
+    }
+
 }

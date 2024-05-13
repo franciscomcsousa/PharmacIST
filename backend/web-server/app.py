@@ -40,10 +40,8 @@ def home():
 # TODO 
 # add salt to passwords + encryption ?
 # verify here if parameters are not null
-@app.route('/register', methods=['GET', 'POST'])
+@app.route('/register', methods=['POST'])
 def register_user():
-    if request.method == 'GET':
-        return render_template('register.html') 
         
     # TODO - verify if all data is correct
     if request.method == 'POST':
@@ -67,10 +65,8 @@ def register_user():
 
 # TODO 
 # verify here if parameters are not null
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/login', methods=['POST'])
 def login_user():
-    if request.method == 'GET':
-        pass
         
     # TODO - verify if all data is correct
     if request.method == 'POST':
@@ -146,6 +142,26 @@ def create_pharmacy():
         return make_response({"status": 200}, 200)
     
     return make_response({"status": 400}, 400)
+
+@app.route('/pharmacy_favorite', methods=['GET', 'POST'])
+def favorite_pharmacy():
+    
+    # get user favorite pharmacies
+    if request.method == 'GET':
+        pass
+    
+    # update favorite state based on the boolean isfavorite
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        pharmacy_id = data['pharmacyId']
+        update_favorite_pharmacies(username, pharmacy_id)
+        
+        return make_response({"status": 200}, 200)
+        
+    return make_response({"status": 400}, 400)
+        
+    
 
 @app.route('/medicine', methods=['GET', 'POST'])
 def get_medicine():

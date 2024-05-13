@@ -8,11 +8,17 @@ data class User(
     @SerializedName("password") val password: String)
 
 data class Pharmacy(
+    @SerializedName("id") val id: String? = null,
     @SerializedName("name") val name: String,
     @SerializedName("address") val address: String,
     @SerializedName("latitude") val latitude: String,
     @SerializedName("longitude") val longitude: String,
     @SerializedName("image") val image: String)
+
+data class FavoritePharmacy(
+    @SerializedName("username") val username: String,
+    @SerializedName("pharmacyId") val pharmacyId: String
+    )
 
 data class Medicine(
     @SerializedName("name") val name: String,

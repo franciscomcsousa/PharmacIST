@@ -121,7 +121,12 @@ class AddPharmacyActivity : AppCompatActivity() {
         }
 
 
-        val pharmacy = Pharmacy(name, address, latitude, longitude, image)
+        val pharmacy = Pharmacy(
+            name = name,
+            address = address,
+            latitude = latitude,
+            longitude = longitude,
+            image = image)
         val call: Call<CreatePharmacyResponse> = retrofitAPI.createPharmacy(pharmacy)
         call.enqueue(object : Callback<CreatePharmacyResponse> {
             override fun onResponse(call: Call<CreatePharmacyResponse>, response: Response<CreatePharmacyResponse>){

@@ -35,7 +35,10 @@ class RegisterActivity : AppCompatActivity() {
         val (formUsername, formPassword) = getFormLayouts()
         verifyForms(username, formUsername, password, formPassword) {
             registerUser(username, password,
-            { startActivity(Intent(this, NavigationDrawerActivity::class.java)) },
+            {
+                startActivity(Intent(this, NavigationDrawerActivity::class.java))
+                setUsername(username)
+            },
             { formUsername.error = "User already exists!" }
             )
         }
@@ -59,9 +62,7 @@ class RegisterActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val token = response.body()!!.token
                     // store token in preferences datastore
-                    lifecycleScope.launch {
-                        setUserToken(token)
-                    }
+                    setToken(token)
                     onSuccess()
                 }
                 else {
@@ -118,14 +119,15 @@ class RegisterActivity : AppCompatActivity() {
             .build()
     }
 
-    suspend fun setUserToken(token: String) {
-        // stores the token in the datastore
-        dataStore.setToken(token)
+    private fun setUsername(username: String) {
+        lifecycleScope.launch {
+            dataStore.setUsername(username)
+        }
     }
 
-    suspend fun getUserToken(): String {
-        // gets the token from the datastore
-        // returns "null" string if token is null
-        return dataStore.getToken().toString()
+    private fun setToken(token: String) {
+        lifecycleScope.launch {
+            dataStore.setToken(token)
+        }
     }
 }

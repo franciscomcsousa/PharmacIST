@@ -47,7 +47,10 @@ class LoginActivity : AppCompatActivity() {
         val (formUsername, formPassword) = getFormLayouts()
         verifyForms(username, formUsername, password, formPassword) {
             loginUser(username, password,
-                { navigateToNavigationDrawerActivity() },
+                {
+                    navigateToNavigationDrawerActivity()
+                    setUsername(username)
+                },
                 { formUsername.error = "User or Password incorrect!" }
             )
         }
@@ -62,9 +65,10 @@ class LoginActivity : AppCompatActivity() {
 
         // TODO - uncomment this
         // does not do this if there is a username stored!
-        /*val randomNumber = (0..9999).random()
+        val randomNumber = (0..9999).random()
         val guestName = "guest_$randomNumber"
-        loginUser(guestName, "", {
+        setUsername(guestName)
+        /*loginUser(guestName, "", {
             // also store the user name in preferences in order to reuse the same guest
             navigateToNavigationDrawerActivity()
         } , { })*/
@@ -86,9 +90,7 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val token = response.body()!!.token
                     // store token in preferences datastore
-                    lifecycleScope.launch {
-                        setUserToken(token)
-                    }
+                    setToken(token)
                     onSuccess()
                 }
                 else {
@@ -114,6 +116,7 @@ class LoginActivity : AppCompatActivity() {
         if (response.isSuccessful) {
             onSuccess()
         } else {
+            // TODO - maybe change this to a persistent message displayed
             // Show toast message for error messages
             /*val message = when(response.code()) {
                 600 -> "Token is missing."
@@ -121,7 +124,7 @@ class LoginActivity : AppCompatActivity() {
                 602 -> "Invalid token."
                 else -> "An error occurred. Please try again later."
             }*/
-            Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -167,14 +170,21 @@ class LoginActivity : AppCompatActivity() {
             .build()
     }
 
-    suspend fun setUserToken(token: String) {
-        // stores the token in the datastore
-        dataStore.setToken(token)
-    }
 
-    suspend fun getUserToken(): String {
-        // gets the token from the datastore
+    private suspend fun getUserToken(): String {
         // returns "null" string if token is null
         return dataStore.getToken().toString()
+    }
+
+    private fun setUsername(username: String) {
+        lifecycleScope.launch {
+            dataStore.setUsername(username)
+        }
+    }
+
+    private fun setToken(token: String) {
+        lifecycleScope.launch {
+            dataStore.setToken(token)
+        }
     }
 }

@@ -72,7 +72,7 @@ class MedicineActivity : AppCompatActivity() {
                             val medicineResponse = response.body()!!.medicine
                             Log.d("serverResponse", "Medicine found: $medicineResponse")
                             val medicine = Medicine(medicineResponse[0][1].toString(), medicineResponse[0][2].toString())
-                            val pharmacy = Pharmacy(medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
+                            val pharmacy = Pharmacy(id = null, medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
                                 medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
 
                             // Display the medicine and pharmacy in a new activity

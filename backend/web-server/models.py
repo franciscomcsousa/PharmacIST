@@ -13,9 +13,10 @@ def connect_db():
                 database = "pharmacist"
                 )
 
+# ========== User Registration and Verification ========== #
 
-# TODO encrypt passwords !
 def create_user(username,password):
+    # TODO encrypt passwords !
     con = connect_db()
     cur = con.cursor()
     # Verify if the user already exists
@@ -76,6 +77,8 @@ def login_guest(username, password):
     return OK_STATUS
 
 
+# ==================== Pharmacy ==================== #
+
 def get_closest_pharmacies(latitude, longitude):
     con = connect_db()
     try:
@@ -108,6 +111,51 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
     
     finally:
         con.close()
+        
+def get_favorite_pharmacies(user):
+    pass
+
+def update_favorite_pharmacies(username, pharmacyId):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        
+        data = (username,)
+        query = 'SELECT user_id FROM users WHERE username = %s'
+        cur.execute(query, data)
+        user_id = cur.fetchone()
+
+        if user_id:
+            # Check if the pharmacy is already in the favorites
+            data = (user_id[0], pharmacyId)
+            query = 'SELECT * FROM favorite_pharmacies WHERE user_id = %s AND pharmacy_id = %s'
+            cur.execute(query, data)
+            existing_favorite = cur.fetchone()
+
+            if existing_favorite:
+                # Pharmacy is already a favorite, delete it
+                query = 'DELETE FROM favorite_pharmacies WHERE user_id = %s AND pharmacy_id = %s'
+                cur.execute(query, data)
+                con.commit()
+                return OK_STATUS
+            else:
+                # Pharmacy is not a favorite, add it
+                query = 'INSERT INTO favorite_pharmacies (user_id, pharmacy_id) VALUES (%s, %s)'
+                cur.execute(query, data)
+                con.commit()
+                return OK_STATUS
+        else:
+            return USER_DOES_NOT_EXIST_STATUS
+            
+    except Exception as e:
+        print("Error:", e)
+        return DATABASE_ERROR_STATUS
+    finally:
+        cur.close()
+        con.close()
+
+        
+# ==================== Medicine ==================== #
 
 def verify_medicine(name):
     con = connect_db()

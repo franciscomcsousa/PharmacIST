@@ -3,9 +3,9 @@
 
     <item
         android:state_checked="false"
-        android:drawable="@drawable/baseline_bookmark_border_24"/>
+        android:drawable="@drawable/baseline_star_outline_24"/>
 
     <item
         android:state_checked="true"
-        android:drawable="@drawable/baseline_bookmark_24" />
+        android:drawable="@drawable/baseline_star_24" />
 </selector>

@@ -11,6 +11,7 @@ import android.os.Handler
 import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
+import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -151,6 +152,10 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         val bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(bottomDrawerView)
         bottomSheetDialog.show()
+    }
+
+    fun showMoreClick(view: View?) {
+        startActivity(Intent(this, PharmacyInformationActivity::class.java))
     }
 
     private fun getPharmacies() {

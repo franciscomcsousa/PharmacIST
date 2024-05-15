@@ -80,6 +80,9 @@
             android:name=".MedicineDetailsActivity"
             android:exported="false"
             android:label="MedicineDetailsActivity" />
+        <activity android:name=".PharmacyInformationActivity"
+            android:exported="false"
+            android:label="MedicineDetailsActivity" />
     </application>
 
 </manifest>

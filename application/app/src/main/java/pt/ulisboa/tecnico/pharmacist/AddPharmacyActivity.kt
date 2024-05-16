@@ -14,6 +14,11 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.gms.common.api.Status
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
 import retrofit2.Callback
@@ -47,10 +52,16 @@ class AddPharmacyActivity : AppCompatActivity() {
             Log.d("PhotoPicker", "No media selected")
         }
     }
+    // address autocomplete
+    private lateinit var autocompleteFragment: AutocompleteSupportFragment
+    private var selectedAddress: Place? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_pharmacy)
+        startPlacesAPI()
+
     }
 
     fun choosePhoto(view: View){
@@ -61,42 +72,28 @@ class AddPharmacyActivity : AppCompatActivity() {
         findViewById<ImageView>(R.id.add_photo_preview).setImageURI(uri)
     }
 
-    private fun getFields(): List<String> {
+    private fun getFieldName(): String {
         val nameEditText = findViewById<EditText>(R.id.name)
-        val addressEditText = findViewById<EditText>(R.id.address)
-        val name = nameEditText.text.toString()
-        val address = addressEditText.text.toString()
-
-        val latitudeEditText = findViewById<EditText>(R.id.latitude)
-        val longitudeEditText = findViewById<EditText>(R.id.longitude)
-        val latitude = latitudeEditText.text.toString()
-        val longitude = longitudeEditText.text.toString()
-
-        return listOf(name, address, latitude, longitude)
-    }
-
-    private fun getFormLayouts(): List<TextInputLayout> {
-        val formName = findViewById<TextInputLayout>(R.id.formName)
-        val formAddress = findViewById<TextInputLayout>(R.id.formAddress)
-        val formLatitude = findViewById<TextInputLayout>(R.id.formLatitude)
-        val formLongitude = findViewById<TextInputLayout>(R.id.formLongitude)
-
-        return listOf(formName, formAddress, formLatitude, formLongitude)
+        return nameEditText.text.toString()
     }
 
     fun createPharmacyClick(view: View) {
-        val (name, address, latitude, longitude) = getFields()
-        val (formName, formAddress, formLatitude, formLongitude) = getFormLayouts()
+        val name = getFieldName()
+        val formName = findViewById<TextInputLayout>(R.id.formName)
+        val address = selectedAddress?.address ?: ""
+        val latLng = selectedAddress?.latLng
+        val latitude = latLng?.latitude.toString()
+        val longitude = latLng?.longitude.toString()
+
         verifyForms(
             name = name,
             address = address,
             latitude = latitude,
             longitude = longitude,
             formName = formName,
-            formAddress = formAddress,
-            formLatitude = formLatitude,
-            formLongitude = formLongitude,
             uri = currentUri) {
+
+            // get the latitude and longitude from the place selected
             createPharmacy(name, address, latitude, longitude, currentUri) {
                 navigateToNavigationDrawerActivity()
             }
@@ -119,7 +116,6 @@ class AddPharmacyActivity : AppCompatActivity() {
             val imageB64 = Base64.encodeToString(byteArray, Base64.DEFAULT)
             image = imageB64
         }
-
 
         val pharmacy = Pharmacy(
             name = name,
@@ -145,39 +141,55 @@ class AddPharmacyActivity : AppCompatActivity() {
         startActivity(Intent(this, NavigationDrawerActivity::class.java))
     }
 
+    private fun startPlacesAPI() {
+        val apiKey = BuildConfig.MAPS_API_KEY
+        Places.initialize(applicationContext, apiKey)
+
+        autocompleteFragment = supportFragmentManager.findFragmentById(R.id.places_autocomplete)
+                as AutocompleteSupportFragment
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS, Place.Field.LAT_LNG))
+        autocompleteFragment.setOnPlaceSelectedListener(object: PlaceSelectionListener {
+
+            override fun onError(status: Status) {
+                TODO("Not yet implemented")
+            }
+
+            override fun onPlaceSelected(place: Place) {
+                place.address?.let { Log.d("serverResponse", "This was the address selected!: $it") }
+                selectedAddress = place
+            }
+        })
+    }
+
     private fun verifyForms(
         name: String,
         formName: TextInputLayout,
         address: String,
-        formAddress: TextInputLayout,
         latitude: String,
-        formLatitude: TextInputLayout,
         longitude: String,
-        formLongitude: TextInputLayout,
         uri: Uri?, // TODO - uri can't be empty?
         onSuccess: () -> Unit
     ) {
         formName.error = null
-        formAddress.error = null
-        formLatitude.error = null
-        formLongitude.error = null
 
         if (name.isEmpty()) {
             formName.error = "Name cannot be empty"
         }
         if (address.isEmpty()) {
-            formAddress.error = "Address cannot be empty"
+            Log.e("serverResponse", "Address not selected")
+            TODO("Show error message to user")
         }
         if (latitude.isEmpty()) {
-            formLatitude.error = "Latitude cannot be empty"
+            Log.e("serverResponse", "latitude not selected")
+            TODO("Show error message to user")
         }
         if (longitude.isEmpty()) {
-            formLongitude.error = "Longitude cannot be empty"
+            Log.e("serverResponse", "longitude not selected")
+            TODO("Show error message to user")
         }
         if (name.isNotEmpty() && address.isNotEmpty() && latitude.isNotEmpty() && longitude.isNotEmpty()) {
             onSuccess()
         }
     }
-
 
 }

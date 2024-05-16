@@ -5,20 +5,23 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/formName"
         android:layout_width="350dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="65dp"
+        android:layout_marginBottom="30dp"
         app:boxBackgroundMode="outline"
         app:endIconMode="clear_text"
         app:errorEnabled="true"
         app:errorTextColor="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/cardView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.491"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.100">
+        app:layout_constraintVertical_bias="0.662">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name"
@@ -26,76 +29,6 @@
             android:layout_height="wrap_content"
             android:hint="@string/pharmacy_name"
             android:inputType="text|textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/formAddress"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:errorTextColor="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.250">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/address"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/pharmacy_address"
-            android:inputType="text|textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/formLatitude"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:errorTextColor="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.400">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/latitude"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/pharmacy_latitude"
-            android:inputType="text|textPersonName" />
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/formLongitude"
-        android:layout_width="350dp"
-        android:layout_height="wrap_content"
-        app:boxBackgroundMode="outline"
-        app:endIconMode="clear_text"
-        app:errorEnabled="true"
-        app:errorTextColor="@color/red"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.550">
-
-        <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/longitude"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/pharmacy_longitude"
-            android:inputType="text|textPersonName" />
-
     </com.google.android.material.textfield.TextInputLayout>
 
     <Button
@@ -131,13 +64,36 @@
         android:id="@+id/add_photo_preview"
         android:layout_width="96dp"
         android:layout_height="68dp"
+        android:layout_marginTop="133dp"
+        android:layout_marginBottom="40dp"
         android:scaleType="fitXY"
         app:layout_constraintBottom_toTopOf="@+id/add_photo"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/formLongitude"
-        app:layout_constraintVertical_bias="0.78" />
+        app:layout_constraintTop_toBottomOf="@+id/cardView" />
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="350dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="208dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="4dp"
+        app:layout_constraintBottom_toTopOf="@+id/add_photo_preview"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.269">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/places_autocomplete"
+            android:name="com.google.android.libraries.places.widget.AutocompleteSupportFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </androidx.cardview.widget.CardView>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

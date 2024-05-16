@@ -11,7 +11,7 @@ import android.os.Handler
 import android.util.ArrayMap
 import android.util.Base64
 import android.util.Log
-import android.view.View
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -139,13 +139,21 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
         bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
 
-        val toggleButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
+        val favoriteButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
 
         // Set click listener for the toggle button
-        toggleButton.setOnClickListener {
+        favoriteButton.setOnClickListener {
             // sends updated information to backend
             lifecycleScope.launch {
                 handleFavoriteButton(pharmacy.id.toString())
+            }
+        }
+
+        // Show More (Pharmacy Information Panel) button
+        val informationButton = bottomDrawerView.findViewById<Button>(R.id.show_pharmacy_info)
+        informationButton.setOnClickListener {
+            lifecycleScope.launch {
+                handleShowMore(pharmacy)
             }
         }
 
@@ -154,8 +162,12 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomSheetDialog.show()
     }
 
-    fun showMoreClick(view: View?) {
-        startActivity(Intent(this, PharmacyInformationActivity::class.java))
+    private fun handleShowMore(pharmacy: Pharmacy) {
+        val intent = Intent(this, PharmacyInformationActivity::class.java)
+
+        intent.putExtra("pharmacyId", pharmacy.id)
+        intent.putExtra("pharmacyName", pharmacy.name)
+        startActivity(intent)
     }
 
     private fun getPharmacies() {

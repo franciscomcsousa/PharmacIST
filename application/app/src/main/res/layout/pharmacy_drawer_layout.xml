@@ -67,6 +67,7 @@
         app:layout_constraintTop_toTopOf="@+id/pharmacy_name" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
         android:layout_width="match_parent"
         android:layout_height="70dp"
         android:layout_marginTop="440dp"
@@ -180,37 +181,19 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="40dp"
-        android:layout_marginTop="644dp"
-        android:onClick="showMoreClick"
-        app:layout_constraintTop_toTopOf="@+id/pharmacy_image"
-        tools:layout_editor_absoluteX="0dp">
-
-        <TextView
-            android:id="@+id/show_more_text"
-            android:layout_width="350dp"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:text="@string/show_more"
-            android:textColor="@android:color/holo_blue_dark"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <View
-            android:id="@+id/show_more_divider"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@android:color/darker_gray"
-            app:layout_constraintBottom_toTopOf="@+id/show_more_text"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.0"
-            tools:layout_editor_absoluteX="0dp" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <Button
+        android:id="@+id/show_pharmacy_info"
+        android:layout_width="358dp"
+        android:layout_height="54dp"
+        android:text="@string/show_pharmacy_info"
+        android:layout_gravity="start"
+        android:enabled="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.49"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.976" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

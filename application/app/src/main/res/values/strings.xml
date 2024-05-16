@@ -42,6 +42,7 @@
     <string name="search_for_a_medicine">Search for a medicine</string>
     <string name="search">Search</string>
     <string name="closest_pharmacy">Closest pharmacy:</string>
+    <string name="btn_navigate">Directions</string>
 
     <!-- Placeholder Text -->
     <string name="placeholder_1">Placeholder 1</string>

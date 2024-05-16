@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.ArrayMap
@@ -140,6 +141,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
 
         val favoriteButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
+        val directionButton = bottomDrawerView.findViewById<Button>(R.id.btn_navigate)
 
         // Set click listener for the toggle button
         favoriteButton.setOnClickListener {
@@ -155,6 +157,16 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
             lifecycleScope.launch {
                 handleShowMore(pharmacy)
             }
+        }
+
+        // Go to maps
+        directionButton.setOnClickListener {
+            // get user location
+            val uri =  "http://maps.google.co.in/maps?q=" + pharmacy.address;
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            intent.setPackage("com.google.android.apps.maps")
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent)
         }
 
         val bottomSheetDialog = BottomSheetDialog(this)

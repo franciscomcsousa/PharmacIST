@@ -156,7 +156,9 @@ class AddPharmacyActivity : AppCompatActivity() {
 
             override fun onPlaceSelected(place: Place) {
                 place.address?.let { Log.d("serverResponse", "This was the address selected!: $it") }
+                autocompleteFragment.setHint(place.address)
                 selectedAddress = place
+
             }
         })
     }

@@ -33,7 +33,7 @@ interface RetrofitAPI {
     fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
 
     @POST("medicine")
-    fun getMedicine(): Call<MedicineResponse>
+    fun getMedicine(@Body medicine: Medicine): Call<MedicineResponse>
 
     @POST("medicine_location")
     fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>

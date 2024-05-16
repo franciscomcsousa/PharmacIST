@@ -169,12 +169,13 @@ def get_pharmacy_stock(pharmacy_id, substring):
         
 # ==================== Medicine ==================== #
 
-def get_all_medicines():
+def get_medicines_with_substring(substring):
     con = connect_db()
     try:
         cur = con.cursor()
-        query = 'SELECT * FROM medicine'
-        cur.execute(query)
+        data = (f'%{substring}%',)
+        query = 'SELECT * FROM medicine WHERE name LIKE %s'
+        cur.execute(query, data)
         medicines = cur.fetchall()
         return medicines
     finally:

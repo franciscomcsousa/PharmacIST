@@ -6,7 +6,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.view.View
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -23,7 +22,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MedicineActivity : AppCompatActivity() {
+class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -38,8 +37,6 @@ class MedicineActivity : AppCompatActivity() {
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
-    private lateinit var data: ArrayList<ItemsViewModel>
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -49,34 +46,42 @@ class MedicineActivity : AppCompatActivity() {
 
         val searchView = findViewById<SearchView>(R.id.searchView)
         searchView.clearFocus()
-        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                //getMedicine(query!!)
-                return false
-            }
-
-            override fun onQueryTextChange(newText: String?): Boolean {
-                filterList(newText!!)
-                return true
-            }
-        })
 
         val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
         recyclerView.layoutManager = LinearLayoutManager(this)
-        data = ArrayList<ItemsViewModel>()
 
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.length < 3) {
+                    recyclerView.adapter = null
+                    return true
+                }
+                queryMedicines(newText)
+                return true
+            }
+        })
+    }
+
+    private fun queryMedicines(text: String) {
         // perform a call to the server to get the list of medicines
-        val call: Call<MedicineResponse> = retrofitAPI.getMedicine()
+        val medicineCall = Medicine(text)
+        val call: Call<MedicineResponse> = retrofitAPI.getMedicine(medicineCall)
         call.enqueue(object : Callback<MedicineResponse> {
             override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                 if (response.isSuccessful) {
                     val medicineResponse = response.body()!!.medicine
-                    Log.d("serverResponse", "Medicines found: $medicineResponse")
+                    val data = ArrayList<MedicineSearchViewModel>()
+
                     for (i in medicineResponse) {
                         val medicine = Medicine(i[1].toString())
-                        data.add(ItemsViewModel(R.drawable.pill, medicine.name))
+                        data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name))
                     }
-                    val adapter = CustomAdapter(data)
+                    val adapter = MedicineSearchAdapter(data, this@MedicineActivity)
+                    val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.adapter = adapter
                 }
             }
@@ -87,30 +92,12 @@ class MedicineActivity : AppCompatActivity() {
         })
     }
 
-    private fun filterList(text: String) {
-        val filteredList = ArrayList<ItemsViewModel>()
-        for (item in data) {
-            if (item.text.lowercase().contains(text.lowercase())) {
-                filteredList.add(item)
-            }
-        }
-
-        if (filteredList.isEmpty()) {
-            Toast.makeText(this, "No match found", Toast.LENGTH_SHORT).show()
-            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-            recyclerView.adapter = CustomAdapter(filteredList)
-        }
-        else {
-            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-            recyclerView.adapter = CustomAdapter(filteredList)
-        }
+    override fun onItemClick(position: Int) {
+        val medicineName = (findViewById<RecyclerView>(R.id.recyclerView).adapter as MedicineSearchAdapter).mList[position].text
+        getMedicine(medicineName)
     }
 
-    fun searchMedicineClick(view: View) {
-        //getMedicine()
-    }
-
-    /*private fun getMedicine(name: String) {
+    private fun getMedicine(name: String) {
         // If the name is in lowercase, capitalize the first letter for user friendliness
         val medicineName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
@@ -120,13 +107,13 @@ class MedicineActivity : AppCompatActivity() {
             // TODO - maybe when null use the last non-null value
             if (location != null) {
                 val medicineLocation = MedicineLocation(medicineName, location.latitude, location.longitude)
-                val call: Call<MedicineResponse> = retrofitAPI.getMedicine(medicineLocation)
+                val call: Call<MedicineResponse> = retrofitAPI.getMedicineLocation(medicineLocation)
                 call.enqueue(object : Callback<MedicineResponse> {
                     override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                         if (response.isSuccessful) {
                             val medicineResponse = response.body()!!.medicine
                             Log.d("serverResponse", "Medicine found: $medicineResponse")
-                            val medicine = Medicine(medicineResponse[0][1].toString(), medicineResponse[0][2].toString())
+                            val medicine = MedicinePurpose(medicineResponse[0][1].toString(), medicineResponse[0][2].toString())
                             val pharmacy = Pharmacy(id = null, medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
                                 medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
 
@@ -147,7 +134,7 @@ class MedicineActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToMedicineDetailsActivity(medicine: Medicine, pharmacy: Pharmacy) {
+    private fun navigateToMedicineDetailsActivity(medicine: MedicinePurpose, pharmacy: Pharmacy) {
         val intent = Intent(this, MedicineDetailsActivity::class.java)
         intent.putExtra("medicineName", medicine.name)
         intent.putExtra("medicinePurpose", medicine.purpose)
@@ -156,7 +143,7 @@ class MedicineActivity : AppCompatActivity() {
         intent.putExtra("pharmacyImage", pharmacy.image)
 
         startActivity(intent)
-    }*/
+    }
 
     private fun requestPermissions() {
         // verify permissions

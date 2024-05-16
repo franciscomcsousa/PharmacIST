@@ -40,6 +40,7 @@ class PharmacyInformationActivity : AppCompatActivity() {
         findViewById<TextView>(R.id.panel_pharmacy_name).text = pharmacyName
 
         val searchView = findViewById<SearchView>(R.id.pharmacy_panel_search)
+        searchView.clearFocus()
 
         // Get recycler view
         val recyclerview = findViewById<RecyclerView>(R.id.panel_recycle_view)
@@ -84,7 +85,7 @@ class PharmacyInformationActivity : AppCompatActivity() {
 
                     // For testing purposes
                     if (stockList != null) {
-                        for (medicine in stockList!!) {
+                        for (medicine in stockList) {
                             data.add(MedicineViewModel(R.drawable.baseline_directions_24, medicine))
                         }
                     }

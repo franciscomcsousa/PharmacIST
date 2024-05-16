@@ -167,9 +167,14 @@ def get_medicines():
         pass
 
     if request.method == 'POST':
-        # get all medicines
-        medicines = get_all_medicines()
+        # get medicines that contain the substring in their name passed in the request
+        data = request.get_json()
+        substring = data['name']
+        medicines = get_medicines_with_substring(substring)
+
         return make_response(jsonify({"medicine": medicines}), 200)
+    
+    return make_response({"status": 400}, 400)
 
 @app.route('/medicine_location', methods=['GET', 'POST'])
 def get_medicine_location():

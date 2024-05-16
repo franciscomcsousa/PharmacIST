@@ -162,10 +162,19 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         // Go to maps
         directionButton.setOnClickListener {
             // get user location
-            val uri =  "http://maps.google.co.in/maps?q=" + pharmacy.address;
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+            /*getUserLocation {userLocation ->
+                val source = "${userLocation?.latitude},${userLocation?.longitude}"
+                val uri = "google.navigation:q=" + pharmacy.address
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
+                intent.setPackage("com.google.android.apps.maps")
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            }*/
+            val navigationIntentUri =
+                Uri.parse("google.navigation:q=" + pharmacy.latitude + "," + pharmacy.longitude) //creating intent with latlng
+            val intent = Intent(Intent.ACTION_VIEW, navigationIntentUri)
             intent.setPackage("com.google.android.apps.maps")
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent)
         }
 

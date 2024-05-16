@@ -64,6 +64,7 @@ dependencies {
     implementation("androidx.activity:activity:1.8.0")
     implementation("com.google.android.libraries.places:places:3.4.0")
     implementation("androidx.cardview:cardview:1.0.0")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.7.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0")
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")

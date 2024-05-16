@@ -7,15 +7,16 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
-import com.google.android.material.textfield.TextInputLayout
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -37,25 +38,79 @@ class MedicineActivity : AppCompatActivity() {
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
+    private lateinit var data: ArrayList<ItemsViewModel>
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_medicine)
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MedicineActivity)
         requestPermissions()
+
+        val searchView = findViewById<SearchView>(R.id.searchView)
+        searchView.clearFocus()
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                //getMedicine(query!!)
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                filterList(newText!!)
+                return true
+            }
+        })
+
+        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+        recyclerView.layoutManager = LinearLayoutManager(this)
+        data = ArrayList<ItemsViewModel>()
+
+        // perform a call to the server to get the list of medicines
+        val call: Call<MedicineResponse> = retrofitAPI.getMedicine()
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
+                if (response.isSuccessful) {
+                    val medicineResponse = response.body()!!.medicine
+                    Log.d("serverResponse", "Medicines found: $medicineResponse")
+                    for (i in medicineResponse) {
+                        val medicine = Medicine(i[1].toString())
+                        data.add(ItemsViewModel(R.drawable.pill, medicine.name))
+                    }
+                    val adapter = CustomAdapter(data)
+                    recyclerView.adapter = adapter
+                }
+            }
+
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: " + t.message)
+            }
+        })
     }
 
-    fun searchMedicineClick(view: View) {
-        val medicineName = findViewById<EditText>(R.id.search).text.toString()
-        val formMedicineName = findViewById<TextInputLayout>(R.id.formSearch)
+    private fun filterList(text: String) {
+        val filteredList = ArrayList<ItemsViewModel>()
+        for (item in data) {
+            if (item.text.lowercase().contains(text.lowercase())) {
+                filteredList.add(item)
+            }
+        }
 
-        verifyForm(medicineName, formMedicineName) {
-            // Search for the medicine in the server
-            getMedicine(medicineName)
+        if (filteredList.isEmpty()) {
+            Toast.makeText(this, "No match found", Toast.LENGTH_SHORT).show()
+            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+            recyclerView.adapter = CustomAdapter(filteredList)
+        }
+        else {
+            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+            recyclerView.adapter = CustomAdapter(filteredList)
         }
     }
 
-    private fun getMedicine(name: String) {
+    fun searchMedicineClick(view: View) {
+        //getMedicine()
+    }
+
+    /*private fun getMedicine(name: String) {
         // If the name is in lowercase, capitalize the first letter for user friendliness
         val medicineName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
@@ -92,15 +147,6 @@ class MedicineActivity : AppCompatActivity() {
         }
     }
 
-    private fun verifyForm(medicineName: String, formMedicineName: TextInputLayout, callback: () -> Unit) {
-        if (medicineName.isEmpty()) {
-            formMedicineName.error = "Please fill in the medicine name"
-        } else {
-            formMedicineName.error = null
-            callback()
-        }
-    }
-
     private fun navigateToMedicineDetailsActivity(medicine: Medicine, pharmacy: Pharmacy) {
         val intent = Intent(this, MedicineDetailsActivity::class.java)
         intent.putExtra("medicineName", medicine.name)
@@ -110,7 +156,7 @@ class MedicineActivity : AppCompatActivity() {
         intent.putExtra("pharmacyImage", pharmacy.image)
 
         startActivity(intent)
-    }
+    }*/
 
     private fun requestPermissions() {
         // verify permissions

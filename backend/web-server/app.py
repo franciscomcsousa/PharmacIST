@@ -161,10 +161,18 @@ def favorite_pharmacy():
         
     return make_response({"status": 400}, 400)
         
-    
-
 @app.route('/medicine', methods=['GET', 'POST'])
-def get_medicine():
+def get_medicines():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        # get all medicines
+        medicines = get_all_medicines()
+        return make_response(jsonify({"medicine": medicines}), 200)
+
+@app.route('/medicine_location', methods=['GET', 'POST'])
+def get_medicine_location():
     if request.method == 'GET':
         pass
 

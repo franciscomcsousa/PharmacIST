@@ -53,5 +53,6 @@
     <string name="medicine_default">Medicine Example</string>
     <string name="default_info_panel">Information Panel</string>
     <string name="search_medicine">Medicine Search</string>
+    <string name="item">Item</string>
 
 </resources>

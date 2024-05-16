@@ -169,6 +169,17 @@ def get_pharmacy_stock(pharmacy_id, substring):
         
 # ==================== Medicine ==================== #
 
+def get_all_medicines():
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        query = 'SELECT * FROM medicine'
+        cur.execute(query)
+        medicines = cur.fetchall()
+        return medicines
+    finally:
+        con.close()
+
 def verify_medicine(name):
     con = connect_db()
     try:
@@ -206,6 +217,9 @@ def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
         return pharmacy
     finally:
         con.close()
+
+
+# ==================== Images ==================== #
 
 def save_image(image, name):
     decoded_image = base64.b64decode(image)

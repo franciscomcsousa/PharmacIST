@@ -21,8 +21,7 @@ data class FavoritePharmacy(
     )
 
 data class Medicine(
-    @SerializedName("name") val name: String,
-    @SerializedName("purpose") val purpose: String)
+    @SerializedName("name") val name: String)
 
 data class MedicineLocation(
     @SerializedName("name") val name: String,

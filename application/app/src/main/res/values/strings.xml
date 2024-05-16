@@ -52,5 +52,6 @@
     <string name="show_pharmacy_info">Show Pharmacy Information</string>
     <string name="medicine_default">Medicine Example</string>
     <string name="default_info_panel">Information Panel</string>
+    <string name="search_medicine">Medicine Search</string>
 
 </resources>

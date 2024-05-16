@@ -188,5 +188,22 @@ def get_medicine():
     
     return make_response({"status": 400}, 400)
 
+@app.route('/pharmacy_stock', methods=['GET', 'POST'])
+def pharmacy_stock():
+    if request.method == 'GET':
+        pass
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        substring = data['substring']
+        pharmacy_id = data['pharmacyId']
+
+        stock = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)
+
+        return make_response(jsonify({"stock": stock}), 200)
+    
+    return make_response({"status": 400}, 400)
+
+
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

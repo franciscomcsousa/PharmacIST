@@ -33,7 +33,12 @@ data class Location(
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double)
 
+data class QueryStock(
+    @SerializedName("substring") val substring: String,
+    @SerializedName("pharmacyId") val pharmacyId: String)
 
+
+// Used for medicine search recycler view
 data class MedicineViewModel(val image: Int, val text: String)
 
 // Server Responses data types for RetrofitAPI
@@ -47,5 +52,7 @@ data class PharmaciesResponse(val pharmacies: List<List<Any>>)
 data class CreatePharmacyResponse(val status: Int)
 
 data class PharmacyImageResponse(val image: String)
+
+data class QueryStockResponse(val stock: List<String>)
 
 data class MedicineResponse(val medicine: List<List<Any>>)

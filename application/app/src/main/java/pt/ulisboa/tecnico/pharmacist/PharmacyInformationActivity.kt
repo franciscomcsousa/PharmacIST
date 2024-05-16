@@ -1,15 +1,35 @@
 package pt.ulisboa.tecnico.pharmacist
 
+import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
+import android.util.Log
 import android.widget.SearchView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 
 class PharmacyInformationActivity : AppCompatActivity() {
+
+    // TODO
+    // For now contacts the localhost server
+    private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
+
+    private var currentUri: Uri? = null
+    private val retrofit = Retrofit.Builder()
+        .baseUrl(url)
+        .addConverterFactory(GsonConverterFactory.create())
+        .build()
+    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+
+    private var stockList: List<String>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -42,17 +62,42 @@ class PharmacyInformationActivity : AppCompatActivity() {
                     recyclerview.adapter = null
                     return true
                 }
+
+                if (pharmacyId != null) {
+                    queryStock(newText, pharmacyId)
+                }
                 val data = ArrayList<MedicineViewModel>()
 
                 // For testing purposes
-                for (i in 1..10) {
-                    data.add(MedicineViewModel(R.drawable.baseline_directions_24, newText + " " + i))
+                if (stockList != null) {
+                    for (medicine in stockList!!) {
+                        data.add(MedicineViewModel(R.drawable.baseline_directions_24, medicine))
+                    }
                 }
                 // Set the recycler view adapter to the created adapter
                 val adapter = PharmacyPanelSearchAdapter(data)
                 recyclerview.adapter = adapter
 
                 return true
+            }
+        })
+    }
+
+    fun queryStock(substring: String, pharmacyId: String) {
+
+        val stockQuery = QueryStock(substring, pharmacyId)
+
+        val call: Call<QueryStockResponse> = retrofitAPI.getPharmacyStock(stockQuery)
+        call.enqueue(object : Callback<QueryStockResponse> {
+            override fun onResponse( call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
+                if (response.isSuccessful) {
+                    stockList = response.body()?.stock
+                    Log.d("serverResponse","Pharmacy stock obtained")
+                }
+            }
+
+            override fun onFailure(call: Call<QueryStockResponse>, t: Throwable) {
+                Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
     }

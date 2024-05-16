@@ -154,6 +154,18 @@ def update_favorite_pharmacies(username, pharmacyId):
         cur.close()
         con.close()
 
+
+def get_pharmacy_stock(pharmacy_id, substring):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (pharmacy_id, f'%{substring}%')
+        query = 'SELECT name FROM (SELECT name FROM medicine WHERE medicine_id IN (SELECT medicine_id FROM medicine_stock WHERE pharmacy_id = %s)) AS subquery WHERE name LIKE %s'
+        cur.execute(query, data)
+        stock = cur.fetchone()
+        return stock
+    finally:
+        con.close()
         
 # ==================== Medicine ==================== #
 
@@ -194,7 +206,6 @@ def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
         return pharmacy
     finally:
         con.close()
-
 
 def save_image(image, name):
     decoded_image = base64.b64decode(image)

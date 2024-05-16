@@ -29,8 +29,6 @@ class PharmacyInformationActivity : AppCompatActivity() {
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
-    private var stockList: List<String>? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -66,17 +64,6 @@ class PharmacyInformationActivity : AppCompatActivity() {
                 if (pharmacyId != null) {
                     queryStock(newText, pharmacyId)
                 }
-                val data = ArrayList<MedicineViewModel>()
-
-                // For testing purposes
-                if (stockList != null) {
-                    for (medicine in stockList!!) {
-                        data.add(MedicineViewModel(R.drawable.baseline_directions_24, medicine))
-                    }
-                }
-                // Set the recycler view adapter to the created adapter
-                val adapter = PharmacyPanelSearchAdapter(data)
-                recyclerview.adapter = adapter
 
                 return true
             }
@@ -91,7 +78,21 @@ class PharmacyInformationActivity : AppCompatActivity() {
         call.enqueue(object : Callback<QueryStockResponse> {
             override fun onResponse( call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
                 if (response.isSuccessful) {
-                    stockList = response.body()?.stock
+                    val stockList = response.body()?.stock
+
+                    val data = ArrayList<MedicineViewModel>()
+
+                    // For testing purposes
+                    if (stockList != null) {
+                        for (medicine in stockList!!) {
+                            data.add(MedicineViewModel(R.drawable.baseline_directions_24, medicine))
+                        }
+                    }
+                    // Set the recycler view adapter to the created adapter
+                    val adapter = PharmacyPanelSearchAdapter(data)
+                    val recyclerview = findViewById<RecyclerView>(R.id.panel_recycle_view)
+                    recyclerview.adapter = adapter
+
                     Log.d("serverResponse","Pharmacy stock obtained")
                 }
             }

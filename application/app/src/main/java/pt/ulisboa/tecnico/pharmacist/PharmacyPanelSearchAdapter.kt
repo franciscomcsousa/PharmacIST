@@ -35,8 +35,8 @@ class PharmacyPanelSearchAdapter(private val medicineList: List<MedicineViewMode
 
     // Holds the views for adding it to image and text
     class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        val imageView: ImageView = itemView.findViewById(R.id.imageview)
-        val textView: TextView = itemView.findViewById(R.id.textView)
+        val imageView: ImageView = itemView.findViewById(R.id.medicine_image_view)
+        val textView: TextView = itemView.findViewById(R.id.medicine_text_view)
     }
 
 }

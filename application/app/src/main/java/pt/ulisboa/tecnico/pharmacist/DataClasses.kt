@@ -44,6 +44,8 @@ data class QueryStock(
 // Used for medicine search recycler view
 data class MedicineViewModel(val image: Int, val text: String)
 
+data class MedicineSearchViewModel(val image: Int, val text: String)
+
 // Server Responses data types for RetrofitAPI
 // simplifies the way data is treated when received in onResponse
 data class SignInResponse(val token: String)

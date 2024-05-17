@@ -14,9 +14,8 @@ class MedicineSearchAdapter(
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        // inflates the medicine_card_view_design view that is used to hold list item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.medicine_card_view_design, parent, false)
+            .inflate(R.layout.medicine_card, parent, false)
 
         return ViewHolder(view)
     }
@@ -45,8 +44,8 @@ class MedicineSearchAdapter(
 
     // Holds the views for adding it to image and text
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        val imageView: ImageView = itemView.findViewById(R.id.imageView)
-        val textView: TextView = itemView.findViewById(R.id.textView)
+        val imageView: ImageView = itemView.findViewById(R.id.medicine_image_view)
+        val textView: TextView = itemView.findViewById(R.id.medicine_text_view)
 
         init {
             itemView.setOnClickListener(this)

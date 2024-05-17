@@ -14,7 +14,7 @@
         android:padding="5dp">
 
         <ImageView
-            android:id="@+id/imageview"
+            android:id="@+id/medicine_image_view"
             android:layout_width="86dp"
             android:layout_height="36dp"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -24,7 +24,7 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/medicine_text_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Item"

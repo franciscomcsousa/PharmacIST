@@ -4,10 +4,10 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
-import android.widget.SearchView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import retrofit2.Call
@@ -22,7 +22,6 @@ class PharmacyInformationActivity : AppCompatActivity() {
     // For now contacts the localhost server
     private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
 
-    private var currentUri: Uri? = null
     private val retrofit = Retrofit.Builder()
         .baseUrl(url)
         .addConverterFactory(GsonConverterFactory.create())

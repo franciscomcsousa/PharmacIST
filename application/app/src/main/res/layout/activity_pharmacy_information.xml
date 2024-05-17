@@ -3,7 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    tools:context=".PharmacyInformationActivity">
 
     <TextView
         android:id="@+id/panel_pharmacy_name"
@@ -17,20 +18,22 @@
         app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="16dp" />
 
-    <android.widget.SearchView
+    <androidx.appcompat.widget.SearchView
         android:id="@+id/pharmacy_panel_search"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:queryHint="@string/search_medicine"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.212"
-        tools:layout_editor_absoluteX="0dp" />
+        android:layout_width="380dp"
+        android:layout_height="wrap_content"
+        android:background="@drawable/search_view_bg"
+        app:iconifiedByDefault="false"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/panel_pharmacy_name"
+        app:queryHint="@string/search_for_a_medicine" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/panel_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="300dp"
+        android:layout_marginBottom="268dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_search"
         app:layout_constraintVertical_bias="0.0"

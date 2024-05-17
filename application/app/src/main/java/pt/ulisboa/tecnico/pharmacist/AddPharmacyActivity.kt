@@ -81,7 +81,6 @@ class AddPharmacyActivity : AppCompatActivity() {
 
     private val CAMERA_PERMISSION_REQUEST_CODE = 1002
 
-    // address autocomplete
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null
 
@@ -90,7 +89,6 @@ class AddPharmacyActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setContentView(R.layout.activity_add_pharmacy)
         startPlacesAPI()
-
     }
 
     private fun getFieldName(): String {
@@ -172,14 +170,13 @@ class AddPharmacyActivity : AppCompatActivity() {
         autocompleteFragment.setOnPlaceSelectedListener(object: PlaceSelectionListener {
 
             override fun onError(status: Status) {
-                TODO("Not yet implemented")
+                Log.d("placesError", "An error occurred: $status")
             }
 
             override fun onPlaceSelected(place: Place) {
                 place.address?.let { Log.d("serverResponse", "This was the address selected!: $it") }
                 autocompleteFragment.setHint(place.address)
                 selectedAddress = place
-
             }
         })
     }

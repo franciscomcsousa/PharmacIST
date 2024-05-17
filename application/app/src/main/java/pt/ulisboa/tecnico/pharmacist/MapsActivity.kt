@@ -21,6 +21,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -29,6 +30,10 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.widget.AutocompleteSupportFragment
+import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
@@ -64,6 +69,9 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
+    private lateinit var autocompleteFragment: AutocompleteSupportFragment
+    private var selectedAddress: Place? = null
+
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
 
     // TODO - Later create a cache to store these images
@@ -81,6 +89,7 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
 
+        startPlacesAPI()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
@@ -246,6 +255,28 @@ class MapsActivity : FragmentActivity(), OnMapReadyCallback {
 
             override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
                 Log.d("serverResponse", "FAILED: " + t.message)
+            }
+        })
+    }
+
+    private fun startPlacesAPI() {
+        val apiKey = BuildConfig.MAPS_API_KEY
+        Places.initialize(applicationContext, apiKey)
+
+        autocompleteFragment = supportFragmentManager.findFragmentById(R.id.places_autocomplete)
+                as AutocompleteSupportFragment
+        autocompleteFragment.setPlaceFields(listOf(Place.Field.ADDRESS, Place.Field.LAT_LNG))
+        autocompleteFragment.setOnPlaceSelectedListener(object: PlaceSelectionListener {
+
+            override fun onError(status: Status) {
+                Log.d("placesError", "An error occurred: $status")
+            }
+
+            override fun onPlaceSelected(place: Place) {
+                place.address?.let { Log.d("serverResponse", "This was the address selected!: $it") }
+                autocompleteFragment.setHint(place.address)
+                selectedAddress = place
+                mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(place.latLng!!, 16f))
             }
         })
     }

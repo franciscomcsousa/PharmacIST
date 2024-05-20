@@ -9,7 +9,6 @@ import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.google.android.material.textfield.TextInputLayout
@@ -28,12 +27,10 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        dataStore = DataStoreManager(this@LoginActivity)
-        checkThemeMode()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_login)
-
+        dataStore = DataStoreManager(this@LoginActivity)
 
         lifecycleScope.launch {
             val storedToken = getUserToken()
@@ -42,18 +39,6 @@ class LoginActivity : AppCompatActivity() {
                 autoLogin(storedToken) {
                     navigateToNavigationDrawerActivity()
                 }
-            }
-        }
-    }
-
-    private fun checkThemeMode() {
-        lifecycleScope.launch {
-            val isDarkMode = getAppTheme()
-            if (isDarkMode) {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            else {
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
             }
         }
     }
@@ -202,9 +187,5 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dataStore.setToken(token)
         }
-    }
-
-    private suspend fun getAppTheme(): Boolean {
-        return dataStore.getTheme()
     }
 }

@@ -56,5 +56,6 @@
     <string name="item">Item</string>
     <string name="light_mode">Light Mode</string>
     <string name="dark_mode">Dark Mode</string>
+    <string name="medicine_name">Medicine Name</string>
 
 </resources>

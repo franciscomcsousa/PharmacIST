@@ -7,7 +7,10 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class PharmacyPanelSearchAdapter(private val medicineList: List<MedicineViewModel>) : RecyclerView.Adapter<PharmacyPanelSearchAdapter.ViewHolder>() {
+class PharmacyPanelSearchAdapter(
+    val medicineList: List<MedicineViewModel>,
+    private val listener: RecyclerViewEvent
+    ) : RecyclerView.Adapter<PharmacyPanelSearchAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -33,10 +36,24 @@ class PharmacyPanelSearchAdapter(private val medicineList: List<MedicineViewMode
         return medicineList.size
     }
 
+    interface RecyclerViewEvent {
+        fun onItemClick(position: Int)
+    }
+
     // Holds the views for adding it to image and text
-    class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
         val imageView: ImageView = itemView.findViewById(R.id.medicine_image_view)
         val textView: TextView = itemView.findViewById(R.id.medicine_text_view)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
+
+        override fun onClick(v: View?) {
+            if (adapterPosition != RecyclerView.NO_POSITION) {
+                listener.onItemClick(adapterPosition)
+            }
+        }
     }
 
 }

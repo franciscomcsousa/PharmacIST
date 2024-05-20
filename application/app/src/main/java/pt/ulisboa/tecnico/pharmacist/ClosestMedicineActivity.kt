@@ -5,12 +5,12 @@ import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 
-class MedicineDetailsActivity : AppCompatActivity() {
+class ClosestMedicineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_medicine_details)
+        setContentView(R.layout.activity_cloesest_medicine)
 
         // Retrieve the medicine and pharmacy from the intent
         val medicineName = intent.getStringExtra("medicineName")

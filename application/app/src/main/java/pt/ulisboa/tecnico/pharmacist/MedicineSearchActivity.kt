@@ -22,7 +22,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
+class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -40,8 +40,8 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_medicine)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MedicineActivity)
+        setContentView(R.layout.activity_medicine_search)
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MedicineSearchActivity)
         requestPermissions()
 
         val searchView = findViewById<SearchView>(R.id.searchView)
@@ -80,7 +80,7 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
                         val medicine = Medicine(i[1].toString())
                         data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name))
                     }
-                    val adapter = MedicineSearchAdapter(data, this@MedicineActivity)
+                    val adapter = MedicineSearchAdapter(data, this@MedicineSearchActivity)
                     val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
                     recyclerView.adapter = adapter
                 }
@@ -121,7 +121,7 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
                             navigateToMedicineDetailsActivity(medicine, pharmacy)
                         }
                         else if (response.code() == 453) {
-                            Toast.makeText(this@MedicineActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@MedicineSearchActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
                             Log.d("serverResponse","Medicine not found")
                         }
                     }
@@ -135,7 +135,7 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
     }
 
     private fun navigateToMedicineDetailsActivity(medicine: MedicinePurpose, pharmacy: Pharmacy) {
-        val intent = Intent(this, MedicineDetailsActivity::class.java)
+        val intent = Intent(this, ClosestMedicineActivity::class.java)
         intent.putExtra("medicineName", medicine.name)
         intent.putExtra("medicinePurpose", medicine.purpose)
         intent.putExtra("pharmacyName", pharmacy.name)
@@ -148,13 +148,13 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
     private fun requestPermissions() {
         // verify permissions
         if (ContextCompat.checkSelfPermission(
-                this@MedicineActivity,
+                this@MedicineSearchActivity,
                 Manifest.permission.ACCESS_FINE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) else {
             // Permission is not granted, request it
             ActivityCompat.requestPermissions(
-                this@MedicineActivity,
+                this@MedicineSearchActivity,
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                 PERMISSION_REQUEST_ACCESS_LOCATION_CODE
             )
@@ -171,8 +171,8 @@ class MedicineActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerView
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 else {
                 // Permission denied, redirect to NavigationDrawer activity
-                Toast.makeText(this@MedicineActivity, "Permission denied", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this@MedicineActivity, NavigationDrawerActivity::class.java))
+                Toast.makeText(this@MedicineSearchActivity, "Permission denied", Toast.LENGTH_SHORT).show()
+                startActivity(Intent(this@MedicineSearchActivity, NavigationDrawerActivity::class.java))
             }
         }
     }

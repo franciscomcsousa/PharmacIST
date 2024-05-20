@@ -78,16 +78,19 @@
             android:exported="false"
             android:label="@string/title_add_pharmacy" />
         <activity
-            android:name=".MedicineActivity"
+            android:name=".MedicineSearchActivity"
             android:exported="false"
             android:label="MedicineActivity" />
         <activity
-            android:name=".MedicineDetailsActivity"
+            android:name=".ClosestMedicineActivity"
             android:exported="false"
             android:label="MedicineDetailsActivity" />
         <activity android:name=".PharmacyInformationActivity"
             android:exported="false"
             android:label="MedicineDetailsActivity" />
+        <activity android:name=".MedicineInformationActivity"
+            android:exported="false"
+            android:label="MedicineInformationActivity" />
 
         <!-- When taking photos they will be stored in the phone -->
         <provider

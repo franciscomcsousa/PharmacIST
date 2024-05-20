@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:paddingTop="50dp"
-    tools:context=".MedicineActivity">
+    tools:context=".MedicineSearchActivity">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/searchView"

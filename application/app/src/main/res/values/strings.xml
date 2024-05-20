@@ -54,5 +54,7 @@
     <string name="default_info_panel">Information Panel</string>
     <string name="search_medicine">Medicine Search</string>
     <string name="item">Item</string>
+    <string name="light_mode">Light Mode</string>
+    <string name="dark_mode">Dark Mode</string>
 
 </resources>

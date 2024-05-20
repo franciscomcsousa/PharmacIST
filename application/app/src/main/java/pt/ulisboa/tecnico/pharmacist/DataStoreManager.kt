@@ -2,16 +2,12 @@ package pt.ulisboa.tecnico.pharmacist
 
 import android.content.Context
 import androidx.datastore.core.DataStore
-import androidx.datastore.core.IOException
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.emptyPreferences
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 
     val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
@@ -20,6 +16,7 @@ class DataStoreManager(val context: Context) {
     companion object {
         val KEY_TOKEN = stringPreferencesKey("token")
         val USERNAME = stringPreferencesKey("username")
+        val DARKMODE = booleanPreferencesKey("dark_mode")
     }
 
     suspend fun setToken(token: String) {
@@ -44,9 +41,14 @@ class DataStoreManager(val context: Context) {
         return values[USERNAME]
     }
 
-    suspend fun clearToken() {
+    suspend fun setTheme(isDarkMode: Boolean) {
         context.dataStore.edit { settings ->
-            settings.remove(KEY_TOKEN)
+            settings[DARKMODE] = isDarkMode
         }
+    }
+
+    suspend fun getTheme(): Boolean {
+        val values = context.dataStore.data.first()
+        return values[DARKMODE] ?: false
     }
 }

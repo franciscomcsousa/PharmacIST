@@ -24,8 +24,8 @@ For the application to work as intended, for now, its required that the [web ser
 (Debian)
 ``` bash
 sudo apt install mariadb-server
-sudo /etc/init.d/mysql start
-sudo /etc/init.d/mysql status
+sudo systemctl start mariadb.service
+sudo systemctl status mariadb.service
 sudo mysql_secure_installation
 ```
 If it does not work:

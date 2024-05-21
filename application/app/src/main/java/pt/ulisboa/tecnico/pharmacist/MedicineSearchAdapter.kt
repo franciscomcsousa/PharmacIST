@@ -8,12 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
 class MedicineSearchAdapter(
-    val mList: List<MedicineSearchViewModel>,
+    val medicineList: List<MedicineSearchViewModel>,
     private val listener: RecyclerViewEvent
-) : RecyclerView.Adapter<MedicineSearchAdapter.ViewHolder>() {
+    ) : RecyclerView.Adapter<MedicineSearchAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // inflates the medicine_card view
+        // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
             .inflate(R.layout.medicine_card, parent, false)
 
@@ -23,19 +25,15 @@ class MedicineSearchAdapter(
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val itemsViewModel = mList[position]
+        val medicineViewModel = medicineList[position]
 
-        // sets the image to the imageview from the itemHolder class
-        holder.imageView.setImageResource(itemsViewModel.image)
-
-        // sets the text to the textview from the itemHolder class
-        holder.textView.text = itemsViewModel.text
+        holder.imageView.setImageResource(medicineViewModel.image)
+        holder.textView.text = medicineViewModel.text
 
     }
 
-    // return the number of the items in the list
     override fun getItemCount(): Int {
-        return mList.size
+        return medicineList.size
     }
 
     interface RecyclerViewEvent {
@@ -57,4 +55,5 @@ class MedicineSearchAdapter(
             }
         }
     }
+
 }

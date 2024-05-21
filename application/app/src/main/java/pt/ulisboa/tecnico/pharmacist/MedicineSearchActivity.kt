@@ -89,7 +89,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
     }
 
     override fun onItemClick(position: Int) {
-        val medicineName = (findViewById<RecyclerView>(R.id.recyclerView).adapter as MedicineSearchAdapter).mList[position].text
+        val medicineName = (findViewById<RecyclerView>(R.id.recyclerView).adapter as MedicineSearchAdapter).medicineList[position].text
         getMedicine(medicineName)
     }
 

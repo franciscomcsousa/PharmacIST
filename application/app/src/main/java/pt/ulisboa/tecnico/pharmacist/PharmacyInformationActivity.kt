@@ -1,9 +1,7 @@
 package pt.ulisboa.tecnico.pharmacist
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
@@ -18,7 +16,7 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class PharmacyInformationActivity : AppCompatActivity(), PharmacyPanelSearchAdapter.RecyclerViewEvent {
+class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(DataStoreManager.getUrl())
@@ -69,7 +67,7 @@ class PharmacyInformationActivity : AppCompatActivity(), PharmacyPanelSearchAdap
     }
 
     override fun onItemClick(position: Int) {
-        val medicineName = (findViewById<RecyclerView>(R.id.panel_recycle_view).adapter as PharmacyPanelSearchAdapter).medicineList[position].text
+        val medicineName = (findViewById<RecyclerView>(R.id.panel_recycle_view).adapter as MedicineSearchAdapter).medicineList[position].text
 
         val intent = Intent(this, MedicineInformationActivity::class.java)
 
@@ -87,16 +85,16 @@ class PharmacyInformationActivity : AppCompatActivity(), PharmacyPanelSearchAdap
                 if (response.isSuccessful) {
                     val stockList = response.body()?.stock
 
-                    val data = ArrayList<MedicineViewModel>()
+                    val data = ArrayList<MedicineSearchViewModel>()
 
                     // For testing purposes
                     if (stockList != null) {
                         for (medicine in stockList) {
-                            data.add(MedicineViewModel(R.drawable.baseline_directions_24, medicine))
+                            data.add(MedicineSearchViewModel(R.drawable.baseline_directions_24, medicine))
                         }
                     }
                     // Set the recycler view adapter to the created adapter
-                    val adapter = PharmacyPanelSearchAdapter(data, this@PharmacyInformationActivity)
+                    val adapter = MedicineSearchAdapter(data, this@PharmacyInformationActivity)
                     val recyclerview = findViewById<RecyclerView>(R.id.panel_recycle_view)
                     recyclerview.adapter = adapter
 

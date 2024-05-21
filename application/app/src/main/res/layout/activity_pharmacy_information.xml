@@ -39,4 +39,15 @@
         app:layout_constraintVertical_bias="0.0"
         tools:layout_editor_absoluteX="0dp" />
 
+    <Button
+        android:id="@+id/btn_addStock"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:onClick="addStock"
+        android:text="@string/btn_addStock"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/panel_recycle_view" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

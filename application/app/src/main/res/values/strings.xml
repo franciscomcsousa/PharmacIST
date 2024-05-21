@@ -2,6 +2,7 @@
     <string name="app_name">PharmacIST</string>
     <string name="title_activity_maps">MapsActivity</string>
     <string name="title_add_pharmacy">AddPharmacyActivity</string>
+    <string name="title_activity_add_stock">AddStockActivity</string>
 
     <!-- Login Texts -->
     <string name="prompt_username">Username</string>
@@ -43,6 +44,7 @@
     <string name="search">Search</string>
     <string name="closest_pharmacy">Closest pharmacy:</string>
     <string name="btn_navigate">Directions</string>
+    <string name="btn_addStock">Add Stock</string>
 
     <!-- Placeholder Text -->
     <string name="placeholder_1">Placeholder 1</string>

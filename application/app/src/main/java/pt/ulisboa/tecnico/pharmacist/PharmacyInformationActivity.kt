@@ -5,6 +5,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.util.Log
+import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -107,5 +108,9 @@ class PharmacyInformationActivity : AppCompatActivity(), PharmacyPanelSearchAdap
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
         })
+    }
+
+    fun addStock(view: View) {
+        startActivity(Intent(this, AddStockActivity::class.java))
     }
 }

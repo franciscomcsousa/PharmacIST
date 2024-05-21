@@ -14,9 +14,6 @@ class MedicineInformationActivity : AppCompatActivity() {
 
         val medicineName = intent.getStringExtra("medicineName")
 
-        println("WOOO")
-        println(medicineName)
-
         findViewById<TextView>(R.id.panel_medicine_text)?.text = medicineName
     }
 

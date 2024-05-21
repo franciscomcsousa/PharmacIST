@@ -17,6 +17,10 @@ class DataStoreManager(val context: Context) {
         val KEY_TOKEN = stringPreferencesKey("token")
         val USERNAME = stringPreferencesKey("username")
         val DARKMODE = booleanPreferencesKey("dark_mode")
+
+        fun getUrl(): String {
+            return "http://172.232.42.26/"
+        }
     }
 
     suspend fun setToken(token: String) {

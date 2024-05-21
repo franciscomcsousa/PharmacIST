@@ -21,9 +21,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 // possible change this to jetpack compose
 class LoginActivity : AppCompatActivity() {
-
-    // for now contacts the localhost server
-    private val url = "http://10.0.2.2:5000/"
     private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -166,7 +163,7 @@ class LoginActivity : AppCompatActivity() {
 
     private fun buildRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(url)
+            .baseUrl(DataStoreManager.getUrl())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

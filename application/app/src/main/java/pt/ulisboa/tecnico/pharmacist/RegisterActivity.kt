@@ -19,7 +19,6 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 class RegisterActivity : AppCompatActivity() {
-    private val url = "http://10.0.2.2:5000/"
     private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -114,7 +113,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun buildRetrofit(): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(url)
+            .baseUrl(DataStoreManager.getUrl())
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }

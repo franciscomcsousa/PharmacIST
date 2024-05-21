@@ -27,12 +27,8 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
-    // TODO
-    // For now contacts the localhost server
-    private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
-
     private val retrofit = Retrofit.Builder()
-        .baseUrl(url)
+        .baseUrl(DataStoreManager.getUrl())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)

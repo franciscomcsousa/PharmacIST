@@ -44,13 +44,9 @@ import java.util.Locale
 
 class AddPharmacyActivity : AppCompatActivity() {
 
-    // TODO
-    // For now contacts the localhost server
-    private val url = "http://" + "10.0.2.2" + ":" + 5000 + "/"
-
     private var currentUri: Uri? = null
     private val retrofit = Retrofit.Builder()
-        .baseUrl(url)
+        .baseUrl(DataStoreManager.getUrl())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)

@@ -72,6 +72,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
 
+    private var pharmacyFavorites: ArrayMap<String, Boolean> = ArrayMap()
+
     // TODO - Later create a cache to store these images
     private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
 
@@ -94,6 +96,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap = googleMap
 
         requestPermissions()
+
+        // If the intent was started by the ClosestMedicineActivity, show the pharmacy only
+        if (intent.hasExtra("pharmacyLatitude") && intent.hasExtra("pharmacyLongitude")) {
+            val pharmacyId = intent.getStringExtra("pharmacyId")!!
+            val pharmacyName = intent.getStringExtra("pharmacyName")!!
+            val pharmacyAddress = intent.getStringExtra("pharmacyAddress")!!
+            val pharmacyLatitude = intent.getStringExtra("pharmacyLatitude")!!.toDouble()
+            val pharmacyLongitude = intent.getStringExtra("pharmacyLongitude")!!.toDouble()
+
+            val marker = mMap?.addMarker(MarkerOptions()
+                .position(LatLng(pharmacyLatitude, pharmacyLongitude))
+                .title(pharmacyName)
+                .snippet(pharmacyAddress)
+            )
+
+            pharmacyImage(pharmacyName)
+            marker?.tag = Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), "")
+
+            mMap!!.setOnMarkerClickListener { clickedMarker ->
+                val clickedPharmacy = clickedMarker.tag as Pharmacy
+                showPharmacyDrawer(clickedPharmacy)
+                true
+            }
+
+            return
+        }
 
         timer = Timer()
         timerTask = object : TimerTask() {
@@ -148,6 +176,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
 
         val favoriteButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
+        lifecycleScope.launch {
+            isPharmacyFavorite(pharmacy.id.toString(), favoriteButton)
+        }
+
         val directionButton = bottomDrawerView.findViewById<Button>(R.id.btn_navigate)
 
         // Set click listener for the toggle button
@@ -182,6 +214,27 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val bottomSheetDialog = BottomSheetDialog(this)
         bottomSheetDialog.setContentView(bottomDrawerView)
         bottomSheetDialog.show()
+    }
+
+    private suspend fun isPharmacyFavorite(id: String, favoriteButton: ToggleButton) {
+        val username = getUsername()
+        val favoritePharmacy = FavoritePharmacy(username,id)
+        val call: Call<StatusResponse> = retrofitAPI.isPharmacyFavorite(favoritePharmacy)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                if (response.isSuccessful) {
+                    Log.d("serverResponse", "SUCCESSFUL: ${response.code()}")
+                    favoriteButton.isChecked = response.code() == 203
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: ${t.message}")
+            }
+        })
     }
 
     private fun handleShowMore(pharmacy: Pharmacy) {

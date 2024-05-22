@@ -112,8 +112,29 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
     finally:
         con.close()
         
-def get_favorite_pharmacies(user):
-    pass
+def is_pharmacy_favorite(username, pharmacyId):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        
+        data = (username,)
+        query = 'SELECT user_id FROM users WHERE username = %s'
+        cur.execute(query, data)
+        user_id = cur.fetchone()
+        
+        if user_id:
+            data = (user_id[0], pharmacyId)
+            query = 'SELECT * FROM favorite_pharmacies WHERE user_id = %s AND pharmacy_id = %s'
+            cur.execute(query, data)
+            favorite = cur.fetchone()
+            if favorite:
+                return PHARMACY_FAVORITED_STATUS
+            else:
+                return PHARMACY_NOT_FAVORITED_STATUS
+        else:
+            return USER_DOES_NOT_EXIST_STATUS
+    finally:
+        con.close()
 
 def update_favorite_pharmacies(username, pharmacyId):
     con = connect_db()

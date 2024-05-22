@@ -60,5 +60,6 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="medicine_name">Medicine Name</string>
     <string name="pharmacist">PharmacIST</string>
+    <string name="navigate">Navigate to Pharmacy</string>
 
 </resources>

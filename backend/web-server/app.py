@@ -160,6 +160,21 @@ def favorite_pharmacy():
         return make_response({"status": 200}, 200)
         
     return make_response({"status": 400}, 400)
+
+@app.route('/is_pharmacy_favorite', methods=['GET', 'POST'])
+def is_favorite_pharmacy():
+    if request.method == 'GET':
+        pass
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        pharmacy_id = data['pharmacyId']
+        status = is_pharmacy_favorite(username, pharmacy_id)
+        
+        return make_response({"status": status}, status)
+    
+    return make_response({"status": 400}, 400)
         
 @app.route('/medicine', methods=['GET', 'POST'])
 def get_medicines():

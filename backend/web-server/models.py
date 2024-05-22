@@ -187,7 +187,21 @@ def get_pharmacy_stock(pharmacy_id, substring):
         return stock
     finally:
         con.close()
+
+def get_near_pharmacies(medicine_name, latitude, longitude):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (medicine_name, latitude, longitude)
+        query = 'SELECT p.pharmacy_id, p.name, ms.quantity FROM pharmacies p JOIN medicine_stock ms ON p.pharmacy_id = ms.pharmacy_id JOIN medicine m ON ms.medicine_id = m.medicine_id WHERE m.name = %s ORDER BY ABS(p.latitude - %s) + ABS(p.longitude - %s) LIMIT 20;'
+        cur.execute(query, data)
+        pharmacies_stock = cur.fetchall()
+        return pharmacies_stock
+    finally:
+        con.close()
         
+
+
 # ==================== Medicine ==================== #
 
 def get_medicines_with_substring(substring):

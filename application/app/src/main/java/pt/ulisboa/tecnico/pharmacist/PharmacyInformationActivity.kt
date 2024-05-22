@@ -38,7 +38,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
         searchView.clearFocus()
 
         // Get recycler view
-        val recyclerview = findViewById<RecyclerView>(R.id.panel_recycle_view)
+        val recyclerview = findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view)
         recyclerview.layoutManager = LinearLayoutManager(this)
 
         // Search query listener
@@ -67,7 +67,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
     }
 
     override fun onItemClick(position: Int) {
-        val medicineName = (findViewById<RecyclerView>(R.id.panel_recycle_view).adapter as MedicineSearchAdapter).medicineList[position].text
+        val medicineName = (findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view).adapter as MedicineSearchAdapter).medicineList[position].text
 
         val intent = Intent(this, MedicineInformationActivity::class.java)
 
@@ -95,7 +95,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
                     }
                     // Set the recycler view adapter to the created adapter
                     val adapter = MedicineSearchAdapter(data, this@PharmacyInformationActivity)
-                    val recyclerview = findViewById<RecyclerView>(R.id.panel_recycle_view)
+                    val recyclerview = findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view)
                     recyclerview.adapter = adapter
 
                     Log.d("serverResponse","Pharmacy stock obtained")

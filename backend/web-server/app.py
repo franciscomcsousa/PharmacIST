@@ -232,6 +232,22 @@ def pharmacy_stock():
     
     return make_response({"status": 400}, 400)
 
+@app.route('/medicine_near_pharmacies', methods=['GET', 'POST'])
+def medicine_near_pharmacies():
+    if request.method == 'GET':
+        pass
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        medicineName = data['name']
+        latitude = data['latitude']
+        longitude = data['longitude']
+
+        pharmacies_stock = get_near_pharmacies(medicineName, latitude, longitude)
+
+        return make_response(jsonify({"pharmaciesStock": pharmacies_stock}), 200)
+    
+    return make_response({"status": 400}, 400)
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

@@ -62,4 +62,7 @@
     <string name="pharmacist">PharmacIST</string>
     <string name="navigate">Navigate to Pharmacy</string>
 
+    <string name="closest_pharmacies">Closest Pharmacies</string>
+    <string name="stock">Stock</string>
+
 </resources>

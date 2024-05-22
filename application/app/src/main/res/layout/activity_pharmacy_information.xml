@@ -30,7 +30,7 @@
         app:queryHint="@string/search_for_a_medicine" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/panel_recycle_view"
+        android:id="@+id/pharmacy_panel_recycle_view"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginBottom="268dp"
@@ -48,6 +48,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/panel_recycle_view" />
+        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_recycle_view" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

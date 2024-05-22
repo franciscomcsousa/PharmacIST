@@ -17,8 +17,7 @@ data class Pharmacy(
 
 data class FavoritePharmacy(
     @SerializedName("username") val username: String,
-    @SerializedName("pharmacyId") val pharmacyId: String
-    )
+    @SerializedName("pharmacyId") val pharmacyId: String)
 
 data class Medicine(
     @SerializedName("name") val name: String)
@@ -40,9 +39,16 @@ data class QueryStock(
     @SerializedName("substring") val substring: String,
     @SerializedName("pharmacyId") val pharmacyId: String)
 
+data class PharmacyStock(
+    @SerializedName("pharmacyName") val pharmacyName: String,
+    @SerializedName("pharmacyId") val pharmacyId: String,
+    @SerializedName("stock") val stock: Int)
+
 
 // Used for medicine search recycler view
 data class MedicineSearchViewModel(val image: Int, val text: String)
+
+data class PharmacyStockViewModel(val name: String, val stock: Int)
 
 // Server Responses data types for RetrofitAPI
 // simplifies the way data is treated when received in onResponse
@@ -59,3 +65,5 @@ data class PharmacyImageResponse(val image: String)
 data class QueryStockResponse(val stock: List<String>)
 
 data class MedicineResponse(val medicine: List<List<Any>>)
+
+data class NearestPharmaciesResponse(val pharmaciesStock: List<List<Any>>)

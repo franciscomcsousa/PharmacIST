@@ -84,3 +84,40 @@ sudo apt-get install libmariadb3 libmariadb-dev
 Run requirements script: ```pip3 install -r requirements.txt```
 
 **To run the webserver:** ```python3 app.py```
+
+## Scripts
+
+### Nginx
+```
+server {
+	listen 80;
+	listen [::]:80;
+
+	server_name 172.232.42.26;
+
+	location / {
+		proxy_pass http://localhost:8000/;
+	}
+}
+```
+
+### Git Hook
+
+```
+#!/bin/bash
+
+APP_DIR="/root/PharmacIST"
+SUPERVISORCTL="/usr/bin/supervisorctl"
+
+cd $APP_DIR
+
+git pull origin main
+
+# Reload supervisor
+$SUPERVISORCTL reread
+$SUPERVISORCTL update
+$SUPERVISORCTL restart all
+
+# Log the deployment (optional)
+echo "$(date) - Deployed and reloaded supervisor" >> /var/log/deploy.log
+```

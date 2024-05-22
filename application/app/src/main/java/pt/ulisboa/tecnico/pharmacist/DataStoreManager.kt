@@ -19,8 +19,7 @@ class DataStoreManager(val context: Context) {
         val DARKMODE = booleanPreferencesKey("dark_mode")
 
         fun getUrl(): String {
-            //return "http://172.232.42.26/"
-            return "http://10.0.2.2:5000"
+            return "http://172.232.42.26/"
         }
     }
 

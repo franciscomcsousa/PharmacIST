@@ -61,41 +61,58 @@ class ScannerActivity : AppCompatActivity() {
     }
 
     private fun bindCameraPreview() {
-        cameraPreview = Preview.Builder()
-            .setTargetRotation(binding.cameraView.display.rotation)
-            .build()
-        cameraPreview.setSurfaceProvider(binding.cameraView.surfaceProvider)
-        try {
-            processCameraProvider.bindToLifecycle(this, cameraSelector, cameraPreview)
-        } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
-        } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+        // ensures the view is initialized
+        binding.cameraView.post {
+            val display = binding.cameraView.display
+            // prevents Null pointer exception
+            if (display != null) {
+                cameraPreview = Preview.Builder()
+                    .setTargetRotation(display.rotation)
+                    .build()
+                cameraPreview.setSurfaceProvider(binding.cameraView.surfaceProvider)
+                try {
+                    processCameraProvider.bindToLifecycle(this, cameraSelector, cameraPreview)
+                } catch (illegalStateException: IllegalStateException) {
+                    Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+                } catch (illegalArgumentException: IllegalArgumentException) {
+                    Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+                }
+            } else {
+                Log.e(TAG, "Display is null")
+            }
         }
     }
+
     @ExperimentalGetImage
     private fun bindInputAnalyser() {
-        val barcodeScanner: BarcodeScanner = BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)    // TODO: revisit this. what types to use
-                .build()
-        )
-        imageAnalysis = ImageAnalysis.Builder()
-            .setTargetRotation(binding.cameraView.display.rotation)
-            .build()
+        // ensures the view is initialized
+        binding.cameraView.post {
+            val display = binding.cameraView.display
+            // prevents Null pointer exception
+            if (display != null) {
+                val barcodeScanner: BarcodeScanner = BarcodeScanning.getClient(
+                    BarcodeScannerOptions.Builder()
+                        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                        .build()
+                )
+                imageAnalysis = ImageAnalysis.Builder()
+                    .setTargetRotation(display.rotation)
+                    .build()
+                val cameraExecutor = Executors.newSingleThreadExecutor()
 
-        val cameraExecutor = Executors.newSingleThreadExecutor()
-
-        imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
-            processImageProxy(barcodeScanner, imageProxy)
-        }
-
-        try {
-            processCameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis)
-        } catch (illegalStateException: IllegalStateException) {
-            Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
-        } catch (illegalArgumentException: IllegalArgumentException) {
-            Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+                imageAnalysis.setAnalyzer(cameraExecutor) { imageProxy ->
+                    processImageProxy(barcodeScanner, imageProxy)
+                }
+                try {
+                    processCameraProvider.bindToLifecycle(this, cameraSelector, imageAnalysis)
+                } catch (illegalStateException: IllegalStateException) {
+                    Log.e(TAG, illegalStateException.message ?: "IllegalStateException")
+                } catch (illegalArgumentException: IllegalArgumentException) {
+                    Log.e(TAG, illegalArgumentException.message ?: "IllegalArgumentException")
+                }
+            } else {
+                Log.e(TAG, "Display is null")
+            }
         }
     }
 

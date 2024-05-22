@@ -9,7 +9,6 @@ app = Flask(__name__)
 # used to encrypt the Jtokens, for simplicity is now here
 app.config['SECRET_KEY'] = 'manteiga de amendoim'
 
-
 # Decorator to require login
 # Token verification in headers
 def login_required(f):
@@ -193,7 +192,10 @@ def get_favorite_pharmacies():
 @app.route('/medicine', methods=['GET', 'POST'])
 def get_medicines():
     if request.method == 'GET':
-        pass
+        # TODO - further verification?
+        medicine_id = request.args.get("id")
+        medicine, status = get_medicine_by_id(medicine_id)
+        return make_response(jsonify({"medicine": medicine}), status)
 
     if request.method == 'POST':
         # get medicines that contain the substring in their name passed in the request
@@ -262,6 +264,21 @@ def medicine_near_pharmacies():
         return make_response(jsonify({"pharmaciesStock": pharmacies_stock}), 200)
     
     return make_response({"status": 400}, 400)
+
+@app.route('/update_stock', methods=['POST'])
+def update_stock():
+    if request.method == 'POST':
+        data = request.get_json()
+        pharmacy_id = data[0]['pharmacyId']
+        
+        # Extracting medicine_id and stock and creating a list of lists
+        medicine_stock_list = [[entry['id'], entry['stock']] for entry in data]
+        status = update_pharmacy_stock(medicine_stock_list, pharmacy_id)
+
+        return make_response({"status": status}, status)
+
+    return make_response({"status": 400}, 400)
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

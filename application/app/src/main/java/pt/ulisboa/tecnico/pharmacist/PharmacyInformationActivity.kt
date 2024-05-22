@@ -24,13 +24,15 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
+    private lateinit var pharmacyId: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_pharmacy_information)
 
         val pharmacyName = intent.getStringExtra("pharmacyName")
-        val pharmacyId = intent.getStringExtra("pharmacyId")
+        pharmacyId = intent.getStringExtra("pharmacyId").toString()
 
         findViewById<TextView>(R.id.panel_pharmacy_name).text = pharmacyName
 
@@ -57,9 +59,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
                     return true
                 }
 
-                if (pharmacyId != null) {
-                    queryStock(newText, pharmacyId)
-                }
+                queryStock(newText, pharmacyId)
 
                 return true
             }
@@ -109,6 +109,8 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
     }
 
     fun addStock(view: View) {
-        startActivity(Intent(this, AddStockActivity::class.java))
+        val intent = Intent(this@PharmacyInformationActivity, AddStockActivity::class.java)
+        intent.putExtra("pharmacyId", pharmacyId)
+        startActivity(intent)
     }
 }

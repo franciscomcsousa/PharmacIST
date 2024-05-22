@@ -217,10 +217,48 @@ def get_near_pharmacies(medicine_name, latitude, longitude):
         return pharmacies_stock
     finally:
         con.close()
+
+def update_pharmacy_stock(medicine_stock_list, pharmacy_id):
+    # medicine_stock_list -> [[medicine_id, stock], . . . ]
+    con = connect_db()
+    try:
+        # TODO - is it be necessary to check if the pharmacy id and medicine id are correct?
+        # if stock is positive, simply add, else verify if it can purchase
+        cur = con.cursor()       
         
+        for entry in medicine_stock_list:
+            stock = entry[1] 
+            if stock > 0:
+                
+                data = (pharmacy_id, entry[0], stock) 
+                query = """
+                        INSERT INTO medicine_stock (pharmacy_id, medicine_id, quantity)
+                        VALUES (%s, %s, %s)
+                        ON DUPLICATE KEY UPDATE
+                        quantity = quantity + VALUES(quantity)"""
+                cur.execute(query, data)
+        con.commit()
 
-
+        return OK_STATUS
+    finally:
+        con.close()
+            
+        
 # ==================== Medicine ==================== #
+
+def get_medicine_by_id(id):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (id,)
+        query = 'SELECT * FROM medicine WHERE medicine_id = %s'
+        cur.execute(query, data)
+        medicine = cur.fetchall()
+        if medicine:
+            return medicine, OK_STATUS
+        return medicine, MEDICINE_DOES_NOT_EXIST_STATUS
+    finally:
+        con.close()
 
 def get_medicines_with_substring(substring):
     con = connect_db()

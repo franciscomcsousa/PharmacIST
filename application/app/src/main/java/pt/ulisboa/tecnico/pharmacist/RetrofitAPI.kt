@@ -6,6 +6,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 // Builds the requests (GET,POST, ...) with the write body to the backend
 interface RetrofitAPI {
@@ -41,6 +42,9 @@ interface RetrofitAPI {
     @POST("medicine")
     fun getMedicine(@Body medicine: Medicine): Call<MedicineResponse>
 
+    @GET("medicine")
+    fun getMedicineById(@Query("id") medicineId: String): Call<MedicineResponse>
+
     @POST("medicine_location")
     fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 
@@ -49,4 +53,6 @@ interface RetrofitAPI {
 
     @POST("medicine_near_pharmacies")
     fun nearbyPharmacyMedicine(@Body medicineLocation: MedicineLocation): Call<NearestPharmaciesResponse>
+    @POST("update_stock")
+    fun updateStock(@Body listMedicineStock: List<MedicineStock>): Call<StatusResponse>
 }

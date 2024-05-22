@@ -38,7 +38,8 @@ drop table if exists medicine;
         medicine_id integer not null,
         quantity integer not null,
         foreign key (pharmacy_id) references pharmacies(pharmacy_id) ON DELETE CASCADE ON UPDATE CASCADE,
-        foreign key (medicine_id) references medicine(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE
+        foreign key (medicine_id) references medicine(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        UNIQUE KEY (pharmacy_id, medicine_id)
     );
 
 insert into users (username, password) values ('a', 'a');

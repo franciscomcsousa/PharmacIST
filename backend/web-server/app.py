@@ -155,9 +155,9 @@ def favorite_pharmacy():
         data = request.get_json()
         username = data['username']
         pharmacy_id = data['pharmacyId']
-        update_favorite_pharmacies(username, pharmacy_id)
+        status = update_favorite_pharmacies(username, pharmacy_id)
         
-        return make_response({"status": 200}, 200)
+        return make_response({"status": status}, status)
         
     return make_response({"status": 400}, 400)
 
@@ -173,6 +173,20 @@ def is_favorite_pharmacy():
         status = is_pharmacy_favorite(username, pharmacy_id)
         
         return make_response({"status": status}, status)
+    
+    return make_response({"status": 400}, 400)
+
+@app.route('/get_favorite_pharmacies', methods=['GET', 'POST'])
+def get_favorite_pharmacies():
+    if request.method == 'GET':
+        pass
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data
+        pharmacies = get_user_favorite_pharmacies(username)
+        
+        return make_response(jsonify({"pharmacies": pharmacies}), 200)
     
     return make_response({"status": 400}, 400)
         

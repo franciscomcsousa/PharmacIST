@@ -48,7 +48,7 @@ insert into pharmacies (name, address, latitude, longitude) values ('Farmácia M
 insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Bandeira', 'Rua Sá da Bandeira 1, 1252-162 Lisboa', 38.724075, -9.150967);
 insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Avenida', 'Avenida da Liberdade 1, 1253-162 Lisboa', 38.725360, -9.148243);
 
-insert into favorite_pharmacies (user_id, pharmacy_id) values (1, 1); -- User 1 favorites Pharmacy 1
+insert into favorite_pharmacies (user_id, pharmacy_id) values (1, 1);
 
 insert into medicine (name, purpose) values ('Paracetamol', 'Painkiller');
 insert into medicine (name, purpose) values ('Ibuprofen', 'Anti-inflammatory');

@@ -136,6 +136,24 @@ def is_pharmacy_favorite(username, pharmacyId):
     finally:
         con.close()
 
+def get_user_favorite_pharmacies(username):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        
+        data = (username,)
+        query = 'SELECT user_id FROM users WHERE username = %s'
+        cur.execute(query, data)
+        user_id = cur.fetchone()
+        
+        data = (user_id[0],)
+        query = 'SELECT * FROM pharmacies WHERE pharmacy_id IN (SELECT pharmacy_id FROM favorite_pharmacies WHERE user_id = %s)'
+        cur.execute(query, data)
+        favorite_pharmacies = cur.fetchall()
+        return favorite_pharmacies
+    finally:
+        con.close()
+
 def update_favorite_pharmacies(username, pharmacyId):
     con = connect_db()
     try:
@@ -158,13 +176,13 @@ def update_favorite_pharmacies(username, pharmacyId):
                 query = 'DELETE FROM favorite_pharmacies WHERE user_id = %s AND pharmacy_id = %s'
                 cur.execute(query, data)
                 con.commit()
-                return OK_STATUS
+                return PHARMACY_NOT_FAVORITED_STATUS
             else:
                 # Pharmacy is not a favorite, add it
                 query = 'INSERT INTO favorite_pharmacies (user_id, pharmacy_id) VALUES (%s, %s)'
                 cur.execute(query, data)
                 con.commit()
-                return OK_STATUS
+                return PHARMACY_FAVORITED_STATUS
         else:
             return USER_DOES_NOT_EXIST_STATUS
             

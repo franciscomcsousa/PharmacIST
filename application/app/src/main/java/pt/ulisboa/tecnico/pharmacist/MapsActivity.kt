@@ -29,6 +29,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.libraries.places.api.Places
@@ -72,7 +73,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var pharmacies: MutableList<Pharmacy> = mutableListOf()
 
-    private var pharmacyFavorites: ArrayMap<String, Boolean> = ArrayMap()
+    private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
     // TODO - Later create a cache to store these images
     private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
@@ -120,6 +121,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
 
+            pharmacies = mutableListOf(Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), ""))
+
+            // Fetch favorites from the server
+            lifecycleScope.launch {
+                getFavorites()
+            }
+
             return
         }
 
@@ -157,6 +165,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     true // Return true to indicate that the listener has consumed the event
                 }
             }
+
+            // Fetch favorites from the server
+            lifecycleScope.launch {
+                getFavorites()
+            }
+
             needNewMarkers = false
         }
     }
@@ -332,6 +346,53 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         })
     }
 
+    private suspend fun getFavorites() {
+        val username = getUsername()
+        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
+        val call: Call<PharmaciesResponse> = retrofitAPI.getFavoritePharmacies(username)
+        call.enqueue(object : Callback<PharmaciesResponse> {
+            override fun onResponse(
+                call: Call<PharmaciesResponse>,
+                response: Response<PharmaciesResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val pharmaciesList = response.body()!!.pharmacies
+                    for (pharmacy in pharmaciesList) {
+                        // transform pharmacies into a list of Pharmacy objects
+                        pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),
+                            pharmacy[3].toString(), pharmacy[4].toString(), "")
+                    }
+                    pharmaciesFavorite = pharmaciesFetched
+                    Log.d("serverResponse", "Favorites retrieved")
+
+                    for (pharmacy in pharmacies) {
+                        if (pharmaciesFavorite.contains(pharmacy)) {
+                            val marker = mMap?.addMarker(MarkerOptions()
+                                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                                .title(pharmacy.name)
+                                .snippet(pharmacy.address)
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                            )
+
+                            marker?.tag = pharmacy
+
+                            mMap!!.setOnMarkerClickListener { clickedMarker ->
+                                val clickedPharmacy = clickedMarker.tag as Pharmacy
+                                showPharmacyDrawer(clickedPharmacy)
+                                true // Return true to indicate that the listener has consumed the event
+                            }
+                        }
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                // we get error response from API.
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
+    }
+
     private suspend fun handleFavoriteButton(id: String) {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
@@ -341,9 +402,30 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 call: Call<StatusResponse>,
                 response: Response<StatusResponse>
             ) {
-                // TODO - may not be necessary, delete
                 if (response.isSuccessful) {
                     Log.d("serverResponse", "UPDATED: ${response.code()}")
+                    for (pharmacy in pharmacies) {
+                        if (pharmacy.id == id) {
+                            val marker = mMap!!.addMarker(MarkerOptions()
+                                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                                .title(pharmacy.name)
+                                .snippet(pharmacy.address)
+                            )
+                            marker?.tag = pharmacy
+
+                            if (response.code() == 203) {
+                                marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                            } else {
+                                marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                            }
+                            mMap!!.setOnMarkerClickListener { clickedMarker ->
+                                val clickedPharmacy = clickedMarker.tag as Pharmacy
+                                showPharmacyDrawer(clickedPharmacy)
+                                true // Return true to indicate that the listener has consumed the event
+                            }
+                            break
+                        }
+                    }
                 }
             }
 

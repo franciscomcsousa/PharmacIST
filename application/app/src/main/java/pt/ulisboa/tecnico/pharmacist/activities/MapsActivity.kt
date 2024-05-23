@@ -158,24 +158,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Only add markers if new pharmacies were fetched
         if (needNewMarkers) {
-            for (pharmacy in pharmacies) {
-                // Add a marker for each pharmacy
-                val marker = mMap!!.addMarker(MarkerOptions()
-                    .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
-                    .title(pharmacy.name)
-                    .snippet(pharmacy.address)
-                )
-
-                marker?.tag = pharmacy // Store pharmacy data as a tag
-
-                mMap!!.setOnMarkerClickListener { clickedMarker ->
-                    val clickedPharmacy = clickedMarker.tag as Pharmacy
-                    showPharmacyDrawer(clickedPharmacy)
-                    true // Return true to indicate that the listener has consumed the event
-                }
-            }
-
-            // Fetch favorites from the server
+            // Fetch favorites from the server and add markers to all pharmacies
             lifecycleScope.launch {
                 getFavorites()
             }
@@ -375,21 +358,22 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     Log.d("serverResponse", "Favorites retrieved")
 
                     for (pharmacy in pharmacies) {
+                        val marker = mMap?.addMarker(MarkerOptions()
+                            .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                            .title(pharmacy.name)
+                            .snippet(pharmacy.address)
+                        )
+
                         if (pharmaciesFavorite.contains(pharmacy)) {
-                            val marker = mMap?.addMarker(MarkerOptions()
-                                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
-                                .title(pharmacy.name)
-                                .snippet(pharmacy.address)
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                            )
+                            marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                        }
 
-                            marker?.tag = pharmacy
+                        marker?.tag = pharmacy
 
-                            mMap!!.setOnMarkerClickListener { clickedMarker ->
-                                val clickedPharmacy = clickedMarker.tag as Pharmacy
-                                showPharmacyDrawer(clickedPharmacy)
-                                true // Return true to indicate that the listener has consumed the event
-                            }
+                        mMap!!.setOnMarkerClickListener { clickedMarker ->
+                            val clickedPharmacy = clickedMarker.tag as Pharmacy
+                            showPharmacyDrawer(clickedPharmacy)
+                            true // Return true to indicate that the listener has consumed the event
                         }
                     }
                 }

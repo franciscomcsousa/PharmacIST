@@ -69,6 +69,7 @@ class LoginActivity : AppCompatActivity() {
                 loginUser(storedGuestName, "",
                     {
                         navigateToNavigationDrawerActivity()
+                        setUsername(storedGuestName)
                     },
                     { Toast.makeText(this@LoginActivity, "Failed to login as guest!", Toast.LENGTH_LONG).show() }
                 )
@@ -79,6 +80,7 @@ class LoginActivity : AppCompatActivity() {
                     {
                         navigateToNavigationDrawerActivity()
                         setGuestName(guestName)
+                        setUsername(guestName)
                     },
                     { Toast.makeText(this@LoginActivity, "Failed to register as guest!", Toast.LENGTH_LONG).show() })
             }

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +10,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
+import pt.ulisboa.tecnico.pharmacist.MedicineSearchViewModel
+import pt.ulisboa.tecnico.pharmacist.QueryStock
+import pt.ulisboa.tecnico.pharmacist.QueryStockResponse
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -81,7 +88,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
 
         val call: Call<QueryStockResponse> = retrofitAPI.getPharmacyStock(stockQuery)
         call.enqueue(object : Callback<QueryStockResponse> {
-            override fun onResponse( call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
+            override fun onResponse(call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
                 if (response.isSuccessful) {
                     val stockList = response.body()?.stock
 

@@ -23,13 +23,13 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".PurchaseStockActivity"
+            android:name=".activities.PurchaseStockActivity"
             android:exported="false" />
         <activity
-            android:name=".ScannerActivity"
+            android:name=".activities.ScannerActivity"
             android:exported="false" />
         <activity
-            android:name=".RegisterActivity"
+            android:name=".activities.RegisterActivity"
             android:exported="false" /> <!-- Trigger Google Play services to install the backported photo picker module. -->
         <service
             android:name="com.google.android.gms.metadata.ModuleDependencies"
@@ -46,7 +46,7 @@
         </service>
 
         <activity
-            android:name=".NavigationDrawerActivity"
+            android:name=".activities.NavigationDrawerActivity"
             android:exported="false"
             android:label="@string/title_activity_drawer"
             android:theme="@style/Theme.PharmacIST.NoActionBar" />
@@ -66,7 +66,7 @@
             android:value="${MAPS_API_KEY}" />
 
         <activity
-            android:name=".LoadingScreenActivity"
+            android:name=".activities.LoadingScreenActivity"
             android:exported="true"
             android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar">
             <intent-filter>
@@ -76,35 +76,35 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LoginActivity"
+            android:name=".activities.LoginActivity"
             android:exported="false"
             android:label="LoginActivity" />
         <activity
-            android:name=".MapsActivity"
+            android:name=".activities.MapsActivity"
             android:exported="false"
             android:label="@string/title_activity_maps" />
         <activity
-            android:name=".AddPharmacyActivity"
+            android:name=".activities.AddPharmacyActivity"
             android:exported="false"
             android:label="@string/title_add_pharmacy" />
         <activity
-            android:name=".MedicineSearchActivity"
+            android:name=".activities.MedicineSearchActivity"
             android:exported="false"
             android:label="MedicineActivity" />
         <activity
-            android:name=".ClosestMedicineActivity"
+            android:name=".activities.ClosestMedicineActivity"
             android:exported="false"
             android:label="MedicineDetailsActivity" />
         <activity
-            android:name=".PharmacyInformationActivity"
+            android:name=".activities.PharmacyInformationActivity"
             android:exported="false"
             android:label="MedicineDetailsActivity" />
         <activity
-            android:name=".MedicineInformationActivity"
+            android:name=".activities.MedicineInformationActivity"
             android:exported="false"
             android:label="MedicineInformationActivity" /> <!-- When taking photos they will be stored in the phone -->
         <activity
-            android:name=".AddStockActivity"
+            android:name=".activities.AddStockActivity"
             android:exported="false"
             android:label="@string/title_activity_add_stock" />
 

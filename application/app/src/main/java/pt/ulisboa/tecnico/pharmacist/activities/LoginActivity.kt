@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -8,10 +8,14 @@ import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.google.android.material.textfield.TextInputLayout
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.SignInResponse
+import pt.ulisboa.tecnico.pharmacist.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,9 +1,10 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
+import pt.ulisboa.tecnico.pharmacist.R
 
 class ClosestMedicineActivity : AppCompatActivity() {
 

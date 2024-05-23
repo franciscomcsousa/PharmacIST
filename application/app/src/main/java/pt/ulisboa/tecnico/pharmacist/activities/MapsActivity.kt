@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -20,7 +20,6 @@ import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.api.Status
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -38,6 +37,16 @@ import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
+import pt.ulisboa.tecnico.pharmacist.BuildConfig
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.FavoritePharmacy
+import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.PharmaciesResponse
+import pt.ulisboa.tecnico.pharmacist.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.PharmacyImageResponse
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.StatusResponse
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback

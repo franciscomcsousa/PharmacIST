@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.os.Bundle
@@ -16,6 +16,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityDrawerBinding
 
 class NavigationDrawerActivity : AppCompatActivity() {
@@ -39,7 +41,8 @@ class NavigationDrawerActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
-                R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow), drawerLayout)
+            R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+        ), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 

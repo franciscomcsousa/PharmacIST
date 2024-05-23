@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,6 +16,17 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.Medicine
+import pt.ulisboa.tecnico.pharmacist.MedicineLocation
+import pt.ulisboa.tecnico.pharmacist.MedicinePurpose
+import pt.ulisboa.tecnico.pharmacist.MedicineResponse
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
+import pt.ulisboa.tecnico.pharmacist.MedicineSearchViewModel
+import pt.ulisboa.tecnico.pharmacist.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

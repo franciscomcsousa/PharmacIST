@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="@color/quantum_purple200"
     android:orientation="vertical"
-    tools:context=".LoadingScreenActivity">
+    tools:context=".activities.LoadingScreenActivity">
 
     <TextView
         android:id="@+id/loading_text"

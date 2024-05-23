@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.app.AlertDialog
 import android.content.DialogInterface
@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory
 import android.icu.text.SimpleDateFormat
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.Manifest
 import android.provider.MediaStore
 import android.util.Base64
@@ -31,6 +30,12 @@ import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener
 import com.google.android.material.textfield.TextInputLayout
+import pt.ulisboa.tecnico.pharmacist.BuildConfig
+import pt.ulisboa.tecnico.pharmacist.CreatePharmacyResponse
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

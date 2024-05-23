@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Context
 import android.content.Intent
@@ -147,7 +147,7 @@ class ScannerActivity : AppCompatActivity() {
         // when this function is called, it runs
         // the ScannerActivity and reads the barcode returning what read
         fun startScanner(context: Context, onScan: (barcodes: List<Barcode>) -> Unit) {
-            this.onScan = onScan
+            Companion.onScan = onScan
             Intent(context, ScannerActivity::class.java).also {
                 context.startActivity(it)
             }

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -16,13 +16,23 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.MedicineLocation
+import pt.ulisboa.tecnico.pharmacist.NearestPharmaciesResponse
+import pt.ulisboa.tecnico.pharmacist.PharmacyStock
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
+import pt.ulisboa.tecnico.pharmacist.PharmacyStockViewModel
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
-class MedicineInformationActivity : AppCompatActivity(), PharmacyStockSearchAdapter.RecyclerViewEvent {
+class MedicineInformationActivity : AppCompatActivity(),
+    PharmacyStockSearchAdapter.RecyclerViewEvent {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
@@ -74,7 +84,8 @@ class MedicineInformationActivity : AppCompatActivity(), PharmacyStockSearchAdap
                         for (pharmacyStock in pharmaciesStockResponse) {
                             val stock = pharmacyStock[2] as Double
                             // TODO - should pharmacyStock[0] be used anywhere?
-                            data.add(PharmacyStockViewModel(
+                            data.add(
+                                PharmacyStockViewModel(
                                 pharmacyStock[1].toString(),
                                 stock.toInt())
                             )

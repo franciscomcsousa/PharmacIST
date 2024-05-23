@@ -18,6 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import pt.ulisboa.tecnico.pharmacist.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.LocationHandler
 import pt.ulisboa.tecnico.pharmacist.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.PharmacyStock
@@ -35,7 +36,6 @@ class MedicineInformationActivity : AppCompatActivity(),
     PharmacyStockSearchAdapter.RecyclerViewEvent {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(DataStoreManager.getUrl())
@@ -48,8 +48,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         enableEdgeToEdge()
         setContentView(R.layout.activity_medicine_information)
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MedicineInformationActivity)
-        requestPermissions()
+        LocationHandler.requestPermissions(this)
 
         val medicineName = intent.getStringExtra("medicineName")
 
@@ -67,7 +66,7 @@ class MedicineInformationActivity : AppCompatActivity(),
 
     fun nearestPharmacies(medicineName: String) {
 
-        getUserLocation {location ->
+        val locationCallback : (Location?) -> Unit = {location ->
             if (location != null) {
                 val medicineLocation =
                     MedicineLocation(medicineName, location.latitude, location.longitude)
@@ -103,23 +102,7 @@ class MedicineInformationActivity : AppCompatActivity(),
                 })
             }
         }
-    }
-
-    // TODO - repeating these 3 functions 3 times is a sin and shall be punished in the future
-    private fun requestPermissions() {
-        // verify permissions
-        if (ContextCompat.checkSelfPermission(
-                this@MedicineInformationActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) else {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(
-                this@MedicineInformationActivity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_ACCESS_LOCATION_CODE
-            )
-        }
+        LocationHandler.getUserLocation(locationCallback, this)
     }
 
     override fun onRequestPermissionsResult(
@@ -135,17 +118,6 @@ class MedicineInformationActivity : AppCompatActivity(),
                 Toast.makeText(this@MedicineInformationActivity, "Permission denied", Toast.LENGTH_SHORT).show()
                 startActivity(Intent(this@MedicineInformationActivity, NavigationDrawerActivity::class.java))
             }
-        }
-    }
-    @SuppressLint("MissingPermission")  // IDE does not consider how this function is called
-    private fun getUserLocation(callback: (Location?) -> Unit) {
-        val locationTask = fusedLocationProviderClient.lastLocation
-        locationTask.addOnSuccessListener { location ->
-            // Check if location is not null before using it
-            val userLocation = location?.let {
-                Location(it.latitude, it.longitude)
-            }
-            callback(userLocation)
         }
     }
 

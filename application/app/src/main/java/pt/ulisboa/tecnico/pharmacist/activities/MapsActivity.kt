@@ -41,6 +41,7 @@ import pt.ulisboa.tecnico.pharmacist.BuildConfig
 import pt.ulisboa.tecnico.pharmacist.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.LocationHandler
 import pt.ulisboa.tecnico.pharmacist.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.PharmacyImageResponse
@@ -68,7 +69,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var handler: Handler? = null
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
     private lateinit var dataStore: DataStoreManager
 
     private val retrofit = Retrofit.Builder()
@@ -92,7 +92,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
         dataStore = DataStoreManager(this@MapsActivity)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MapsActivity)
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -105,7 +104,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        requestPermissions()
+        if (LocationHandler.requestPermissions(this)) {
+            enableUserLocation()
+            centerUserLocation()
+        }
 
         // If the intent was started by the ClosestMedicineActivity, show the pharmacy only
         if (intent.hasExtra("pharmacyLatitude") && intent.hasExtra("pharmacyLongitude")) {
@@ -206,7 +208,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Go to maps
         directionButton.setOnClickListener {
-            getUserLocation {userLocation ->
+            val locationCallback : (Location?) -> Unit = {userLocation ->
                 val source = "${userLocation?.latitude},${userLocation?.longitude}"
                 val uri = "https://www.google.com/maps/dir/?api=1&origin=$source&destination=" + pharmacy.address
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))
@@ -215,6 +217,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(intent)
                 }
             }
+            LocationHandler.getUserLocation(locationCallback, this)
         }
 
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -252,7 +255,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun getPharmacies() {
-        getUserLocation { location ->
+        val locationCallback : (Location?) -> Unit = { location ->
             // sometimes it might not be able to fetch
             // TODO - maybe when null use the last non-null value
             // Fetch pharmacies only if the location has changed significantly
@@ -291,6 +294,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 needNewMarkers = true
             }
         }
+        LocationHandler.getUserLocation(locationCallback, this)
     }
 
     private fun pharmacyImage(name: String) {
@@ -434,46 +438,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap?.isMyLocationEnabled = true
 
     }
-
-    @SuppressLint("MissingPermission")  // IDE does not consider how this function is called
-    private fun getUserLocation(callback: (Location?) -> Unit) {
-        val locationTask = fusedLocationProviderClient.lastLocation
-        locationTask.addOnSuccessListener { location ->
-            // Check if location is not null before using it
-            val userLocation = location?.let {
-                Location(it.latitude, it.longitude)
-            }
-            callback(userLocation)
-        }
-    }
     private fun centerUserLocation() {
-        getUserLocation { location ->
+        val locationCallback : (Location?) -> Unit = { location ->
             location?.let {
                 val latLng = LatLng(location.latitude, location.longitude)
                 mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
+        LocationHandler.getUserLocation(locationCallback, this)
     }
 
-    private fun requestPermissions() {
-        // verify permissions
-        if (ContextCompat.checkSelfPermission(
-                this@MapsActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Permission is granted
-            enableUserLocation()
-            centerUserLocation()
-        } else {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(
-                this@MapsActivity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_ACCESS_LOCATION_CODE
-            )
-        }
-    }
     override fun onRequestPermissionsResult(
         requestCode: Int,
         permissions: Array<out String>,

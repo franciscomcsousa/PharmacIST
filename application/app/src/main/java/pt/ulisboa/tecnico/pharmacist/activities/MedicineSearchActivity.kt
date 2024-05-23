@@ -18,6 +18,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import pt.ulisboa.tecnico.pharmacist.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.Location
+import pt.ulisboa.tecnico.pharmacist.LocationHandler
 import pt.ulisboa.tecnico.pharmacist.Medicine
 import pt.ulisboa.tecnico.pharmacist.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.MedicinePurpose
@@ -35,21 +36,20 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
-    private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
-    private lateinit var fusedLocationProviderClient: FusedLocationProviderClient
-
     private val retrofit = Retrofit.Builder()
         .baseUrl(DataStoreManager.getUrl())
         .addConverterFactory(GsonConverterFactory.create())
         .build()
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
+    private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContentView(R.layout.activity_medicine_search)
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this@MedicineSearchActivity)
-        requestPermissions()
+
+        LocationHandler.requestPermissions(this)
 
         val searchView = findViewById<SearchView>(R.id.searchView)
         searchView.clearFocus()
@@ -109,7 +109,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         val medicineName = name.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 
         // Call the server to get the medicine
-        getUserLocation { location ->
+        val locationCallback : (Location?) -> Unit = { location ->
             // sometimes it might not be able to fetch
             // TODO - maybe when null use the last non-null value
             if (location != null) {
@@ -139,6 +139,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
                 })
             }
         }
+        LocationHandler.getUserLocation(locationCallback, this)
     }
 
     private fun navigateToMedicineDetailsActivity(medicine: MedicinePurpose, pharmacy: Pharmacy) {
@@ -153,22 +154,6 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         intent.putExtra("pharmacyImage", pharmacy.image)
 
         startActivity(intent)
-    }
-
-    private fun requestPermissions() {
-        // verify permissions
-        if (ContextCompat.checkSelfPermission(
-                this@MedicineSearchActivity,
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED
-        ) else {
-            // Permission is not granted, request it
-            ActivityCompat.requestPermissions(
-                this@MedicineSearchActivity,
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
-                PERMISSION_REQUEST_ACCESS_LOCATION_CODE
-            )
-        }
     }
 
     override fun onRequestPermissionsResult(
@@ -187,15 +172,4 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         }
     }
 
-    @SuppressLint("MissingPermission")  // IDE does not consider how this function is called
-    private fun getUserLocation(callback: (Location?) -> Unit) {
-        val locationTask = fusedLocationProviderClient.lastLocation
-        locationTask.addOnSuccessListener { location ->
-            // Check if location is not null before using it
-            val userLocation = location?.let {
-                Location(it.latitude, it.longitude)
-            }
-            callback(userLocation)
-        }
-    }
 }

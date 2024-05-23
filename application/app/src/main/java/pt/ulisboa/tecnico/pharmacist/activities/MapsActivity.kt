@@ -143,7 +143,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
             }
         }
-        timer!!.schedule(timerTask, 0, 2000)
+        timer!!.schedule(timerTask, 0, 1000)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        timer?.cancel()
+        timer?.purge()
     }
 
     private fun mapPharmacies() {
@@ -254,12 +260,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if (location != null  && (previousLocation == null ||
                 abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
                 abs(location.longitude - previousLocation!!.longitude) > 0.0001)) {
-                val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
+                previousLocation = location
                 val call: Call<PharmaciesResponse> = pharmacistAPI.getPharmacies(location)
                 call.enqueue(object : Callback<PharmaciesResponse> {
                     override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
                         if (response.isSuccessful) {
                             val pharmaciesList = response.body()!!.pharmacies
+                            val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
                             for (pharmacy in pharmaciesList) {
                                 // transform pharmacies into a list of Pharmacy objects
                                 pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),
@@ -267,6 +274,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             }
                             // update the pharmacies list
                             pharmacies = pharmaciesFetched
+                            needNewMarkers = true
                             Log.d("serverResponse", "Pharmacies retrieved")
 
                             // TODO - this might waste too much resources
@@ -279,11 +287,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
                         // we get error response from API.
+                        previousLocation = null
                         Log.d("serverResponse","FAILED: "+ t.message)
                     }
                 })
-                previousLocation = location
-                needNewMarkers = true
             }
         }
         LocationHandler.getUserLocation(locationCallback, this)
@@ -336,7 +343,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private suspend fun getFavorites() {
         val username = getUsername()
-        val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
         val call: Call<PharmaciesResponse> = pharmacistAPI.getFavoritePharmacies(username)
         call.enqueue(object : Callback<PharmaciesResponse> {
             override fun onResponse(
@@ -345,6 +351,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             ) {
                 if (response.isSuccessful) {
                     val pharmaciesList = response.body()!!.pharmacies
+                    val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
                     for (pharmacy in pharmaciesList) {
                         // transform pharmacies into a list of Pharmacy objects
                         pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),

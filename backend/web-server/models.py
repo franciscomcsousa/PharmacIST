@@ -104,9 +104,15 @@ def serialize_pharmacy(name, address, latitude, longitude, image):
         if image == "":
             return OK_STATUS
 
+
         # Save image of pharmacy in base64 encode of its name
-        name_b64 = base64.b64encode(name.encode('utf-8'))
-        save_image(image, name=name_b64.decode())
+        # Get the last inserted ID
+        cur.execute('SELECT LAST_INSERT_ID()')
+        pharmacy_id = cur.fetchone()[0]
+        id = str(pharmacy_id)
+        
+        
+        save_image(image, id, "P")
         return OK_STATUS
     
     finally:
@@ -331,18 +337,19 @@ def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
 
 # ==================== Images ==================== #
 
-def save_image(image, name):
+def save_image(image, id, type):
     decoded_image = base64.b64decode(image)
+    
     # TODO - create images dir if it doesn't exist
-    path = f"images/{name}.png"
+    path = f"images/{type}_{id}.png"
 
     with open(path, 'wb') as f:
         f.write(decoded_image)
 
-def get_image(name):
-    path = f"images/{name}.png"
+def get_image(id, type):
+    path = f"images/{type}_{id}.png"
 
-
+    print(path)
     # TODO - make default image be loaded in the app by default
     if not os.path.exists(path=path):
         with open("images/default.png", 'rb') as f:

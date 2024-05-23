@@ -116,11 +116,11 @@ def get_pharmacies():
 def get_pharmacy_image():
     if request.method == 'GET':
         pass
-
+    #HERE
     if request.method == 'POST':
         data = request.get_json()
-        name = data
-        image = get_image(name=base64.b64encode(name.encode('utf-8')).decode())
+        id = int(float(data))
+        image = get_image(str(id), "P")
 
     return make_response(jsonify({"image": base64.b64encode(image).decode()}), 200)
 

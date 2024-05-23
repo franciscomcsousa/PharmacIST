@@ -115,7 +115,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .snippet(pharmacyAddress)
             )
 
-            pharmacyImage(pharmacyName)
+            pharmacyImage(pharmacyId)
             marker?.tag = Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), "")
 
             mMap!!.setOnMarkerClickListener { clickedMarker ->
@@ -167,13 +167,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
         val bottomDrawerView = layoutInflater.inflate(R.layout.pharmacy_drawer_layout, null)
-        pharmacyImage(pharmacy.name)
+        pharmacy.id?.let { pharmacyImage(it) }
 
         // Update views with pharmacy information
         // For example:
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_name)?.text = pharmacy.name
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
-        bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.name])
+        bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.id])
 
         val favoriteButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
         lifecycleScope.launch {
@@ -272,7 +272,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                             // TODO - this might waste too much resources
                             // Only way to correctly preview image
                             for (pharmacy in pharmacies) {
-                                pharmacyImage(pharmacy.name)
+                                pharmacy.id?.let { pharmacyImage(it) }
                             }
                         }
                     }
@@ -289,10 +289,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         LocationHandler.getUserLocation(locationCallback, this)
     }
 
-    private fun pharmacyImage(name: String) {
+    private fun pharmacyImage(id: String) {
 
         var b64Image = ""
-        val call: Call<PharmacyImageResponse> = pharmacistAPI.pharmacyImage(name)
+        val call: Call<PharmacyImageResponse> = pharmacistAPI.pharmacyImage(id)
         call.enqueue(object : Callback<PharmacyImageResponse> {
             override fun onResponse(
                 call: Call<PharmacyImageResponse>,
@@ -301,7 +301,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 if (response.isSuccessful) {
                     b64Image = response.body()!!.image
                     val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
-                    pharmacyImages[name] = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                    pharmacyImages[id] = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
                     Log.d("serverResponse", "Pharmacy image retrieved")
                 }
             }

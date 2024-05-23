@@ -28,7 +28,7 @@ interface RetrofitAPI {
     fun createPharmacy(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
 
     @POST("pharmacy_image")
-    fun pharmacyImage(@Body name: String): Call<PharmacyImageResponse>
+    fun pharmacyImage(@Body id: String): Call<PharmacyImageResponse>
 
     @POST("/pharmacy_favorite")
     fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>

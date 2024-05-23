@@ -113,4 +113,10 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
         intent.putExtra("pharmacyId", pharmacyId)
         startActivity(intent)
     }
+
+    fun purchaseStock(view: View) {
+        val intent = Intent(this@PharmacyInformationActivity, PurchaseStockActivity::class.java)
+        intent.putExtra("pharmacyId", pharmacyId)
+        startActivity(intent)
+    }
 }

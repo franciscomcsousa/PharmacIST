@@ -235,7 +235,12 @@ def get_medicine_location():
 @app.route('/pharmacy_stock', methods=['GET', 'POST'])
 def pharmacy_stock():
     if request.method == 'GET':
-        pass
+        # TODO - further verification?
+        medicine_id = request.args.get("medicineId")
+        pharmacy_id = request.args.get("pharmacyId")
+        result, status = get_pharmacy_stock_id(medicine_id, pharmacy_id)
+        return make_response(jsonify({"stock": result}), status)
+        
     
     if request.method == 'POST':
         data = request.get_json()

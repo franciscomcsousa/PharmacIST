@@ -51,6 +51,12 @@ interface RetrofitAPI {
     @POST("pharmacy_stock")
     fun getPharmacyStock(@Body queryStock: QueryStock): Call<QueryStockResponse>
 
+    @GET("pharmacy_stock")
+    fun getPharmacyStockId(
+        @Query("medicineId") medicineId: String,
+        @Query("pharmacyId") pharmacyId: String
+    ): Call<QueryStockResponse>
+
     @POST("medicine_near_pharmacies")
     fun nearbyPharmacyMedicine(@Body medicineLocation: MedicineLocation): Call<NearestPharmaciesResponse>
     @POST("update_stock")

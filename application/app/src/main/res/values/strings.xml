@@ -44,7 +44,9 @@
     <string name="search">Search</string>
     <string name="closest_pharmacy">Closest pharmacy:</string>
     <string name="btn_navigate">Directions</string>
-    <string name="btn_addStock">Add Stock</string>
+    <string name="btn_add_stock">Add Stock</string>
+    <string name="btn_purchase_stock">Purchase Stock</string>
+
 
     <!-- Placeholder Text -->
     <string name="placeholder_1">Placeholder 1</string>

@@ -22,14 +22,14 @@
         app:layout_constraintVertical_bias="0.895" />
 
     <Button
-        android:id="@+id/add_stock_btn"
+        android:id="@+id/btn_purchase_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
         android:onClick="addStockButton"
-        android:text="@string/btn_add_stock"
+        android:text="@string/btn_purchase_stock"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/btn_scan"
         app:layout_constraintEnd_toEndOf="parent"

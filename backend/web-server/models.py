@@ -205,6 +205,26 @@ def get_pharmacy_stock(pharmacy_id, substring):
         return stock
     finally:
         con.close()
+        
+def get_pharmacy_stock_id(medicine_id, pharmacy_id):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (pharmacy_id, medicine_id)
+        # ms is used as an alias for medicine_stock, and m is alias for medicine
+        query = """
+            SELECT ms.quantity, m.name 
+            FROM medicine_stock ms 
+            JOIN medicine m 
+            ON ms.medicine_id = m.medicine_id 
+            WHERE ms.pharmacy_id = %s AND ms.medicine_id = %s"""
+        cur.execute(query, data)
+        result = cur.fetchone()
+        if result:
+            return [result[0], result[1]], OK_STATUS
+        return [], OK_STATUS
+    finally:
+        con.close()
 
 def get_near_pharmacies(medicine_name, latitude, longitude):
     con = connect_db()

@@ -63,19 +63,58 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun guestButtonClick(view: View?) {
-        // whenever using the guest, uses the preferences of this registered user!
+        lifecycleScope.launch {
+            val storedGuestName = getGuestName()
+            if (storedGuestName.isNotEmpty() && storedGuestName != "null") {
+                loginUser(storedGuestName, "",
+                    {
+                        navigateToNavigationDrawerActivity()
+                    },
+                    { Toast.makeText(this@LoginActivity, "Failed to login as guest!", Toast.LENGTH_LONG).show() }
+                )
+            } else {
+                val randomNumber = (0..9999).random()
+                val guestName = "guest_$randomNumber"
+                registerUser(guestName, "",
+                    {
+                        navigateToNavigationDrawerActivity()
+                        setGuestName(guestName)
+                    },
+                    { Toast.makeText(this@LoginActivity, "Failed to register as guest!", Toast.LENGTH_LONG).show() })
+            }
+        }
+    }
 
-        // TODO - uncomment this
-        // does not do this if there is a username stored!
-        val randomNumber = (0..9999).random()
-        val guestName = "guest_$randomNumber"
-        setUsername(guestName)
-        /*loginUser(guestName, "", {
-            // also store the user name in preferences in order to reuse the same guest
-            navigateToNavigationDrawerActivity()
-        } , { })*/
+    private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        val retrofit = buildRetrofit()
+        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+        val user = User(username, password)
+        val call = retrofitAPI.sendRegister(user)
+        handleRegisterResponse(call, onSuccess, onFailure)
+    }
 
-        startActivity(Intent(this, NavigationDrawerActivity::class.java))
+    private fun handleRegisterResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
+        call.enqueue(object : Callback<SignInResponse> {
+            override fun onResponse(
+                call: Call<SignInResponse>,
+                response: Response<SignInResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val token = response.body()!!.token
+                    // store token in preferences datastore
+                    setToken(token)
+                    onSuccess()
+                }
+                else {
+                    onFailure()
+                }
+            }
+
+            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: ${t.message}")
+                onFailure()
+            }
+        })
     }
 
     private fun loginUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
@@ -83,10 +122,10 @@ class LoginActivity : AppCompatActivity() {
         val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
         val call = retrofitAPI.sendLogin(user)
-        handleResponse(call, onSuccess, onFailure)
+        handleLoginResponse(call, onSuccess, onFailure)
     }
 
-    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
+    private fun handleLoginResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
         call.enqueue(object : Callback<SignInResponse> {
             override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
                 if (response.isSuccessful) {
@@ -182,6 +221,16 @@ class LoginActivity : AppCompatActivity() {
         lifecycleScope.launch {
             dataStore.setUsername(username)
         }
+    }
+
+    private fun setGuestName(guestname: String) {
+        lifecycleScope.launch {
+            dataStore.setGuestName(guestname)
+        }
+    }
+
+    private suspend fun getGuestName(): String {
+        return dataStore.getGuestName().toString()
     }
 
     private fun setToken(token: String) {

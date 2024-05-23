@@ -64,7 +64,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         }
     }
 
-    fun nearestPharmacies(medicineName: String) {
+    private fun nearestPharmacies(medicineName: String) {
 
         val locationCallback : (Location?) -> Unit = {location ->
             if (location != null) {

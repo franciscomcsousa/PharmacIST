@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -42,6 +43,16 @@ class ClosestMedicineActivity : AppCompatActivity() {
             intent.putExtra("pharmacyLatitude", pharmacyLatitude)
             intent.putExtra("pharmacyLongitude", pharmacyLongitude)
             startActivity(intent)
+        }
+
+        // set on click listener for the share button which will share the pharmacy name, address
+        // and medicine name with other apps
+        findViewById<TextView>(R.id.share_button).setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, "I found the medicine $medicineName at $pharmacyName, $pharmacyAddress")
+            intent.setType("text/plain")
+            startActivity(Intent.createChooser(intent, "Share using"))
         }
     }
 }

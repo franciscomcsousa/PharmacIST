@@ -16,6 +16,7 @@ class DataStoreManager(val context: Context) {
     companion object {
         val KEY_TOKEN = stringPreferencesKey("token")
         val USERNAME = stringPreferencesKey("username")
+        val GUESTNAME = stringPreferencesKey("guestname")
         val DARKMODE = booleanPreferencesKey("dark_mode")
 
         fun getUrl(): String {
@@ -46,6 +47,17 @@ class DataStoreManager(val context: Context) {
     suspend fun getUsername(): String? {
         val values = context.dataStore.data.first()
         return values[USERNAME]
+    }
+
+    suspend fun setGuestName(guestname: String) {
+        context.dataStore.edit { settings ->
+            settings[GUESTNAME] = guestname
+        }
+    }
+
+    suspend fun getGuestName(): String? {
+        val values = context.dataStore.data.first()
+        return values[GUESTNAME]
     }
 
     suspend fun setTheme(isDarkMode: Boolean) {

@@ -1,7 +1,5 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -10,22 +8,18 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
-import pt.ulisboa.tecnico.pharmacist.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.Location
-import pt.ulisboa.tecnico.pharmacist.LocationHandler
-import pt.ulisboa.tecnico.pharmacist.MedicineLocation
-import pt.ulisboa.tecnico.pharmacist.NearestPharmaciesResponse
-import pt.ulisboa.tecnico.pharmacist.PharmacyStock
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.Location
+import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
+import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
-import pt.ulisboa.tecnico.pharmacist.PharmacyStockViewModel
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -66,7 +60,7 @@ class MedicineInformationActivity : AppCompatActivity(),
 
     private fun nearestPharmacies(medicineName: String) {
 
-        val locationCallback : (Location?) -> Unit = {location ->
+        val locationCallback : (Location?) -> Unit = { location ->
             if (location != null) {
                 val medicineLocation =
                     MedicineLocation(medicineName, location.latitude, location.longitude)

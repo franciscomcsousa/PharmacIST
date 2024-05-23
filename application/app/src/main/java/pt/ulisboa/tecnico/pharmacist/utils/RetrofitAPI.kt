@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.utils
 
 import retrofit2.Call
 import retrofit2.Response

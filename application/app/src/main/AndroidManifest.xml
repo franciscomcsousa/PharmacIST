@@ -23,7 +23,7 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
-            android:name=".activities.PurchaseStockActivity"
+            android:name=".activities.stock.PurchaseStockActivity"
             android:exported="false" />
         <activity
             android:name=".activities.ScannerActivity"
@@ -104,7 +104,7 @@
             android:exported="false"
             android:label="MedicineInformationActivity" /> <!-- When taking photos they will be stored in the phone -->
         <activity
-            android:name=".activities.AddStockActivity"
+            android:name=".activities.stock.AddStockActivity"
             android:exported="false"
             android:label="@string/title_activity_add_stock" />
 

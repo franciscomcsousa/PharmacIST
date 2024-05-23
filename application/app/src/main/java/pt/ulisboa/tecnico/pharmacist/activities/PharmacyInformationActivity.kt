@@ -17,6 +17,8 @@ import pt.ulisboa.tecnico.pharmacist.QueryStock
 import pt.ulisboa.tecnico.pharmacist.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
+import pt.ulisboa.tecnico.pharmacist.activities.stock.PurchaseStockActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

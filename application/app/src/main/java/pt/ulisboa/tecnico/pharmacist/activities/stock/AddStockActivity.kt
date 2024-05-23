@@ -1,31 +1,15 @@
 package pt.ulisboa.tecnico.pharmacist.activities.stock
 
-import android.content.pm.PackageManager
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import android.Manifest
-import androidx.core.app.ActivityCompat
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.google.mlkit.vision.barcode.common.Barcode
-import pt.ulisboa.tecnico.pharmacist.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
 import pt.ulisboa.tecnico.pharmacist.MedicineResponse
 import pt.ulisboa.tecnico.pharmacist.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.StatusResponse
-import pt.ulisboa.tecnico.pharmacist.activities.ScannerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
 class AddStockActivity : StockActivity() {
@@ -62,7 +46,7 @@ class AddStockActivity : StockActivity() {
             }
 
             override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
-                // we get error response from API.
+                // TODO - add more error handling (display it to the user for him to understand)
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
         })

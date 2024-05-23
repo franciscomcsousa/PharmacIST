@@ -8,6 +8,7 @@ import android.widget.Button
 import pt.ulisboa.tecnico.pharmacist.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.StatusResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -31,13 +32,13 @@ class PurchaseStockActivity : StockActivity() {
                     val stockResponse = response.body()
                     if (stockResponse != null && stockResponse.stock.isNotEmpty()) {
                         val medicineName = stockResponse.stock[1]
-                        val maxStock = stockResponse.stock[0]
+                        val maxStock = stockResponse.stock[0].toIntOrNull()
                         val existingMedicine = medicines.find { it.id == medId }
-
                         if (existingMedicine != null) {
                             updateMedicineStock(existingMedicine)
                         } else {
-                            val medicine = MedicineStock(id = medId, name = medicineName, pharmacyId = pharmacyId)
+                            Log.d("barcode", "Adding new medicine with ID: $medId. Adding new medicine.")
+                            val medicine = MedicineStock(id = medId, name = medicineName, pharmacyId = pharmacyId, maxStock = maxStock)
                             addMedicineToList(medicine)
                         }
                         Log.d("serverResponse", medicineName + maxStock)
@@ -46,6 +47,27 @@ class PurchaseStockActivity : StockActivity() {
             }
 
             override fun onFailure(call: Call<QueryStockResponse>, t: Throwable) {
+                // TODO - add more error handling (display it to the user for him to understand)
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
+    }
+
+    // user sends post to backend to add the current medicine to pharmacy
+    fun purchaseStockButton(view: View) {
+        // makes the stock of the medicines the corresponding negative, so it subtracts from the database
+        val updatedMedicines = medicines.map { it.copy(stock = -it.stock) }
+
+        val call: Call<StatusResponse> = retrofitAPI.updateStock(updatedMedicines)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
+                if (response.isSuccessful) {
+                    Log.d("serverResponse", response.code().toString())
+                    resetMedicineStock()
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
                 // we get error response from API.
                 Log.d("serverResponse","FAILED: "+ t.message)
             }

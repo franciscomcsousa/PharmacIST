@@ -7,12 +7,9 @@ import android.util.Log
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -20,7 +17,6 @@ import pt.ulisboa.tecnico.pharmacist.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
-import pt.ulisboa.tecnico.pharmacist.activities.ScannerActivity
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -88,18 +84,29 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
 
     protected fun addMedicineToList(medicine: MedicineStock) {
         runOnUiThread {
-            medicines.add(medicine)
-            medicineAdapter.notifyItemInserted(medicines.size - 1)
-            updateActionButtonVisibility()
+            if (medicine.maxStock == null || medicine.stock < medicine.maxStock!!) {
+                medicines.add(medicine)
+                medicineAdapter.notifyItemInserted(medicines.size - 1)
+                updateActionButtonVisibility()
+            } else {
+                Log.d("PurchaseStockActivity", "Max stock reached for ${medicine.name}")
+                notifyMaxStockReached(medicine.name)
+            }
         }
     }
 
     protected fun updateMedicineStock(medicine: MedicineStock) {
         runOnUiThread {
-            val position = medicines.indexOf(medicine)
-            if (position != -1) {
+            if (medicine.maxStock == null || medicine.stock < medicine.maxStock!!) {
                 medicine.stock += 1
-                medicineAdapter.notifyItemChanged(position)
+                val position = medicines.indexOf(medicine)
+                if (position != -1) {
+                    medicineAdapter.notifyItemChanged(position)
+                }
+            } else {
+                // Handle case where stock cannot be increased
+                Log.d("PurchaseStockActivity", "Max stock reached for ${medicine.name}")
+                notifyMaxStockReached(medicine.name)
             }
         }
     }
@@ -121,6 +128,12 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
             actionButton.visibility = View.VISIBLE
         } else {
             actionButton.visibility = View.GONE
+        }
+    }
+
+    private fun notifyMaxStockReached(medicineName: String) {
+        runOnUiThread {
+            Toast.makeText(this, "Max stock reached for $medicineName", Toast.LENGTH_SHORT).show()
         }
     }
 

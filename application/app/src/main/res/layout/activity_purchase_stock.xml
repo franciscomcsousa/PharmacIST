@@ -28,7 +28,7 @@
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="20dp"
-        android:onClick="addStockButton"
+        android:onClick="purchaseStockButton"
         android:text="@string/btn_purchase_stock"
         android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@+id/btn_scan"

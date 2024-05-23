@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist.activities
+package pt.ulisboa.tecnico.pharmacist.activities.stock
 
 import android.content.Context
 import android.content.Intent

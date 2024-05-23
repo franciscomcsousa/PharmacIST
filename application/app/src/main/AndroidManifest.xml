@@ -26,7 +26,7 @@
             android:name=".activities.stock.PurchaseStockActivity"
             android:exported="false" />
         <activity
-            android:name=".activities.ScannerActivity"
+            android:name=".activities.stock.ScannerActivity"
             android:exported="false" />
         <activity
             android:name=".activities.RegisterActivity"

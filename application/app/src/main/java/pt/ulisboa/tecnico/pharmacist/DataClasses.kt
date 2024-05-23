@@ -28,7 +28,8 @@ data class MedicineStock(
     val id: String,
     val name: String,
     val pharmacyId: String,
-    var stock: Int = 1)
+    var stock: Int = 1,
+    var maxStock: Int? = null) // optional
 
 data class MedicinePurpose(
     @SerializedName("name") val name: String,

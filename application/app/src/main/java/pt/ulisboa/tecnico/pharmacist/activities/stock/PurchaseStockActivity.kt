@@ -23,7 +23,7 @@ class PurchaseStockActivity : StockActivity() {
     // fetches the medicine that corresponds to the barcode
     // and is currently available in the pharmacy
     override fun fetchMedicine(medId: String) {
-        val call: Call<QueryStockResponse> = retrofitAPI.getPharmacyStockId(medicineId = medId, pharmacyId = pharmacyId)
+        val call: Call<QueryStockResponse> = pharmacistAPI.getPharmacyStockId(medicineId = medId, pharmacyId = pharmacyId)
         call.enqueue(object : Callback<QueryStockResponse> {
             override fun onResponse(call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
                 if (response.isSuccessful) {
@@ -57,7 +57,7 @@ class PurchaseStockActivity : StockActivity() {
         // makes the stock of the medicines the corresponding negative, so it subtracts from the database
         val updatedMedicines = medicines.map { it.copy(stock = -it.stock) }
 
-        val call: Call<StatusResponse> = retrofitAPI.updateStock(updatedMedicines)
+        val call: Call<StatusResponse> = pharmacistAPI.updateStock(updatedMedicines)
         call.enqueue(object : Callback<StatusResponse> {
             override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
                 if (response.isSuccessful) {

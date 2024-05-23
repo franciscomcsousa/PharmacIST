@@ -41,6 +41,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
@@ -66,11 +67,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var dataStore: DataStoreManager
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    private val pharmacistAPI = PharmacistAPI()
 
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null
@@ -223,7 +220,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private suspend fun isPharmacyFavorite(id: String, favoriteButton: ToggleButton) {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
-        val call: Call<StatusResponse> = retrofitAPI.isPharmacyFavorite(favoritePharmacy)
+        val call: Call<StatusResponse> = pharmacistAPI.isPharmacyFavorite(favoritePharmacy)
         call.enqueue(object : Callback<StatusResponse> {
             override fun onResponse(
                 call: Call<StatusResponse>,
@@ -258,7 +255,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
                 abs(location.longitude - previousLocation!!.longitude) > 0.0001)) {
                 val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-                val call: Call<PharmaciesResponse> = retrofitAPI.getPharmacies(location)
+                val call: Call<PharmaciesResponse> = pharmacistAPI.getPharmacies(location)
                 call.enqueue(object : Callback<PharmaciesResponse> {
                     override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
                         if (response.isSuccessful) {
@@ -295,7 +292,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private fun pharmacyImage(name: String) {
 
         var b64Image = ""
-        val call: Call<PharmacyImageResponse> = retrofitAPI.pharmacyImage(name)
+        val call: Call<PharmacyImageResponse> = pharmacistAPI.pharmacyImage(name)
         call.enqueue(object : Callback<PharmacyImageResponse> {
             override fun onResponse(
                 call: Call<PharmacyImageResponse>,
@@ -340,7 +337,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private suspend fun getFavorites() {
         val username = getUsername()
         val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-        val call: Call<PharmaciesResponse> = retrofitAPI.getFavoritePharmacies(username)
+        val call: Call<PharmaciesResponse> = pharmacistAPI.getFavoritePharmacies(username)
         call.enqueue(object : Callback<PharmaciesResponse> {
             override fun onResponse(
                 call: Call<PharmaciesResponse>,
@@ -388,7 +385,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private suspend fun handleFavoriteButton(id: String) {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
-        val call: Call<StatusResponse> = retrofitAPI.pharmacyFavorite(favoritePharmacy)
+        val call: Call<StatusResponse> = pharmacistAPI.pharmacyFavorite(favoritePharmacy)
         call.enqueue(object : Callback<StatusResponse> {
             override fun onResponse(
                 call: Call<StatusResponse>,

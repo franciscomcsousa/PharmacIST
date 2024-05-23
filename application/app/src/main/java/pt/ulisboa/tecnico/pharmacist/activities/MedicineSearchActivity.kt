@@ -21,6 +21,7 @@ import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
@@ -30,11 +31,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    private val pharmacistAPI = PharmacistAPI()
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
@@ -70,7 +67,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
     private fun queryMedicines(text: String) {
         // perform a call to the server to get the list of medicines
         val medicineCall = Medicine(text)
-        val call: Call<MedicineResponse> = retrofitAPI.getMedicine(medicineCall)
+        val call: Call<MedicineResponse> = pharmacistAPI.getMedicine(medicineCall)
         call.enqueue(object : Callback<MedicineResponse> {
             override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                 if (response.isSuccessful) {
@@ -108,7 +105,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
             // TODO - maybe when null use the last non-null value
             if (location != null) {
                 val medicineLocation = MedicineLocation(medicineName, location.latitude, location.longitude)
-                val call: Call<MedicineResponse> = retrofitAPI.getMedicineLocation(medicineLocation)
+                val call: Call<MedicineResponse> = pharmacistAPI.getMedicineLocation(medicineLocation)
                 call.enqueue(object : Callback<MedicineResponse> {
                     override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                         if (response.isSuccessful) {

@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import retrofit2.Call
 import retrofit2.Callback
@@ -31,11 +32,7 @@ class MedicineInformationActivity : AppCompatActivity(),
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    private val pharmacistAPI = PharmacistAPI()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -64,7 +61,7 @@ class MedicineInformationActivity : AppCompatActivity(),
             if (location != null) {
                 val medicineLocation =
                     MedicineLocation(medicineName, location.latitude, location.longitude)
-                val call: Call<NearestPharmaciesResponse> = retrofitAPI.nearbyPharmacyMedicine(medicineLocation)
+                val call: Call<NearestPharmaciesResponse> = pharmacistAPI.nearbyPharmacyMedicine(medicineLocation)
                 val pharmaciesStock: MutableList<PharmacyStock> = mutableListOf()
                 val data = ArrayList<PharmacyStockViewModel>()
                 call.enqueue(object : Callback<NearestPharmaciesResponse> {

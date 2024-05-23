@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist.utils
+package pt.ulisboa.tecnico.pharmacist.databaseCache
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase

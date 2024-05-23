@@ -16,6 +16,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
 import retrofit2.Retrofit
@@ -28,11 +29,7 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
     protected val medicines = mutableListOf<MedicineStock>()
     protected lateinit var actionButton: Button
 
-    protected val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    protected val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    protected val pharmacistAPI = PharmacistAPI()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -12,6 +12,7 @@ import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.utils.SignInResponse
 import pt.ulisboa.tecnico.pharmacist.utils.User
@@ -23,6 +24,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager
+
+    private val pharmacistAPI = PharmacistAPI()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,10 +51,8 @@ class RegisterActivity : AppCompatActivity() {
 
 
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        val retrofit = buildRetrofit()
-        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
-        val call = retrofitAPI.sendRegister(user)
+        val call = pharmacistAPI.sendRegister(user)
         handleResponse(call, onSuccess, onFailure)
     }
 
@@ -112,13 +113,6 @@ class RegisterActivity : AppCompatActivity() {
         val formUsername = findViewById<TextInputLayout>(R.id.formUsername)
         val formPassword = findViewById<TextInputLayout>(R.id.formPassword)
         return Pair(formUsername, formPassword)
-    }
-
-    private fun buildRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(DataStoreManager.getUrl())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
     }
 
     private fun setUsername(username: String) {

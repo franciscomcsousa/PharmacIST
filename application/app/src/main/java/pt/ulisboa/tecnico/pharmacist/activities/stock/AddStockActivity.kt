@@ -24,7 +24,7 @@ class AddStockActivity : StockActivity() {
 
     // fetches the medicine that corresponds to the barcode
     override fun fetchMedicine(medId: String) {
-        val call: Call<MedicineResponse> = retrofitAPI.getMedicineById(medId)
+        val call: Call<MedicineResponse> = pharmacistAPI.getMedicineById(medId)
         call.enqueue(object : Callback<MedicineResponse> {
             override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                 if (response.isSuccessful) {
@@ -60,7 +60,7 @@ class AddStockActivity : StockActivity() {
 
     // user sends post to backend to add the current medicine to pharmacy
     fun addStockButton(view: View) {
-        val call: Call<StatusResponse> = retrofitAPI.updateStock(medicines)
+        val call: Call<StatusResponse> = pharmacistAPI.updateStock(medicines)
         call.enqueue(object : Callback<StatusResponse> {
             override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>) {
                 if (response.isSuccessful) {

@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
 import retrofit2.Call
@@ -28,12 +29,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class AddPharmacyActivity : MediaPickerHandlerActivity() {
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
-
+    val pharmacistAPI = PharmacistAPI()
 
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null
@@ -83,7 +79,7 @@ class AddPharmacyActivity : MediaPickerHandlerActivity() {
             latitude = latitude,
             longitude = longitude,
             image = image)
-        val call: Call<CreatePharmacyResponse> = retrofitAPI.createPharmacy(pharmacy)
+        val call: Call<CreatePharmacyResponse> = pharmacistAPI.createPharmacy(pharmacy)
         call.enqueue(object : Callback<CreatePharmacyResponse> {
             override fun onResponse(call: Call<CreatePharmacyResponse>, response: Response<CreatePharmacyResponse>){
                 if (response.isSuccessful) {

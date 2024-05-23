@@ -13,6 +13,7 @@ import kotlinx.coroutines.launch
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.utils.SignInResponse
 import pt.ulisboa.tecnico.pharmacist.utils.User
@@ -26,6 +27,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 // possible change this to jetpack compose
 class LoginActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager
+
+    private val pharmacistAPI = PharmacistAPI()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -88,10 +91,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        val retrofit = buildRetrofit()
-        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
-        val call = retrofitAPI.sendRegister(user)
+        val call = pharmacistAPI.sendRegister(user)
         handleRegisterResponse(call, onSuccess, onFailure)
     }
 
@@ -120,10 +121,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        val retrofit = buildRetrofit()
-        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
         val user = User(username, password)
-        val call = retrofitAPI.sendLogin(user)
+        val call = pharmacistAPI.sendLogin(user)
         handleLoginResponse(call, onSuccess, onFailure)
     }
 
@@ -153,9 +152,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
-        val retrofit = buildRetrofit()
-        val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
-        val response = retrofitAPI.getAuth(storedToken)
+        val response = pharmacistAPI.getAuth(storedToken)
         if (response.isSuccessful) {
             onSuccess()
         } else {
@@ -205,14 +202,6 @@ class LoginActivity : AppCompatActivity() {
         val formPassword = findViewById<TextInputLayout>(R.id.formPassword)
         return Pair(formUsername, formPassword)
     }
-
-    private fun buildRetrofit(): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(DataStoreManager.getUrl())
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
 
     private suspend fun getUserToken(): String {
         // returns "null" string if token is null

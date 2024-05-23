@@ -9,6 +9,7 @@ import android.widget.EditText
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
@@ -22,11 +23,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class NewMedicineActivity : MediaPickerHandlerActivity() {
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    private val pharmacistAPI = PharmacistAPI()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

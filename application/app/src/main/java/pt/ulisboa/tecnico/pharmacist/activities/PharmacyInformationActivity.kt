@@ -19,6 +19,7 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
 import pt.ulisboa.tecnico.pharmacist.activities.stock.PurchaseStockActivity
+import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -27,11 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
-    private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
+    private val pharmacistAPI = PharmacistAPI()
 
     private lateinit var pharmacyId: String
 
@@ -88,7 +85,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
 
         val stockQuery = QueryStock(substring, pharmacyId)
 
-        val call: Call<QueryStockResponse> = retrofitAPI.getPharmacyStock(stockQuery)
+        val call: Call<QueryStockResponse> = pharmacistAPI.getPharmacyStock(stockQuery)
         call.enqueue(object : Callback<QueryStockResponse> {
             override fun onResponse(call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
                 if (response.isSuccessful) {

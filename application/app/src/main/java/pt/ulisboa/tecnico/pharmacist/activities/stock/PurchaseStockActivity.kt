@@ -4,11 +4,10 @@ package pt.ulisboa.tecnico.pharmacist.activities.stock
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import android.widget.Button
-import pt.ulisboa.tecnico.pharmacist.MedicineStock
-import pt.ulisboa.tecnico.pharmacist.QueryStockResponse
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.StatusResponse
+import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.utils
 
 import android.content.Context
 import androidx.datastore.core.DataStore

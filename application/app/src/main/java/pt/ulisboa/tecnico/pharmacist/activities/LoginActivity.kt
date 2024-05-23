@@ -11,11 +11,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
 import com.google.android.material.textfield.TextInputLayout
-import pt.ulisboa.tecnico.pharmacist.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
-import pt.ulisboa.tecnico.pharmacist.SignInResponse
-import pt.ulisboa.tecnico.pharmacist.User
+import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.utils.SignInResponse
+import pt.ulisboa.tecnico.pharmacist.utils.User
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response

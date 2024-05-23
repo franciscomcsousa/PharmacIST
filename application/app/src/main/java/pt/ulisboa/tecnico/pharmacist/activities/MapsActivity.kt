@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -18,12 +17,8 @@ import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.api.Status
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
@@ -38,16 +33,16 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.BuildConfig
-import pt.ulisboa.tecnico.pharmacist.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.FavoritePharmacy
-import pt.ulisboa.tecnico.pharmacist.Location
-import pt.ulisboa.tecnico.pharmacist.LocationHandler
-import pt.ulisboa.tecnico.pharmacist.PharmaciesResponse
-import pt.ulisboa.tecnico.pharmacist.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.PharmacyImageResponse
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.Location
+import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
+import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
+import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
-import pt.ulisboa.tecnico.pharmacist.StatusResponse
+import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
@@ -208,7 +203,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Go to maps
         directionButton.setOnClickListener {
-            val locationCallback : (Location?) -> Unit = {userLocation ->
+            val locationCallback : (Location?) -> Unit = { userLocation ->
                 val source = "${userLocation?.latitude},${userLocation?.longitude}"
                 val uri = "https://www.google.com/maps/dir/?api=1&origin=$source&destination=" + pharmacy.address
                 val intent = Intent(Intent.ACTION_VIEW, Uri.parse(uri))

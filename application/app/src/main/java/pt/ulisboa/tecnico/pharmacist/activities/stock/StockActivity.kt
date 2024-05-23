@@ -13,10 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
-import pt.ulisboa.tecnico.pharmacist.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

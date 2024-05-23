@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.utils
 
 import android.Manifest
 import android.annotation.SuppressLint

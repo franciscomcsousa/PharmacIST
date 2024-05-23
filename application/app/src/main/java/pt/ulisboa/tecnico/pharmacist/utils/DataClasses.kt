@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist
+package pt.ulisboa.tecnico.pharmacist.utils
 
 import android.content.Intent
 import com.google.gson.annotations.SerializedName

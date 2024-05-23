@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.pharmacist.activities.stock
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.activities.NewMedicineActivity
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import retrofit2.Call
 import retrofit2.Callback
@@ -43,11 +45,15 @@ class AddStockActivity : StockActivity() {
                         Log.d("serverResponse", medicineName)
                     }
                 }
+                // if the medicine is not recognizable, goes to new medicine activity
+                if(response.code() == 453) {
+                    startActivity(Intent(applicationContext, NewMedicineActivity::class.java))
+                }
             }
 
             override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
                 // TODO - add more error handling (display it to the user for him to understand)
-                Log.d("serverResponse","FAILED: "+ t.message)
+                Log.d("serverResponse","FAILED: "+ t.message )
             }
         })
     }

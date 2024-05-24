@@ -11,7 +11,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
+import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
@@ -35,7 +35,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         enableEdgeToEdge()
         setContentView(R.layout.activity_medicine_information)
 
-        LocationHandler.requestPermissions(this)
+        LocationUtils.requestPermissions(this)
 
         val medicineName = intent.getStringExtra("medicineName")
 
@@ -89,7 +89,7 @@ class MedicineInformationActivity : AppCompatActivity(),
                 })
             }
         }
-        LocationHandler.getUserLocation(locationCallback, this)
+        LocationUtils.getUserLocation(locationCallback, this)
     }
 
     override fun onRequestPermissionsResult(

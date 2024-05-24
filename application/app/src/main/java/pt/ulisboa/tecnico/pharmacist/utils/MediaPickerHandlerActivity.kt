@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.pharmacist.utils
 
 import android.Manifest
 import android.app.AlertDialog
+import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -24,6 +25,7 @@ import androidx.core.content.FileProvider
 import pt.ulisboa.tecnico.pharmacist.R
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Date
 import java.util.Locale

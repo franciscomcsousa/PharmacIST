@@ -8,7 +8,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 
-class LocationHandler {
+class LocationUtils {
 
     companion object {
         private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice

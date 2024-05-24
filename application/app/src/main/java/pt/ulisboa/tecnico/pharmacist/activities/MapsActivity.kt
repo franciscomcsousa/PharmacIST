@@ -36,10 +36,9 @@ import pt.ulisboa.tecnico.pharmacist.BuildConfig
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
+import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.PharmacyImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
@@ -93,7 +92,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        if (LocationHandler.requestPermissions(this)) {
+        if (LocationUtils.requestPermissions(this)) {
             enableUserLocation()
             centerUserLocation()
         }
@@ -170,7 +169,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
         val bottomDrawerView = layoutInflater.inflate(R.layout.pharmacy_drawer_layout, null)
-        pharmacy.id?.let { pharmacyImage(it) }
+        //pharmacy.id?.let { pharmacyImage(it) }
 
         // Update views with pharmacy information
         // For example:
@@ -212,7 +211,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(intent)
                 }
             }
-            LocationHandler.getUserLocation(locationCallback, this)
+            LocationUtils.getUserLocation(locationCallback, this)
         }
 
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -280,30 +279,15 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 pharmacistAPI.getPharmacies(location, onSuccess)
             }
         }
-        LocationHandler.getUserLocation(locationCallback, this)
+        LocationUtils.getUserLocation(locationCallback, this)
     }
 
     private fun pharmacyImage(id: String) {
-
-        var b64Image = ""
-        val call: Call<PharmacyImageResponse> = pharmacistAPI.pharmacyImage(id)
-        call.enqueue(object : Callback<PharmacyImageResponse> {
-            override fun onResponse(
-                call: Call<PharmacyImageResponse>,
-                response: Response<PharmacyImageResponse>
-            ) {
-                if (response.isSuccessful) {
-                    b64Image = response.body()!!.image
-                    val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
-                    pharmacyImages[id] = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                    Log.d("serverResponse", "Pharmacy image retrieved")
-                }
-            }
-
-            override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: " + t.message)
-            }
-        })
+        val onSuccess: (Bitmap) -> Unit = {bitmapImage ->
+            pharmacyImages[id] = bitmapImage
+            Log.d("serverResponse", "Pharmacy image retrieved")
+        }
+        pharmacistAPI.pharmacyImage(id, onSuccess)
     }
 
     private fun startPlacesAPI() {
@@ -431,7 +415,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
-        LocationHandler.getUserLocation(locationCallback, this)
+        LocationUtils.getUserLocation(locationCallback, this)
     }
 
     override fun onRequestPermissionsResult(

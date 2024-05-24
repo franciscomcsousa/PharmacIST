@@ -3,10 +3,15 @@ package pt.ulisboa.tecnico.pharmacist.localDatabase
 import android.app.Activity
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import android.util.Log
+import okio.ByteString.Companion.decodeBase64
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.ImageUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
@@ -30,6 +35,7 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Query
+import java.io.ByteArrayOutputStream
 import java.time.Instant
 
 class PharmacistAPI(val activity: Activity) {
@@ -145,8 +151,46 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.createPharmacyRequest(pharmacy)
     }
 
-    fun pharmacyImage(@Body name: String): Call<PharmacyImageResponse> {
-        return retrofitAPI.pharmacyImageRequest(name)
+    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit): Call<PharmacyImageResponse> {
+
+        var b64Image = ""
+        var bitmap = ImageUtils.loadImageFromInternalStorage("P_$id", activity)
+
+        // Uncomment this to delete all cached images
+        // ImageUtils.deleteAllImagesFromInternalStorage(activity)
+
+        if (bitmap != null) {
+            // Maybe change this to a function
+            println("WOOOO")
+            println("USED CACHE :D")
+            val byteArrayOutputStream = ByteArrayOutputStream()
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+            onSuccess(bitmap)
+        }
+
+        else {
+            val call: Call<PharmacyImageResponse> = retrofitAPI.pharmacyImageRequest(id)
+            call.enqueue(object : Callback<PharmacyImageResponse> {
+                override fun onResponse(
+                    call: Call<PharmacyImageResponse>,
+                    response: Response<PharmacyImageResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        b64Image = response.body()!!.image
+                        val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
+                        val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                        ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
+                        onSuccess(bitmap)
+                    }
+                }
+
+                override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
+                    Log.d("serverResponse", "FAILED: " + t.message)
+                }
+            })
+        }
+
+        return retrofitAPI.pharmacyImageRequest(id)
     }
 
     fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse> {

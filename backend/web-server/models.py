@@ -205,10 +205,17 @@ def get_pharmacy_stock(pharmacy_id, substring):
     try:
         cur = con.cursor()
         data = (pharmacy_id, f'%{substring}%')
-        query = 'SELECT name FROM (SELECT name FROM medicine WHERE medicine_id IN (SELECT medicine_id FROM medicine_stock WHERE pharmacy_id = %s)) AS subquery WHERE name LIKE %s'
+        query = """ SELECT medicine_id, name
+                    FROM medicine
+                    WHERE medicine_id IN (
+                        SELECT medicine_id
+                        FROM medicine_stock
+                        WHERE pharmacy_id = %s
+                    )
+                    AND name LIKE %s"""
         cur.execute(query, data)
-        stock = cur.fetchone()
-        return stock
+        stock = cur.fetchall()
+        return stock, OK_STATUS
     finally:
         con.close()
         

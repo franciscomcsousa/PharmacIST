@@ -28,7 +28,7 @@ interface RetrofitAPI {
     fun createPharmacyRequest(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
 
     @POST("pharmacy_image")
-    fun pharmacyImageRequest(@Body id: String): Call<PharmacyImageResponse>
+    fun pharmacyImageRequest(@Body id: String): Call<ImageResponse>
 
     @POST("/pharmacy_favorite")
     fun pharmacyFavoriteRequest(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
@@ -45,6 +45,9 @@ interface RetrofitAPI {
     @GET("medicine")
     fun getMedicineByIdRequest(@Query("id") medicineId: String): Call<MedicineResponse>
 
+    @GET("medicine_image")
+    fun medicineImageRequest(@Query("id") medicineId: String): Call<ImageResponse>
+
     @POST("create_medicine")
     fun createMedicineRequest(@Body medicine: MedicineStock): Call<StatusResponse>
 
@@ -52,7 +55,7 @@ interface RetrofitAPI {
     fun getMedicineLocationRequest(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 
     @POST("pharmacy_stock")
-    fun getPharmacyStockRequest(@Body queryStock: QueryStock): Call<QueryStockResponse>
+    fun getPharmacyStockRequest(@Body queryStock: QueryStock): Call<MedicineResponse>
 
     @GET("pharmacy_stock")
     fun getPharmacyStockIdRequest(

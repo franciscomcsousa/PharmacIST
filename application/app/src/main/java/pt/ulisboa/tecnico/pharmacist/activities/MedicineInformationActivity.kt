@@ -2,8 +2,11 @@ package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -19,6 +22,7 @@ import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdap
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -38,9 +42,10 @@ class MedicineInformationActivity : AppCompatActivity(),
         LocationUtils.requestPermissions(this)
 
         val medicineName = intent.getStringExtra("medicineName")
+        val medicineId = intent.getStringExtra("medicineId")
 
         findViewById<TextView>(R.id.panel_medicine_text)?.text = medicineName
-
+        medicineImage(medicineId.toString())
         // Get recycler view
         val recyclerView = findViewById<RecyclerView>(R.id.medicine_panel_recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
@@ -56,7 +61,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         val locationCallback : (Location?) -> Unit = { location ->
             if (location != null) {
                 val medicineLocation =
-                    MedicineLocation(medicineName, location.latitude, location.longitude)
+                    MedicineLocation(name = medicineName, latitude = location.latitude, longitude = location.longitude)
                 val call: Call<NearestPharmaciesResponse> = pharmacistAPI.nearbyPharmacyMedicine(medicineLocation)
                 val pharmaciesStock: MutableList<PharmacyStock> = mutableListOf()
                 val data = ArrayList<PharmacyStockViewModel>()
@@ -91,6 +96,35 @@ class MedicineInformationActivity : AppCompatActivity(),
         }
         LocationUtils.getUserLocation(locationCallback, this)
     }
+
+    // TODO - revisit with cache
+    // request medicine image
+    private fun medicineImage(medicineId: String) {
+
+        val call: Call<ImageResponse> = pharmacistAPI.medicineImage(medicineId)
+        call.enqueue(object : Callback<ImageResponse> {
+            override fun onResponse(
+                call: Call<ImageResponse>,
+                response: Response<ImageResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val b64Image = response.body()!!.image
+                    val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+                    // Set the bitmap to the ImageView
+                    findViewById<ImageView>(R.id.panel_medicine_image).setImageBitmap(bitmap)
+
+                    Log.d("serverResponse", "Medicine image retrieved")
+                }
+            }
+
+            override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: " + t.message)
+            }
+        })
+    }
+
 
     override fun onRequestPermissionsResult(
         requestCode: Int,

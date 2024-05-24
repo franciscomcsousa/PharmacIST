@@ -20,7 +20,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.PharmacyImageResponse
+import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStock
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
@@ -151,7 +151,7 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.createPharmacyRequest(pharmacy)
     }
 
-    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit): Call<PharmacyImageResponse> {
+    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit): Call<ImageResponse> {
 
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("P_$id", activity)
@@ -169,11 +169,11 @@ class PharmacistAPI(val activity: Activity) {
         }
 
         else {
-            val call: Call<PharmacyImageResponse> = retrofitAPI.pharmacyImageRequest(id)
-            call.enqueue(object : Callback<PharmacyImageResponse> {
+            val call: Call<ImageResponse> = retrofitAPI.pharmacyImageRequest(id)
+            call.enqueue(object : Callback<ImageResponse> {
                 override fun onResponse(
-                    call: Call<PharmacyImageResponse>,
-                    response: Response<PharmacyImageResponse>
+                    call: Call<ImageResponse>,
+                    response: Response<ImageResponse>
                 ) {
                     if (response.isSuccessful) {
                         b64Image = response.body()!!.image
@@ -184,7 +184,7 @@ class PharmacistAPI(val activity: Activity) {
                     }
                 }
 
-                override fun onFailure(call: Call<PharmacyImageResponse>, t: Throwable) {
+                override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
                     Log.d("serverResponse", "FAILED: " + t.message)
                 }
             })
@@ -217,11 +217,15 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.getMedicineByIdRequest(medicineId)
     }
 
+    fun medicineImage(@Query("id") medicineId: String): Call<ImageResponse> {
+        return retrofitAPI.medicineImageRequest(medicineId)
+    }
+
     fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse> {
         return retrofitAPI.getMedicineLocationRequest(medicineLocation)
     }
 
-    fun getPharmacyStock(@Body queryStock: QueryStock): Call<QueryStockResponse> {
+    fun getPharmacyStock(@Body queryStock: QueryStock): Call<MedicineResponse> {
         return retrofitAPI.getPharmacyStockRequest(queryStock)
     }
 

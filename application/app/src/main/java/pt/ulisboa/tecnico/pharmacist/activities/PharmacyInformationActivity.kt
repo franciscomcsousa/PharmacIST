@@ -18,6 +18,7 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
 import pt.ulisboa.tecnico.pharmacist.activities.stock.PurchaseStockActivity
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -69,11 +70,12 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
     }
 
     override fun onItemClick(position: Int) {
-        val medicineName = (findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view).adapter as MedicineSearchAdapter).medicineList[position].text
+        val medicine = (findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view).adapter as MedicineSearchAdapter).medicineList[position]
 
         val intent = Intent(this, MedicineInformationActivity::class.java)
 
-        intent.putExtra("medicineName", medicineName)
+        intent.putExtra("medicineName", medicine.text)
+        intent.putExtra("medicineId", medicine.medicineId)
         startActivity(intent)
     }
 
@@ -81,18 +83,22 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
 
         val stockQuery = QueryStock(substring, pharmacyId)
 
-        val call: Call<QueryStockResponse> = pharmacistAPI.getPharmacyStock(stockQuery)
-        call.enqueue(object : Callback<QueryStockResponse> {
-            override fun onResponse(call: Call<QueryStockResponse>, response: Response<QueryStockResponse>) {
+        val call: Call<MedicineResponse> = pharmacistAPI.getPharmacyStock(stockQuery)
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
                 if (response.isSuccessful) {
-                    val stockList = response.body()?.stock
+                    val medicineList = response.body()?.medicine
 
                     val data = ArrayList<MedicineSearchViewModel>()
 
                     // For testing purposes
-                    if (stockList != null) {
-                        for (medicine in stockList) {
-                            data.add(MedicineSearchViewModel(R.drawable.baseline_directions_24, medicine))
+                    if (medicineList != null) {
+                        for (medicine in medicineList) {
+                            Log.d("serverResponse", medicine[0].toString())
+                            val medicineId = medicine[0]    // id
+                            val medicineName = medicine[1]  // name
+                            data.add(MedicineSearchViewModel(R.drawable.baseline_directions_24,
+                                medicineName.toString(), medicineId.toString()))
                         }
                     }
                     // Set the recycler view adapter to the created adapter
@@ -104,7 +110,7 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
                 }
             }
 
-            override fun onFailure(call: Call<QueryStockResponse>, t: Throwable) {
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
         })

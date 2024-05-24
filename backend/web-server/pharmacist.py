@@ -122,7 +122,16 @@ def get_pharmacy_image():
         id = int(float(data))
         image = get_image(str(id), "P")
 
-    return make_response(jsonify({"image": base64.b64encode(image).decode()}), 200)
+    return make_response(jsonify({"image": base64.b64encode(image).decode()}), OK_STATUS)
+
+@app.route('/medicine_image', methods=['GET'])
+def get_medicine_image():
+
+    if request.method == 'GET':
+        id = int(float(request.args.get("id")))
+        image = get_image(str(id), "M")
+
+    return make_response(jsonify({"image": base64.b64encode(image).decode()}), OK_STATUS)
 
 @app.route('/create_pharmacy', methods=['GET', 'POST'])
 def create_pharmacy():
@@ -267,9 +276,9 @@ def pharmacy_stock():
         substring = data['substring']
         pharmacy_id = data['pharmacyId']
 
-        stock = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)
-
-        return make_response(jsonify({"stock": stock}), 200)
+        medicine, status = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)
+        print(medicine)
+        return make_response(jsonify({"medicine": medicine}), status)
     
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 

@@ -27,6 +27,7 @@ data class FavoritePharmacy(
     @SerializedName("pharmacyId") val pharmacyId: String)
 
 data class Medicine(
+    @SerializedName("id") val id: String? = "",
     @SerializedName("name") val name: String)
 
 // Used to manage the stock in the AddStock and Purchase
@@ -45,6 +46,7 @@ data class MedicinePurpose(
     @SerializedName("purpose") val purpose: String)
 
 data class MedicineLocation(
+    @SerializedName("id") val id: String? = null,
     @SerializedName("name") val name: String,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double)
@@ -64,7 +66,7 @@ data class PharmacyStock(
 
 
 // Used for medicine search recycler view
-data class MedicineSearchViewModel(val image: Int, val text: String)
+data class MedicineSearchViewModel(val image: Int, val text: String, val medicineId: String)
 
 data class PharmacyStockViewModel(val name: String, val stock: Int)
 
@@ -78,7 +80,7 @@ data class PharmaciesResponse(val pharmacies: List<List<Any>>)
 
 data class CreatePharmacyResponse(val status: Int)
 
-data class PharmacyImageResponse(val image: String)
+data class ImageResponse(val image: String)
 
 data class QueryStockResponse(val stock: List<String>)
 

@@ -39,6 +39,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse

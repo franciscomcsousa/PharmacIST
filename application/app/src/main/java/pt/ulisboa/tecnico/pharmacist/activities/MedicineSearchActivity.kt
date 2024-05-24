@@ -62,7 +62,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
 
     private fun queryMedicines(text: String) {
         // perform a call to the server to get the list of medicines
-        val medicineCall = Medicine(text)
+        val medicineCall = Medicine(name = text)
         val call: Call<MedicineResponse> = pharmacistAPI.getMedicine(medicineCall)
         call.enqueue(object : Callback<MedicineResponse> {
             override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
@@ -71,8 +71,8 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
                     val data = ArrayList<MedicineSearchViewModel>()
 
                     for (i in medicineResponse) {
-                        val medicine = Medicine(i[1].toString())
-                        data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name))
+                        val medicine = Medicine(id = i[0].toString(),name = i[1].toString())
+                        data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name, medicine.id.toString()))
                     }
                     val adapter = MedicineSearchAdapter(data, this@MedicineSearchActivity)
                     val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
@@ -100,7 +100,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
             // sometimes it might not be able to fetch
             // TODO - maybe when null use the last non-null value
             if (location != null) {
-                val medicineLocation = MedicineLocation(medicineName, location.latitude, location.longitude)
+                val medicineLocation = MedicineLocation(name = medicineName, latitude =  location.latitude, longitude =  location.longitude)
                 val call: Call<MedicineResponse> = pharmacistAPI.getMedicineLocation(medicineLocation)
                 call.enqueue(object : Callback<MedicineResponse> {
                     override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {

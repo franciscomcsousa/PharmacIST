@@ -107,7 +107,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
                         if (response.isSuccessful) {
                             val medicineResponse = response.body()!!.medicine
                             Log.d("serverResponse", "Medicine found: $medicineResponse")
-                            val medicine = MedicinePurpose(medicineResponse[0][1].toString(), medicineResponse[0][2].toString())
+                            val medicine = MedicinePurpose(id = medicineResponse[0][0].toString(), name = medicineResponse[0][1].toString(), purpose = medicineResponse[0][2].toString())
                             val pharmacy = Pharmacy(medicineResponse[1][0].toString(), medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
                                 medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
 
@@ -131,6 +131,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
 
     private fun navigateToMedicineDetailsActivity(medicine: MedicinePurpose, pharmacy: Pharmacy) {
         val intent = Intent(this, ClosestMedicineActivity::class.java)
+        intent.putExtra("medicineId", medicine.id)
         intent.putExtra("medicineName", medicine.name)
         intent.putExtra("medicinePurpose", medicine.purpose)
         intent.putExtra("pharmacyId", pharmacy.id)

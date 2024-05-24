@@ -1,13 +1,24 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
+import android.util.Log
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class ClosestMedicineActivity : AppCompatActivity() {
+
+    private val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,6 +26,7 @@ class ClosestMedicineActivity : AppCompatActivity() {
         setContentView(R.layout.activity_closest_medicine)
 
         // Retrieve the medicine and pharmacy from the intent
+        val medicineId = intent.getStringExtra("medicineId")
         val medicineName = intent.getStringExtra("medicineName")
         val medicinePurpose = intent.getStringExtra("medicinePurpose")
         val pharmacyId = intent.getStringExtra("pharmacyId")
@@ -54,5 +66,36 @@ class ClosestMedicineActivity : AppCompatActivity() {
             intent.setType("text/plain")
             startActivity(Intent.createChooser(intent, "Share using"))
         }
+        // fetches medicine image and loads it
+        medicineImage(medicineId.toString())
     }
+
+    // TODO - revisit with cache
+    // request medicine image
+    private fun medicineImage(medicineId: String) {
+
+        val call: Call<ImageResponse> = pharmacistAPI.medicineImage(medicineId)
+        call.enqueue(object : Callback<ImageResponse> {
+            override fun onResponse(
+                call: Call<ImageResponse>,
+                response: Response<ImageResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val b64Image = response.body()!!.image
+                    val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
+                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+
+                    // Set the bitmap to the ImageView
+                    findViewById<ImageView>(R.id.medicine_image).setImageBitmap(bitmap)
+
+                    Log.d("serverResponse", "Medicine image retrieved")
+                }
+            }
+
+            override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+                Log.d("serverResponse", "FAILED: " + t.message)
+            }
+        })
+    }
+
 }

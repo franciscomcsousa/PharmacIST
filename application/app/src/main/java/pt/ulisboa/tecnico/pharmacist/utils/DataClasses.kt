@@ -42,6 +42,7 @@ data class MedicineStock(
 
 
 data class MedicinePurpose(
+    val id: String? = "",
     @SerializedName("name") val name: String,
     @SerializedName("purpose") val purpose: String)
 

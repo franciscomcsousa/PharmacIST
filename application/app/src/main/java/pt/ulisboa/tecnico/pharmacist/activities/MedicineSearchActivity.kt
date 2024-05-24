@@ -10,7 +10,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
@@ -21,17 +20,14 @@ import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
-    private val pharmacistAPI = PharmacistAPI()
+    private val pharmacistAPI = PharmacistAPI(this)
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 

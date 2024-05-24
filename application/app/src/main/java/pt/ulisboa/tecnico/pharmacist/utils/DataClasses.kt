@@ -8,6 +8,13 @@ data class User(
     @SerializedName("username") val username: String,
     @SerializedName("password") val password: String)
 
+data class ImagelessPharmacy(
+    @SerializedName("id") val id: String? = null,
+    @SerializedName("name") val name: String,
+    @SerializedName("address") val address: String,
+    @SerializedName("latitude") val latitude: String,
+    @SerializedName("longitude") val longitude: String)
+
 data class Pharmacy(
     @SerializedName("id") val id: String? = null,
     @SerializedName("name") val name: String,

@@ -10,7 +10,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.LocationHandler
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
@@ -19,20 +18,17 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class MedicineInformationActivity : AppCompatActivity(),
     PharmacyStockSearchAdapter.RecyclerViewEvent {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
-    private val pharmacistAPI = PharmacistAPI()
+    private val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

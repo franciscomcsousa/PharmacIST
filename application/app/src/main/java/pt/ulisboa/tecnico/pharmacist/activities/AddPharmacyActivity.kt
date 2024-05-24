@@ -15,21 +15,17 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.BuildConfig
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class AddPharmacyActivity : MediaPickerHandlerActivity() {
 
-    val pharmacistAPI = PharmacistAPI()
+    val pharmacistAPI = PharmacistAPI(this)
 
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null

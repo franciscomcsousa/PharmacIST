@@ -1,4 +1,4 @@
-package pt.ulisboa.tecnico.pharmacist.databaseCache
+package pt.ulisboa.tecnico.pharmacist.localDatabase
 
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "pharmacistCache.db"
-        private const val DATABASE_VERSION = 1
+        private const val DATABASE_VERSION = 3
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -18,7 +18,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             name TEXT NOT NULL,
             address TEXT NOT NULL,
             latitude REAL NOT NULL,
-            longitude REAL NOT NULL
+            longitude REAL NOT NULL,
+            timestamp INT NOT NULL
         );
         """.trimIndent()
 
@@ -27,6 +28,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 favorite_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 user_id INTEGER NOT NULL,
                 pharmacy_id INTEGER NOT NULL,
+                timestamp INT NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (pharmacy_id) REFERENCES pharmacies(pharmacy_id) ON DELETE CASCADE ON UPDATE CASCADE
             );
@@ -36,7 +38,8 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
             CREATE TABLE medicine (
                 medicine_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
                 name TEXT NOT NULL,
-                purpose TEXT NOT NULL
+                purpose TEXT NOT NULL,
+                timestamp INT NOT NULL
             );
         """.trimIndent()
 
@@ -47,6 +50,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
                 pharmacy_id INTEGER NOT NULL,
                 medicine_id INTEGER NOT NULL,
                 quantity INTEGER NOT NULL,
+                timestamp INT NOT NULL,
                 FOREIGN KEY (pharmacy_id) REFERENCES pharmacies(pharmacy_id) ON DELETE CASCADE ON UPDATE CASCADE,
                 FOREIGN KEY (medicine_id) REFERENCES medicine(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE,
                 UNIQUE (pharmacy_id, medicine_id)
@@ -86,7 +90,10 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-        db.execSQL("DROP TABLE IF EXISTS mytable")
+        db.execSQL("DROP TABLE IF EXISTS pharmacies")
+        db.execSQL("DROP TABLE IF EXISTS favorite_pharmacies")
+        db.execSQL("DROP TABLE IF EXISTS medicine")
+        db.execSQL("DROP TABLE IF EXISTS medicine_stock")
         onCreate(db)
     }
 }

@@ -41,15 +41,12 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -67,7 +64,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
     private lateinit var dataStore: DataStoreManager
 
-    private val pharmacistAPI = PharmacistAPI()
+    private val pharmacistAPI = PharmacistAPI(this)
 
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null
@@ -261,36 +258,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
                 abs(location.longitude - previousLocation!!.longitude) > 0.0001)) {
                 previousLocation = location
-                val call: Call<PharmaciesResponse> = pharmacistAPI.getPharmacies(location)
-                call.enqueue(object : Callback<PharmaciesResponse> {
-                    override fun onResponse(call: Call<PharmaciesResponse>, response: Response<PharmaciesResponse>) {
-                        if (response.isSuccessful) {
-                            val pharmaciesList = response.body()!!.pharmacies
-                            val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-                            for (pharmacy in pharmaciesList) {
-                                // transform pharmacies into a list of Pharmacy objects
-                                pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),
-                                    pharmacy[3].toString(), pharmacy[4].toString(), "")
-                            }
-                            // update the pharmacies list
-                            pharmacies = pharmaciesFetched
-                            needNewMarkers = true
-                            Log.d("serverResponse", "Pharmacies retrieved")
 
-                            // TODO - this might waste too much resources
-                            // Only way to correctly preview image
-                            for (pharmacy in pharmacies) {
-                                pharmacy.id?.let { pharmacyImage(it) }
-                            }
-                        }
+                val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
+                    val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
+                    for (pharmacy in pharmaciesList) {
+                        // transform pharmacies into a list of Pharmacy objects
+                        pharmaciesFetched += pharmacy
                     }
+                    // update the pharmacies list
+                    pharmacies = pharmaciesFetched
+                    needNewMarkers = true
+                    Log.d("serverResponse", "Pharmacies retrieved")
 
-                    override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
-                        // we get error response from API.
-                        previousLocation = null
-                        Log.d("serverResponse","FAILED: "+ t.message)
+                    // TODO - this might waste too much resources
+                    // Only way to correctly preview image
+                    for (pharmacy in pharmacies) {
+                        pharmacy.id?.let { pharmacyImage(it) }
                     }
-                })
+                }
+
+                pharmacistAPI.getPharmacies(location, onSuccess)
             }
         }
         LocationHandler.getUserLocation(locationCallback, this)

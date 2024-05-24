@@ -12,53 +12,53 @@ import retrofit2.http.Query
 interface RetrofitAPI {
 
     @POST("register")
-    fun sendRegister(@Body user: User?): Call<SignInResponse>
+    fun sendRegisterRequest(@Body user: User?): Call<SignInResponse>
 
     @POST("login")
-    fun sendLogin(@Body user: User?): Call<SignInResponse>
+    fun sendLoginRequest(@Body user: User?): Call<SignInResponse>
 
     @GET("authorized")
-    suspend fun getAuth(@Header("Authorization") token: String): Response<StatusResponse>
+    suspend fun getAuthRequest(@Header("Authorization") token: String): Response<StatusResponse>
 
     // TODO - add the header authorization + token to all other requests in this app
     @POST("pharmacies")
-    fun getPharmacies(@Body location: Location?): Call<PharmaciesResponse>
+    fun getPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
 
     @POST("create_pharmacy")
-    fun createPharmacy(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
+    fun createPharmacyRequest(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
 
     @POST("pharmacy_image")
-    fun pharmacyImage(@Body id: String): Call<PharmacyImageResponse>
+    fun pharmacyImageRequest(@Body id: String): Call<PharmacyImageResponse>
 
     @POST("/pharmacy_favorite")
-    fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
+    fun pharmacyFavoriteRequest(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
 
     @POST("/is_pharmacy_favorite")
-    fun isPharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
+    fun isPharmacyFavoriteRequest(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
 
     @POST("/get_favorite_pharmacies")
-    fun getFavoritePharmacies(@Body username: String): Call<PharmaciesResponse>
+    fun getFavoritePharmaciesRequest(@Body username: String): Call<PharmaciesResponse>
 
     @POST("medicine")
-    fun getMedicine(@Body medicine: Medicine): Call<MedicineResponse>
+    fun getMedicineRequest(@Body medicine: Medicine): Call<MedicineResponse>
 
     @GET("medicine")
-    fun getMedicineById(@Query("id") medicineId: String): Call<MedicineResponse>
+    fun getMedicineByIdRequest(@Query("id") medicineId: String): Call<MedicineResponse>
 
     @POST("medicine_location")
-    fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
+    fun getMedicineLocationRequest(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 
     @POST("pharmacy_stock")
-    fun getPharmacyStock(@Body queryStock: QueryStock): Call<QueryStockResponse>
+    fun getPharmacyStockRequest(@Body queryStock: QueryStock): Call<QueryStockResponse>
 
     @GET("pharmacy_stock")
-    fun getPharmacyStockId(
+    fun getPharmacyStockIdRequest(
         @Query("medicineId") medicineId: String,
         @Query("pharmacyId") pharmacyId: String
     ): Call<QueryStockResponse>
 
     @POST("medicine_near_pharmacies")
-    fun nearbyPharmacyMedicine(@Body medicineLocation: MedicineLocation): Call<NearestPharmaciesResponse>
+    fun nearbyPharmacyMedicineRequest(@Body medicineLocation: MedicineLocation): Call<NearestPharmaciesResponse>
     @POST("update_stock")
-    fun updateStock(@Body listMedicineStock: List<MedicineStock>): Call<StatusResponse>
+    fun updateStockRequest(@Body listMedicineStock: List<MedicineStock>): Call<StatusResponse>
 }

@@ -10,25 +10,21 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStock
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
 import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
 import pt.ulisboa.tecnico.pharmacist.activities.stock.PurchaseStockActivity
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
-    private val pharmacistAPI = PharmacistAPI()
+    private val pharmacistAPI = PharmacistAPI(this)
 
     private lateinit var pharmacyId: String
 

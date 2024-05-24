@@ -13,14 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.RecyclerViewEvent  {
     protected val CAMERA_PERMISSION_REQUEST_CODE = 1002
@@ -29,7 +25,7 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
     protected val medicines = mutableListOf<MedicineStock>()
     protected lateinit var actionButton: Button
 
-    protected val pharmacistAPI = PharmacistAPI()
+    protected val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

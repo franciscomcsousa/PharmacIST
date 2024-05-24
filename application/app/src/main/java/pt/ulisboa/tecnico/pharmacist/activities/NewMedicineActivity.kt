@@ -1,29 +1,17 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.EditText
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
-import pt.ulisboa.tecnico.pharmacist.databaseCache.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
-import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 class NewMedicineActivity : MediaPickerHandlerActivity() {
 
-    private val pharmacistAPI = PharmacistAPI()
+    private val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

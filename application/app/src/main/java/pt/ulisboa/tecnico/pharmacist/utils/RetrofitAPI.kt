@@ -45,6 +45,9 @@ interface RetrofitAPI {
     @GET("medicine")
     fun getMedicineByIdRequest(@Query("id") medicineId: String): Call<MedicineResponse>
 
+    @POST("create_medicine")
+    fun createMedicineRequest(@Body medicine: MedicineStock): Call<StatusResponse>
+
     @POST("medicine_location")
     fun getMedicineLocationRequest(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 

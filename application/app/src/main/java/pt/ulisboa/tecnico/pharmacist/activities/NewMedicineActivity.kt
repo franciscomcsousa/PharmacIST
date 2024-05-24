@@ -2,20 +2,31 @@ package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.widget.EditText
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class NewMedicineActivity : MediaPickerHandlerActivity() {
 
     private val pharmacistAPI = PharmacistAPI(this)
+    private lateinit var medicineId: String
+    private lateinit var pharmacyId: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_medicine)
+        medicineId = intent.getStringExtra("medicineId").toString()
+        pharmacyId = intent.getStringExtra("pharmacyId").toString()
+
     }
 
     private fun getFields(): List<String> {
@@ -56,29 +67,31 @@ class NewMedicineActivity : MediaPickerHandlerActivity() {
         }
     }
 
-    private fun createMedicine(name: String, address: String, latitude: String, uri: Uri?, onSuccess: () -> Unit) {
+    private fun createMedicine(medicineName: String, quantity: String, purpose: String, uri: Uri?, onSuccess: () -> Unit) {
         val image = encodeImageToBase64(uri)
 
         onSuccess()
 
         // TODO
-        /*val pharmacy = Medicine(
-            medicineName = medicineName,
-            quantity = quantity,
+        val medicine = MedicineStock(
+            id = medicineId,
+            name = medicineName,
+            stock = quantity.toInt(),
             purpose = purpose,
+            pharmacyId = pharmacyId,
             image = image)
-        val call: Call<CreatePharmacyResponse> = retrofitAPI.createPharmacy(pharmacy)
-        call.enqueue(object : Callback<CreatePharmacyResponse> {
-            override fun onResponse(call: Call<CreatePharmacyResponse>, response: Response<CreatePharmacyResponse>){
+        val call: Call<StatusResponse> = pharmacistAPI.createMedicine(medicine)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>){
                 if (response.isSuccessful) {
                     Log.d("serverResponse","Pharmacy added to database!")
                 }
             }
 
-            override fun onFailure(call: Call<CreatePharmacyResponse>, t: Throwable) {
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
                 Log.d("serverResponse","FAILED: "+ t.message)
             }
-        })*/
+        })
     }
 
     private fun navigateBack() {

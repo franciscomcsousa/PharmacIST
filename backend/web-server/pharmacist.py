@@ -59,7 +59,7 @@ def register_user():
                 
         return make_response(jsonify({'token': token}), status)
     
-    return make_response({"status":400}, 400)
+    return make_response({"status":BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 
 # TODO 
@@ -88,7 +88,7 @@ def login_user():
         
         return make_response(jsonify({'token': token}), status)
     
-    return make_response({"status":400}, 400)
+    return make_response({"status":BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/authorized')
 @login_required
@@ -110,7 +110,7 @@ def get_pharmacies():
 
         return make_response(jsonify({"pharmacies": pharmacies}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/pharmacy_image', methods=['GET', 'POST'])
 def get_pharmacy_image():
@@ -140,7 +140,7 @@ def create_pharmacy():
 
         return make_response({"status": 200}, 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/pharmacy_favorite', methods=['GET', 'POST'])
 def favorite_pharmacy():
@@ -158,7 +158,7 @@ def favorite_pharmacy():
         
         return make_response({"status": status}, status)
         
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/is_pharmacy_favorite', methods=['GET', 'POST'])
 def is_favorite_pharmacy():
@@ -173,7 +173,7 @@ def is_favorite_pharmacy():
         
         return make_response({"status": status}, status)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/get_favorite_pharmacies', methods=['GET', 'POST'])
 def get_favorite_pharmacies():
@@ -187,7 +187,7 @@ def get_favorite_pharmacies():
         
         return make_response(jsonify({"pharmacies": pharmacies}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
         
 @app.route('/medicine', methods=['GET', 'POST'])
 def get_medicines():
@@ -205,7 +205,27 @@ def get_medicines():
 
         return make_response(jsonify({"medicine": medicines}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
+
+
+@app.route('/create_medicine', methods=['POST'])
+def create_medicines():
+    if request.method == 'POST':
+        data = request.get_json()
+        
+        medicine_id = data['id']
+        medicine_name = data['name']
+        quantity = data['stock']
+        purpose = data['purpose']
+        pharmacy_id = data['pharmacyId']
+        image = data['image']
+        
+        status = create_medicine(medicine_id, medicine_name, quantity, purpose, pharmacy_id, image)
+        return make_response(jsonify({"status": status}), status)
+    
+    return make_response(jsonify({"status": BAD_REQUEST_STATUS}), BAD_REQUEST_STATUS)
+        
+        
 
 @app.route('/medicine_location', methods=['GET', 'POST'])
 def get_medicine_location():
@@ -230,7 +250,7 @@ def get_medicine_location():
 
         return make_response(jsonify({"medicine": response}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/pharmacy_stock', methods=['GET', 'POST'])
 def pharmacy_stock():
@@ -251,7 +271,7 @@ def pharmacy_stock():
 
         return make_response(jsonify({"stock": stock}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/medicine_near_pharmacies', methods=['GET', 'POST'])
 def medicine_near_pharmacies():
@@ -268,7 +288,7 @@ def medicine_near_pharmacies():
 
         return make_response(jsonify({"pharmaciesStock": pharmacies_stock}), 200)
     
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/update_stock', methods=['POST'])
 def update_stock():
@@ -282,7 +302,7 @@ def update_stock():
 
         return make_response({"status": status}, status)
 
-    return make_response({"status": 400}, 400)
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 
 if __name__ == '__main__':

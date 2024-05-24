@@ -283,6 +283,36 @@ def get_medicine_by_id(id):
         return medicine, MEDICINE_DOES_NOT_EXIST_STATUS
     finally:
         con.close()
+        
+def create_medicine(medicine_id, medicine_name, quantity, purpose, pharmacy_id, image):
+    con = connect_db()
+    try:
+        # TODO - check for possible errors
+        cur = con.cursor()
+        data = (medicine_id, medicine_name, purpose)
+        
+        insert_medicine_query = """ INSERT INTO medicine (medicine_id, name, purpose)
+                                    VALUES (%s, %s, %s) """
+                                    
+        cur.execute(insert_medicine_query, data)
+        
+        data = (pharmacy_id, medicine_id, quantity)
+        insert_stock_query = """INSERT INTO medicine_stock (pharmacy_id, medicine_id, quantity)
+                                VALUES (%s, %s, %s)
+                                ON DUPLICATE KEY UPDATE
+                                quantity = quantity + VALUES(quantity)"""
+                                
+        cur.execute(insert_stock_query, data)
+        con.commit()
+
+        if image == "":
+            return OK_STATUS     
+        
+        save_image(image, medicine_id, "M")
+        return OK_STATUS
+    
+    finally:
+        con.close()
 
 def get_medicines_with_substring(substring):
     con = connect_db()

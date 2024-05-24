@@ -27,7 +27,7 @@ drop table if exists medicine;
     );
 
     create table medicine (
-        medicine_id integer AUTO_INCREMENT primary key not null,
+        medicine_id integer primary key not null,
         name varchar(255) not null,
         purpose varchar(255) not null
     );
@@ -51,9 +51,9 @@ insert into pharmacies (name, address, latitude, longitude) values ('Farmácia A
 
 insert into favorite_pharmacies (user_id, pharmacy_id) values (1, 1);
 
-insert into medicine (name, purpose) values ('Paracetamol', 'Painkiller');
-insert into medicine (name, purpose) values ('Ibuprofen', 'Anti-inflammatory');
-insert into medicine (name, purpose) values ('Zyrtec', 'Antihistamine');
+insert into medicine (medicine_id, name, purpose) values (1, 'Paracetamol', 'Painkiller');
+insert into medicine (medicine_id, name, purpose) values (2, 'Ibuprofen', 'Anti-inflammatory');
+insert into medicine (medicine_id, name, purpose) values (3, 'Zyrtec', 'Antihistamine');
 
 insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (4, 1, 50);
 insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (4, 2, 30);

@@ -1,6 +1,5 @@
 package pt.ulisboa.tecnico.pharmacist.utils
 
-import android.content.Intent
 import com.google.gson.annotations.SerializedName
 
 // Stores data types for RetrofitAPI
@@ -34,9 +33,12 @@ data class Medicine(
 data class MedicineStock(
     val id: String,
     val name: String,
-    val pharmacyId: String,
+    val purpose: String? = null, // used when creating new medicine
+    val pharmacyId: String? = null,
     var stock: Int = 1,
-    var maxStock: Int? = null) // optional
+    var maxStock: Int? = null,
+    val image: String? = "") // used when buying
+
 
 data class MedicinePurpose(
     @SerializedName("name") val name: String,

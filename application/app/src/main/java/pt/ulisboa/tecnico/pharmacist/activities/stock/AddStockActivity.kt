@@ -46,8 +46,12 @@ class AddStockActivity : StockActivity() {
                     }
                 }
                 // if the medicine is not recognizable, goes to new medicine activity
+                // the id of the new medicine will be the unknown id read by the scanner
                 if(response.code() == 453) {
-                    startActivity(Intent(applicationContext, NewMedicineActivity::class.java))
+                    val intent = Intent(applicationContext, NewMedicineActivity::class.java)
+                    intent.putExtra("medicineId", medId)
+                    intent.putExtra("pharmacyId", pharmacyId)
+                    startActivity(intent)
                 }
             }
 

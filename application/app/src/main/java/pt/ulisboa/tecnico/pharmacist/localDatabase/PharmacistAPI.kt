@@ -161,6 +161,10 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.getFavoritePharmaciesRequest(username)
     }
 
+    fun createMedicine(@Body medicine: MedicineStock): Call<StatusResponse> {
+        return retrofitAPI.createMedicineRequest(medicine)
+    }
+
     fun getMedicine(@Body medicine: Medicine): Call<MedicineResponse> {
         return retrofitAPI.getMedicineRequest(medicine)
     }

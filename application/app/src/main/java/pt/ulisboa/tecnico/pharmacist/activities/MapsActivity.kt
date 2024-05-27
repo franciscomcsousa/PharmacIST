@@ -7,7 +7,6 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
-import android.util.ArrayMap
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -64,7 +63,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var autocompleteFragment: AutocompleteSupportFragment
     private var selectedAddress: Place? = null
 
-    private var pharmacies: MutableList<Pharmacy> = mutableListOf()
+    private var activePharmacies: MutableList<Pharmacy> = mutableListOf()
 
     private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
@@ -112,7 +111,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 true
             }
 
-            pharmacies = mutableListOf(Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), ""))
+            activePharmacies = mutableListOf(Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), ""))
 
             // Fetch favorites from the server
             lifecycleScope.launch {
@@ -235,13 +234,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 previousLocation = location
 
                 val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
-                    val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-                    for (pharmacy in pharmaciesList) {
-                        // transform pharmacies into a list of Pharmacy objects
-                        pharmaciesFetched += pharmacy
-                    }
-                    // update the pharmacies list
-                    pharmacies = pharmaciesFetched
+                    // Update the active pharmacies list
+                    activePharmacies = pharmaciesList.toMutableList()
                     Log.d("serverResponse", "Pharmacies retrieved")
 
                     lifecycleScope.launch {
@@ -287,25 +281,25 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private suspend fun getFavorites() {
         val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
-            val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-            for (pharmacy in pharmaciesList) {
-                // transform pharmacies into a list of Pharmacy objects
-                pharmaciesFetched += pharmacy
-            }
-            pharmaciesFavorite = pharmaciesFetched
+            pharmaciesFavorite = pharmaciesList.toMutableList()
             Log.d("serverResponse", "Favorites retrieved")
 
-            for (pharmacy in pharmacies) {
+            for (pharmacy in activePharmacies) {
                 val marker = mMap?.addMarker(MarkerOptions()
                     .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
                     .title(pharmacy.name)
                     .snippet(pharmacy.address)
                 )
 
-                if (pharmaciesFavorite.contains(pharmacy)) {
-                    marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                for (favoritePharmacy in pharmaciesFavorite) {
+                    if (favoritePharmacy.id == pharmacy.id) {
+                        marker?.setIcon(
+                            BitmapDescriptorFactory.defaultMarker(
+                                BitmapDescriptorFactory.HUE_YELLOW
+                            )
+                        )
+                    }
                 }
-
                 marker?.tag = pharmacy
 
                 mMap!!.setOnMarkerClickListener { clickedMarker ->
@@ -330,7 +324,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             ) {
                 if (response.isSuccessful) {
                     Log.d("serverResponse", "UPDATED: ${response.code()}")
-                    for (pharmacy in pharmacies) {
+                    for (pharmacy in activePharmacies) {
                         if (pharmacy.id == id) {
                             val marker = mMap!!.addMarker(MarkerOptions()
                                 .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))

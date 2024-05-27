@@ -253,7 +253,8 @@ class PharmacistAPI(val activity: Activity) {
         for (pharmacy in anyList) {
             // Transform pharmacies into a list of Pharmacy objects
             pharmacies += Pharmacy(
-                pharmacy[0].toString(),
+                // This dumb typecast is unfortunately needed
+                pharmacy[0].toString().toDouble().toInt().toString(),
                 pharmacy[1].toString(),
                 pharmacy[2].toString(),
                 pharmacy[3].toString(),

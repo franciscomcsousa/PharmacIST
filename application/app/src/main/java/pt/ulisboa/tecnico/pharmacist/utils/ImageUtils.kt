@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.util.Base64
 import java.io.File
 import java.io.FileOutputStream
 
@@ -59,6 +60,10 @@ class ImageUtils {
                 }
             }
         }
-    }
 
+        fun b64ImageToBitmap(b64Image: String): Bitmap {
+            val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
+            return BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        }
+    }
 }

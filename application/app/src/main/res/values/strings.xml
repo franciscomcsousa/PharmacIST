@@ -62,10 +62,10 @@
     <string name="dark_mode">Dark Mode</string>
     <string name="medicine_name">Medicine Name</string>
     <string name="pharmacist">PharmacIST</string>
-    <string name="navigate">Navigate to Pharmacy</string>
     <string name="purpose">Purpose/Preferred Use</string>
     <string name="quantity">Quantity to Add</string>
     <string name="create_medicine">Create Medicine</string>
+    <string name="show_on_map">Show on Map</string>
 
 
     <string name="closest_pharmacies">Closest Pharmacies</string>

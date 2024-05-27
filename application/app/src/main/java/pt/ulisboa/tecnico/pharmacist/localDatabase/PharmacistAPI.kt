@@ -7,7 +7,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
+import android.widget.ImageView
 import okio.ByteString.Companion.decodeBase64
+import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
@@ -150,9 +152,6 @@ class PharmacistAPI(val activity: Activity) {
         // ImageUtils.deleteAllImagesFromInternalStorage(activity)
 
         if (bitmap != null) {
-            // Maybe change this to a function
-            val byteArrayOutputStream = ByteArrayOutputStream()
-            bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             onSuccess(bitmap)
         }
 
@@ -165,8 +164,7 @@ class PharmacistAPI(val activity: Activity) {
                 ) {
                     if (response.isSuccessful) {
                         b64Image = response.body()!!.image
-                        val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
-                        val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+                        val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
                         ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
                         onSuccess(bitmap)
                     }
@@ -188,8 +186,6 @@ class PharmacistAPI(val activity: Activity) {
     }
 
     fun getFavoritePharmacies(@Body username: String, onSuccess : (List<Pharmacy>) -> Unit) {
-
-        // TODO - do we want to cache this? Perhaps to have the favorite pharmacies always up to date, same user in different location can interfere
 
         val call: Call<PharmaciesResponse> = retrofitAPI.getFavoritePharmaciesRequest(username)
         call.enqueue(object : Callback<PharmaciesResponse> {
@@ -220,8 +216,37 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.getMedicineByIdRequest(medicineId)
     }
 
-    fun medicineImage(@Query("id") medicineId: String): Call<ImageResponse> {
-        return retrofitAPI.medicineImageRequest(medicineId)
+    fun medicineImage(@Query("id") medicineId: String, onSuccess: (Bitmap) -> Unit) {
+        var b64Image = ""
+        var bitmap = ImageUtils.loadImageFromInternalStorage("M_$medicineId", activity)
+
+        // Uncomment this to delete all cached images
+        // ImageUtils.deleteAllImagesFromInternalStorage(activity)
+
+        if (bitmap != null) {
+            onSuccess(bitmap)
+        }
+
+        else {
+            val call: Call<ImageResponse> = retrofitAPI.medicineImageRequest(medicineId)
+            call.enqueue(object : Callback<ImageResponse> {
+                override fun onResponse(
+                    call: Call<ImageResponse>,
+                    response: Response<ImageResponse>
+                ) {
+                    if (response.isSuccessful) {
+                        b64Image = response.body()!!.image
+                        val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
+                        ImageUtils.saveImageToInternalStorage(bitmap, "M_$medicineId", activity)
+                        onSuccess(bitmap)
+                    }
+                }
+
+                override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+                    onFailureHandler(t)
+                }
+            })
+        }
     }
 
     fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse> {
@@ -244,7 +269,7 @@ class PharmacistAPI(val activity: Activity) {
     }
 
     fun updateStock(@Body listMedicineStock: List<MedicineStock>): Call<StatusResponse> {
-        return return retrofitAPI.updateStockRequest(listMedicineStock)
+        return retrofitAPI.updateStockRequest(listMedicineStock)
     }
 
     // Auxiliary functions

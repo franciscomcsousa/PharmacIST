@@ -2,6 +2,7 @@ package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -97,32 +98,14 @@ class MedicineInformationActivity : AppCompatActivity(),
         LocationUtils.getUserLocation(locationCallback, this)
     }
 
-    // TODO - revisit with cache
-    // request medicine image
     private fun medicineImage(medicineId: String) {
+        val onSuccess : (Bitmap) -> Unit = {bitmap ->
+            // Set the bitmap to the ImageView
+            findViewById<ImageView>(R.id.panel_medicine_image).setImageBitmap(bitmap)
 
-        val call: Call<ImageResponse> = pharmacistAPI.medicineImage(medicineId)
-        call.enqueue(object : Callback<ImageResponse> {
-            override fun onResponse(
-                call: Call<ImageResponse>,
-                response: Response<ImageResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val b64Image = response.body()!!.image
-                    val decodedBytes = Base64.decode(b64Image, Base64.DEFAULT)
-                    val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-
-                    // Set the bitmap to the ImageView
-                    findViewById<ImageView>(R.id.panel_medicine_image).setImageBitmap(bitmap)
-
-                    Log.d("serverResponse", "Medicine image retrieved")
-                }
-            }
-
-            override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: " + t.message)
-            }
-        })
+            Log.d("serverResponse", "Medicine image retrieved")
+        }
+        pharmacistAPI.medicineImage(medicineId, onSuccess)
     }
 
 

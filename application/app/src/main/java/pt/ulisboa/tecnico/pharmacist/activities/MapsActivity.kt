@@ -68,8 +68,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
-    private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -106,7 +104,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .snippet(pharmacyAddress)
             )
 
-            pharmacyImage(pharmacyId)
             marker?.tag = Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), "")
 
             mMap!!.setOnMarkerClickListener { clickedMarker ->
@@ -149,13 +146,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
         val bottomDrawerView = layoutInflater.inflate(R.layout.drawer_pharmacy_layout, null)
-        //pharmacy.id?.let { pharmacyImage(it) }
 
         // Update views with pharmacy information
         // For example:
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_name)?.text = pharmacy.name
         bottomDrawerView.findViewById<TextView>(R.id.pharmacy_address)?.text = pharmacy.address
-        bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)?.setImageBitmap(pharmacyImages[pharmacy.id])
+        val imageView = bottomDrawerView.findViewById<ImageView>(R.id.pharmacy_image)
+
+        pharmacy.id?.let { pharmacyImage(it, imageView) }
 
         val favoriteButton = bottomDrawerView.findViewById<ToggleButton>(R.id.favorite_btn)
         lifecycleScope.launch {
@@ -249,23 +247,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     lifecycleScope.launch {
                         getFavorites()
                     }
-
-                    // TODO - this might waste too much resources
-                    // Only way to correctly preview image
-                    for (pharmacy in pharmacies) {
-                        pharmacy.id?.let { pharmacyImage(it) }
-                    }
                 }
-
                 pharmacistAPI.getPharmacies(location, onSuccess)
             }
         }
         LocationUtils.getUserLocation(locationCallback, this)
     }
 
-    private fun pharmacyImage(id: String) {
+    private fun pharmacyImage(id: String, imageView: ImageView) {
         val onSuccess: (Bitmap) -> Unit = {bitmapImage ->
-            pharmacyImages[id] = bitmapImage
+            imageView.setImageBitmap(bitmapImage)
+            //pharmacyImages[id] = bitmapImage
             Log.d("serverResponse", "Pharmacy image retrieved")
         }
         pharmacistAPI.pharmacyImage(id, onSuccess)

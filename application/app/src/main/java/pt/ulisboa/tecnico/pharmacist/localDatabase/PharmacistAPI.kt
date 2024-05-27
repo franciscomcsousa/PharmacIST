@@ -151,8 +151,6 @@ class PharmacistAPI(val activity: Activity) {
 
         if (bitmap != null) {
             // Maybe change this to a function
-            println("WOOOO")
-            println("USED CACHE :D")
             val byteArrayOutputStream = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
             onSuccess(bitmap)

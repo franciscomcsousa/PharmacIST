@@ -19,8 +19,8 @@ class LoadingScreenActivity: AppCompatActivity() {
         dataStore = DataStoreManager(this@LoadingScreenActivity)
         checkThemeMode()
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_loading_screen)
+        enableEdgeToEdge()
 
         Handler().postDelayed({
             val intent = Intent(this, LoginActivity::class.java)

@@ -31,7 +31,6 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_pharmacy_information)
 
         val pharmacyName = intent.getStringExtra("pharmacyName")

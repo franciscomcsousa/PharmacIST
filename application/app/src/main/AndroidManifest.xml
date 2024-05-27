@@ -110,6 +110,9 @@
             android:name=".activities.stock.AddStockActivity"
             android:exported="false"
             android:label="@string/title_activity_add_stock" />
+        <activity android:name=".activities.SettingsActivity"
+            android:exported="false"
+            android:label="SettingsActivity"/>
 
         <provider
             android:name="androidx.core.content.FileProvider"

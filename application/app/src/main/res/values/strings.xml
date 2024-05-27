@@ -71,5 +71,6 @@
     <string name="closest_pharmacies">Closest Pharmacies</string>
     <string name="stock">Stock</string>
     <string name="share">Share</string>
+    <string name="clear_cache">Clear Cache</string>
 
 </resources>

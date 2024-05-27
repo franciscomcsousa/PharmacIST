@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.pharmacist.activities
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import com.google.android.material.navigation.NavigationView
 import androidx.navigation.findNavController
@@ -45,23 +46,6 @@ class NavigationDrawerActivity : AppCompatActivity() {
         ), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-
-        checkThemeMode()
-
-        val modeSwitch = findViewById<SwitchCompat>(R.id.switch_mode)
-        modeSwitch.setOnClickListener(View.OnClickListener{
-            if (modeSwitch.isChecked) {
-                setAppTheme(true)
-                // this is to make sure the datastore is updated before the activity restarts
-                Thread.sleep(100)
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            } else {
-                setAppTheme(false)
-                // this is to make sure the datastore is updated before the activity restarts
-                Thread.sleep(100)
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -90,31 +74,8 @@ class NavigationDrawerActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun checkThemeMode() {
-        lifecycleScope.launch {
-            val isDarkMode = getAppTheme()
-            if (isDarkMode) {
-                val modeSwitch = findViewById<SwitchCompat>(R.id.switch_mode)
-                modeSwitch.isChecked = true
-                modeSwitch.text = "Dark Mode"
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
-            }
-            else {
-                val modeSwitch = findViewById<SwitchCompat>(R.id.switch_mode)
-                modeSwitch.isChecked = false
-                modeSwitch.text = "Light Mode"
-                AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-            }
-        }
-    }
-
-    private suspend fun getAppTheme(): Boolean {
-        return dataStore.getTheme()
-    }
-
-    private fun setAppTheme(theme: Boolean) {
-        lifecycleScope.launch {
-            dataStore.setTheme(theme)
-        }
+    fun enterSettings(item: MenuItem) {
+        val intent = Intent(this, SettingsActivity::class.java)
+        startActivity(intent)
     }
 }

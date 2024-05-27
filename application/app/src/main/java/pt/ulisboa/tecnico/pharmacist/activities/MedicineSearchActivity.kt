@@ -33,7 +33,6 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_medicine_search)
 
         LocationUtils.requestPermissions(this)

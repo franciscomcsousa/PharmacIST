@@ -62,38 +62,15 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
         db.execSQL(MEDICINE)
     }
 
-    // For testing purposes
-    fun foo() {
-        val db = this.writableDatabase
+    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
 
-        val query = """
-            insert into pharmacies (name, address, latitude, longitude)
-                values ('Farmácia Rossio', 'Rua Augusta 1, 1250-162 Lisboa', 38.712790, -9.137420);
-        """.trimIndent()
-
-        val response = db.execSQL(query)
-
-        val cursor = db.query("pharmacies", null, null, null, null, null, null)
-
-        with(cursor) {
-            while (moveToNext()) {
-                val name = getString(getColumnIndexOrThrow("name"))
-                val address = getString(getColumnIndexOrThrow("address"))
-                val latitude = getDouble(getColumnIndexOrThrow("latitude"))
-                val longitude = getDouble(getColumnIndexOrThrow("longitude"))
-                println(name)
-                println(address)
-                println(latitude)
-                println(longitude)
-            }
-        }
+        onCreate(db)
     }
 
-    override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
+    fun dropAllTables(db: SQLiteDatabase) {
         db.execSQL("DROP TABLE IF EXISTS pharmacies")
         db.execSQL("DROP TABLE IF EXISTS favorite_pharmacies")
         db.execSQL("DROP TABLE IF EXISTS medicine")
         db.execSQL("DROP TABLE IF EXISTS medicine_stock")
-        onCreate(db)
     }
 }

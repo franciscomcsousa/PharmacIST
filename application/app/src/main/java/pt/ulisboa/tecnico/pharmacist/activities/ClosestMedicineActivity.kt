@@ -23,7 +23,6 @@ class ClosestMedicineActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_closest_medicine)
 
         // Retrieve the medicine and pharmacy from the intent

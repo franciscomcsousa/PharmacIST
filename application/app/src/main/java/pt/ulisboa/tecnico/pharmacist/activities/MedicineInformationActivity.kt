@@ -37,7 +37,6 @@ class MedicineInformationActivity : AppCompatActivity(),
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
         setContentView(R.layout.activity_medicine_information)
 
         LocationUtils.requestPermissions(this)

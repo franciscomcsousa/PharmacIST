@@ -112,17 +112,7 @@ class PharmacistAPI(val activity: Activity) {
                 ) {
                     if (response.isSuccessful) {
                         val pharmaciesList = response.body()!!.pharmacies
-                        pharmacies = mutableListOf()
-                        for (pharmacy in pharmaciesList) {
-                            // Transform pharmacies into a list of Pharmacy objects
-                            pharmacies += Pharmacy(
-                                pharmacy[0].toString(),
-                                pharmacy[1].toString(),
-                                pharmacy[2].toString(),
-                                pharmacy[3].toString(),
-                                pharmacy[4].toString(),
-                                "")
-                        }
+                        pharmacies = anyListToPharmacyList(pharmaciesList)
 
                         // Update local database with new remotely fetched pharmacies
                         for (pharmacy in pharmaciesList) {
@@ -141,7 +131,7 @@ class PharmacistAPI(val activity: Activity) {
                     }
                 }
                 override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
-                    Log.d("serverResponse", "FAILED: " + t.message)
+                    onFailureHandler(t)
                 }
             })
         }
@@ -151,7 +141,7 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.createPharmacyRequest(pharmacy)
     }
 
-    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit): Call<ImageResponse> {
+    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit) {
 
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("P_$id", activity)
@@ -185,12 +175,10 @@ class PharmacistAPI(val activity: Activity) {
                 }
 
                 override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-                    Log.d("serverResponse", "FAILED: " + t.message)
+                    onFailureHandler(t)
                 }
             })
         }
-
-        return retrofitAPI.pharmacyImageRequest(id)
     }
 
     fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse> {
@@ -201,8 +189,25 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.isPharmacyFavoriteRequest(favoritePharmacy)
     }
 
-    fun getFavoritePharmacies(@Body username: String): Call<PharmaciesResponse> {
-        return retrofitAPI.getFavoritePharmaciesRequest(username)
+    fun getFavoritePharmacies(@Body username: String, onSuccess : (List<Pharmacy>) -> Unit) {
+
+        // TODO - do we want to cache this? Perhaps to have the favorite pharmacies always up to date, same user in different location can interfere
+
+        val call: Call<PharmaciesResponse> = retrofitAPI.getFavoritePharmaciesRequest(username)
+        call.enqueue(object : Callback<PharmaciesResponse> {
+            override fun onResponse(
+                call: Call<PharmaciesResponse>,
+                response: Response<PharmaciesResponse>
+            ) {
+                val anyList = response.body()!!.pharmacies
+                val pharmaciesList = anyListToPharmacyList(anyList)
+                onSuccess(pharmaciesList)
+            }
+
+            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
     fun createMedicine(@Body medicine: MedicineStock): Call<StatusResponse> {
@@ -244,4 +249,23 @@ class PharmacistAPI(val activity: Activity) {
         return return retrofitAPI.updateStockRequest(listMedicineStock)
     }
 
+    // Auxiliary functions
+    private fun anyListToPharmacyList(anyList : List<List<Any>>) : MutableList<Pharmacy> {
+        val pharmacies : MutableList<Pharmacy> = mutableListOf()
+        for (pharmacy in anyList) {
+            // Transform pharmacies into a list of Pharmacy objects
+            pharmacies += Pharmacy(
+                pharmacy[0].toString(),
+                pharmacy[1].toString(),
+                pharmacy[2].toString(),
+                pharmacy[3].toString(),
+                pharmacy[4].toString(),
+                "")
+        }
+        return pharmacies
+    }
+
+    private fun onFailureHandler(t: Throwable) {
+        Log.d("serverResponse","FAILED: "+ t.message)
+    }
 }

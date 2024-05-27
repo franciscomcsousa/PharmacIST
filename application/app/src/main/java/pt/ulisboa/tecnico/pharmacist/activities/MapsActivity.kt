@@ -314,51 +314,37 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private suspend fun getFavorites() {
-        val username = getUsername()
-        val call: Call<PharmaciesResponse> = pharmacistAPI.getFavoritePharmacies(username)
-        call.enqueue(object : Callback<PharmaciesResponse> {
-            override fun onResponse(
-                call: Call<PharmaciesResponse>,
-                response: Response<PharmaciesResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val pharmaciesList = response.body()!!.pharmacies
-                    val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
-                    for (pharmacy in pharmaciesList) {
-                        // transform pharmacies into a list of Pharmacy objects
-                        pharmaciesFetched += Pharmacy(pharmacy[0].toString() ,pharmacy[1].toString(), pharmacy[2].toString(),
-                            pharmacy[3].toString(), pharmacy[4].toString(), "")
-                    }
-                    pharmaciesFavorite = pharmaciesFetched
-                    Log.d("serverResponse", "Favorites retrieved")
+        val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
+            val pharmaciesFetched: MutableList<Pharmacy> = mutableListOf()
+            for (pharmacy in pharmaciesList) {
+                // transform pharmacies into a list of Pharmacy objects
+                pharmaciesFetched += pharmacy
+            }
+            pharmaciesFavorite = pharmaciesFetched
+            Log.d("serverResponse", "Favorites retrieved")
 
-                    for (pharmacy in pharmacies) {
-                        val marker = mMap?.addMarker(MarkerOptions()
-                            .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
-                            .title(pharmacy.name)
-                            .snippet(pharmacy.address)
-                        )
+            for (pharmacy in pharmacies) {
+                val marker = mMap?.addMarker(MarkerOptions()
+                    .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                    .title(pharmacy.name)
+                    .snippet(pharmacy.address)
+                )
 
-                        if (pharmaciesFavorite.contains(pharmacy)) {
-                            marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                        }
+                if (pharmaciesFavorite.contains(pharmacy)) {
+                    marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                }
 
-                        marker?.tag = pharmacy
+                marker?.tag = pharmacy
 
-                        mMap!!.setOnMarkerClickListener { clickedMarker ->
-                            val clickedPharmacy = clickedMarker.tag as Pharmacy
-                            showPharmacyDrawer(clickedPharmacy)
-                            true // Return true to indicate that the listener has consumed the event
-                        }
-                    }
+                mMap!!.setOnMarkerClickListener { clickedMarker ->
+                    val clickedPharmacy = clickedMarker.tag as Pharmacy
+                    showPharmacyDrawer(clickedPharmacy)
+                    true // Return true to indicate that the listener has consumed the event
                 }
             }
-
-            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
-                // we get error response from API.
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
+        }
+        val username = getUsername()
+        pharmacistAPI.getFavoritePharmacies(username, onSuccess)
     }
 
     private suspend fun handleFavoriteButton(id: String) {

@@ -11,7 +11,7 @@ import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
+import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.MedicinePurpose
@@ -35,7 +35,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medicine_search)
 
-        LocationUtils.requestPermissions(this)
+        PermissionUtils.requestPermissions(this)
 
         val searchView = findViewById<SearchView>(R.id.searchView)
         searchView.clearFocus()
@@ -125,7 +125,7 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
                 })
             }
         }
-        LocationUtils.getUserLocation(locationCallback, this)
+        PermissionUtils.getUserLocation(locationCallback, this)
     }
 
     private fun navigateToMedicineDetailsActivity(medicine: MedicinePurpose, pharmacy: Pharmacy) {

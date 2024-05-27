@@ -15,7 +15,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
+import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
@@ -39,7 +39,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medicine_information)
 
-        LocationUtils.requestPermissions(this)
+        PermissionUtils.requestPermissions(this)
 
         val medicineName = intent.getStringExtra("medicineName")
         val medicineId = intent.getStringExtra("medicineId")
@@ -94,7 +94,7 @@ class MedicineInformationActivity : AppCompatActivity(),
                 })
             }
         }
-        LocationUtils.getUserLocation(locationCallback, this)
+        PermissionUtils.getUserLocation(locationCallback, this)
     }
 
     private fun medicineImage(medicineId: String) {

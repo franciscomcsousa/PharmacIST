@@ -277,7 +277,6 @@ def pharmacy_stock():
         pharmacy_id = data['pharmacyId']
 
         medicine, status = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)
-        print(medicine)
         return make_response(jsonify({"medicine": medicine}), status)
     
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)

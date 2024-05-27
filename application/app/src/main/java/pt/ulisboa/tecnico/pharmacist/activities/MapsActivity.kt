@@ -34,7 +34,7 @@ import pt.ulisboa.tecnico.pharmacist.BuildConfig
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
+import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
@@ -85,7 +85,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        if (LocationUtils.requestPermissions(this)) {
+        if (PermissionUtils.requestPermissions(this)) {
             enableUserLocation()
             centerUserLocation()
         }
@@ -189,7 +189,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     startActivity(intent)
                 }
             }
-            LocationUtils.getUserLocation(locationCallback, this)
+            PermissionUtils.getUserLocation(locationCallback, this)
         }
 
         val bottomSheetDialog = BottomSheetDialog(this)
@@ -246,7 +246,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 pharmacistAPI.getPharmacies(location, onSuccess)
             }
         }
-        LocationUtils.getUserLocation(locationCallback, this)
+        PermissionUtils.getUserLocation(locationCallback, this)
     }
 
     private fun pharmacyImage(id: String, imageView: ImageView) {
@@ -369,7 +369,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 mMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
             }
         }
-        LocationUtils.getUserLocation(locationCallback, this)
+        PermissionUtils.getUserLocation(locationCallback, this)
     }
 
     override fun onRequestPermissionsResult(

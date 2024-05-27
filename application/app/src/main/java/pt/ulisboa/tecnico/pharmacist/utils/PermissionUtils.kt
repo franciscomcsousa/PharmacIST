@@ -4,14 +4,18 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 
-class LocationUtils {
+class PermissionUtils {
 
     companion object {
         private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
+        private val PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE = 1002   // good practice
+
         fun requestPermissions(activity: Activity) : Boolean {
             // verify permissions
             if (ContextCompat.checkSelfPermission(
@@ -28,6 +32,28 @@ class LocationUtils {
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_REQUEST_ACCESS_LOCATION_CODE
                 )
+                return false
+            }
+        }
+
+        fun requestNotificationPermissions(activity: Activity) : Boolean {
+            // verify permissions
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                return true
+            }
+                else {
+                // Permission is not granted, request it
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    ActivityCompat.requestPermissions(
+                        activity,
+                        arrayOf(Manifest.permission.POST_NOTIFICATIONS),
+                        PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE
+                    )
+                }
                 return false
             }
         }

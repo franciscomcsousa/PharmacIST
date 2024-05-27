@@ -193,7 +193,6 @@ def update_favorite_pharmacies(username, pharmacyId):
             return USER_DOES_NOT_EXIST_STATUS
             
     except Exception as e:
-        print("Error:", e)
         return DATABASE_ERROR_STATUS
     finally:
         cur.close()
@@ -386,7 +385,6 @@ def save_image(image, id, type):
 def get_image(id, type):
     path = f"images/{type}_{id}.png"
 
-    print(path)
     # TODO - make default image be loaded in the app by default
     if not os.path.exists(path=path):
         with open("images/default.png", 'rb') as f:

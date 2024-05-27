@@ -112,6 +112,21 @@ def get_pharmacies():
     
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
+@app.route('/nearby_pharmacies', methods=['GET', 'POST'])
+def get_nearby_pharmacies():
+    if request.method == 'GET':
+        pass
+
+    if request.method == 'POST':
+        data = request.get_json()
+        latitude = data['latitude']
+        longitude = data['longitude']
+        pharmacies = get_nearby_pharmacies_db(latitude, longitude)
+
+        return make_response(jsonify({"pharmacies": pharmacies}), 200)
+    
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
+
 @app.route('/pharmacy_image', methods=['GET', 'POST'])
 def get_pharmacy_image():
     if request.method == 'GET':

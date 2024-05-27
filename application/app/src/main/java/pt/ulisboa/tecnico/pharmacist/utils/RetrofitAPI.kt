@@ -24,6 +24,9 @@ interface RetrofitAPI {
     @POST("pharmacies")
     fun getPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
 
+    @POST("/nearby_pharmacies")
+    fun getNearbyPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
+
     @POST("create_pharmacy")
     fun createPharmacyRequest(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse>
 

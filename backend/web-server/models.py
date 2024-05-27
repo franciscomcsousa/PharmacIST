@@ -91,6 +91,18 @@ def get_closest_pharmacies(latitude, longitude):
     finally:
         con.close()
 
+def get_nearby_pharmacies_db(latitude, longitude):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (latitude, longitude)
+        query = 'SELECT * FROM pharmacies WHERE ABS((latitude - %s)) + ABS((longitude - %s)) < 0.003'
+        cur.execute(query, data)
+        pharmacies = cur.fetchall()
+        return pharmacies
+    finally:
+        con.close()
+
 def serialize_pharmacy(name, address, latitude, longitude, image):
     con = connect_db()
     try:

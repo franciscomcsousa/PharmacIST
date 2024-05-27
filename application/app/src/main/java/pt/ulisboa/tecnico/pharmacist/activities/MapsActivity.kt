@@ -90,34 +90,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             centerUserLocation()
         }
 
-        // If the intent was started by the ClosestMedicineActivity, show the pharmacy only
         if (intent.hasExtra("pharmacyLatitude") && intent.hasExtra("pharmacyLongitude")) {
-            val pharmacyId = intent.getStringExtra("pharmacyId")!!
+            val pharmacyId = intent.getStringExtra("pharmacyId")!!.toDouble().toInt().toString()
             val pharmacyName = intent.getStringExtra("pharmacyName")!!
             val pharmacyAddress = intent.getStringExtra("pharmacyAddress")!!
             val pharmacyLatitude = intent.getStringExtra("pharmacyLatitude")!!.toDouble()
             val pharmacyLongitude = intent.getStringExtra("pharmacyLongitude")!!.toDouble()
 
-            val marker = mMap?.addMarker(MarkerOptions()
-                .position(LatLng(pharmacyLatitude, pharmacyLongitude))
-                .title(pharmacyName)
-                .snippet(pharmacyAddress)
-            )
-
-            marker?.tag = Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), "")
-
-            mMap!!.setOnMarkerClickListener { clickedMarker ->
-                val clickedPharmacy = clickedMarker.tag as Pharmacy
-                showPharmacyDrawer(clickedPharmacy)
-                true
-            }
-
             activePharmacies = mutableListOf(Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), ""))
 
-            // Fetch favorites from the server
             lifecycleScope.launch {
                 getFavorites()
             }
+
+            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(pharmacyLatitude, pharmacyLongitude), 16f))
 
             return
         }

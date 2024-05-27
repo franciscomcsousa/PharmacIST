@@ -204,6 +204,26 @@ class PharmacistAPI(val activity: Activity) {
         })
     }
 
+    fun getNearbyPharmacies(@Body location: Location?, onSuccess: (List<Pharmacy>) -> Unit) {
+        val call: Call<PharmaciesResponse> = retrofitAPI.getNearbyPharmaciesRequest(location)
+        call.enqueue(object : Callback<PharmaciesResponse> {
+            override fun onResponse(
+                call: Call<PharmaciesResponse>,
+                response: Response<PharmaciesResponse>
+            ) {
+                if (response.isSuccessful) {
+                    val pharmaciesList = response.body()!!.pharmacies
+                    val pharmacies = anyListToPharmacyList(pharmaciesList)
+                    onSuccess(pharmacies)
+                }
+            }
+
+            override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
+    }
+
     fun createMedicine(@Body medicine: MedicineStock): Call<StatusResponse> {
         return retrofitAPI.createMedicineRequest(medicine)
     }

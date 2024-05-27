@@ -1,11 +1,13 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
+import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.os.Handler
+import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -18,15 +20,15 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.appcompat.app.AppCompatActivity
-import androidx.work.OneTimeWorkRequest
-import androidx.work.WorkManager
-import androidx.work.WorkRequest
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityDrawerBinding
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
-import pt.ulisboa.tecnico.pharmacist.utils.NotificationWorker
+import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -40,6 +42,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
     private var handler: Handler? = null
+    private val pharmacistAPI = PharmacistAPI(this)
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
@@ -75,11 +78,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
             override fun run() {
                 handler = Handler(mainLooper)
                 handler!!.post {
-                    //getNearbyPharmacies()
-
-                    val notificationWorkRequest:WorkRequest = OneTimeWorkRequest.Builder(NotificationWorker::class.java)
-                        .build()
-                    WorkManager.getInstance(applicationContext).enqueue(notificationWorkRequest)
+                    getNearbyPharmacies()
                 }
             }
         }
@@ -123,14 +122,27 @@ class NavigationDrawerActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    @SuppressLint("MissingPermission")
     private fun getNearbyPharmacies() {
         val locationCallback : (Location?) -> Unit = { location ->
             if (location != null  && (previousLocation == null ||
                 abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
                 abs(location.longitude - previousLocation!!.longitude) > 0.0001)) {
                 previousLocation = location
-                println("AQUI")
 
+                val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
+                    Log.d("Pharmacies", pharmaciesList.toString())
+                    for (pharmacy in pharmaciesList) {
+                        val notification = NotificationCompat.Builder(applicationContext, "default")
+                            .setSmallIcon(androidx.loader.R.drawable.notification_bg)
+                            .setContentTitle("Nearby pharmacy")
+                            .setContentText("You are near ${pharmacy.name}")
+                            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .build()
+                        NotificationManagerCompat.from(applicationContext).notify(pharmacy.id.hashCode(), notification)
+                    }
+                }
+                pharmacistAPI.getNearbyPharmacies(location, onSuccess)
             }
         }
         PermissionUtils.getUserLocation(locationCallback, this)

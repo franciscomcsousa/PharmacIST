@@ -18,7 +18,7 @@ class MedicineBarcodeAdapter(
 ) : RecyclerView.Adapter<MedicineBarcodeAdapter.ViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.medicine_stock_card, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.card_medicine_stock, parent, false)
         return ViewHolder(view)
     }
 

@@ -19,19 +19,15 @@ class MedicineSearchAdapter(
         // inflates the medicine_card view
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.medicine_card, parent, false)
+            .inflate(R.layout.card_medicine, parent, false)
 
         return ViewHolder(view)
     }
 
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-
         val medicineViewModel = medicineList[position]
-
-        holder.imageView.setImageResource(medicineViewModel.image)
         holder.textView.text = medicineViewModel.text
-
     }
 
     override fun getItemCount(): Int {
@@ -44,7 +40,6 @@ class MedicineSearchAdapter(
 
     // Holds the views for adding it to image and text
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
-        val imageView: ImageView = itemView.findViewById(R.id.medicine_image_view)
         val textView: TextView = itemView.findViewById(R.id.medicine_text_view)
 
         init {

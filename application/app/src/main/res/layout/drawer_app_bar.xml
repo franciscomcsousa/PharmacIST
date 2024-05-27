@@ -20,7 +20,7 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_drawer" />
+    <include layout="@layout/drawer_content" />
 
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/switch_mode"

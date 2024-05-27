@@ -17,7 +17,7 @@ class PharmacyStockSearchAdapter(
         // inflates the medicine_card view
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.pharmacy_stock_card, parent, false)
+            .inflate(R.layout.card_pharmacy_stock, parent, false)
 
         return ViewHolder(view)
     }

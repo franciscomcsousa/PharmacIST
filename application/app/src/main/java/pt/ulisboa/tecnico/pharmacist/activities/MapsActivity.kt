@@ -4,12 +4,10 @@ import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.ArrayMap
-import android.util.Base64
 import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
@@ -37,9 +35,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.LocationUtils
-import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
@@ -56,7 +52,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var mMap: GoogleMap? = null
     private var binding: ActivityMapsBinding? = null
     private var previousLocation: Location? = null
-    private var needNewMarkers = false
     private var timer: Timer? = null
     private var timerTask: TimerTask? = null
     private var handler: Handler? = null
@@ -73,7 +68,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
-    // TODO - Later create a cache to store these images
     private var pharmacyImages: ArrayMap<String, Bitmap> = ArrayMap()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,12 +125,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             return
         }
 
+        getPharmacies()
+
         timer = Timer()
         timerTask = object : TimerTask() {
             override fun run() {
                 handler = Handler(mainLooper)
                 handler!!.post {
-                    mapPharmacies()
+                    getPharmacies()
                 }
             }
         }
@@ -149,23 +145,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         timer?.purge()
     }
 
-    private fun mapPharmacies() {
-        // Fetch pharmacies from the server
-        getPharmacies()
-
-        // Only add markers if new pharmacies were fetched
-        if (needNewMarkers) {
-            // Fetch favorites from the server and add markers to all pharmacies
-            lifecycleScope.launch {
-                getFavorites()
-            }
-
-            needNewMarkers = false
-        }
-    }
-
-
-    // TODO - possibly change it to be a fragment ?
     // Information of pharmacy selected
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
@@ -251,8 +230,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun getPharmacies() {
         val locationCallback : (Location?) -> Unit = { location ->
-            // sometimes it might not be able to fetch
-            // TODO - maybe when null use the last non-null value
             // Fetch pharmacies only if the location has changed significantly
             if (location != null  && (previousLocation == null ||
                 abs(location.latitude - previousLocation!!.latitude) > 0.0001 ||
@@ -267,8 +244,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     }
                     // update the pharmacies list
                     pharmacies = pharmaciesFetched
-                    needNewMarkers = true
                     Log.d("serverResponse", "Pharmacies retrieved")
+
+                    lifecycleScope.launch {
+                        getFavorites()
+                    }
 
                     // TODO - this might waste too much resources
                     // Only way to correctly preview image

@@ -377,17 +377,17 @@ def save_image(image, id, type):
     decoded_image = base64.b64decode(image)
     
     # TODO - create images dir if it doesn't exist
-    path = f"images/{type}_{id}.png"
+    path = f"images/{type}_{id}.jpg"
 
     with open(path, 'wb') as f:
         f.write(decoded_image)
 
 def get_image(id, type):
-    path = f"images/{type}_{id}.png"
+    path = f"images/{type}_{id}.jpg"
 
     # TODO - make default image be loaded in the app by default
     if not os.path.exists(path=path):
-        with open("images/default.png", 'rb') as f:
+        with open("images/default.jpg", 'rb') as f:
             image = f.read()
             return image
     else:

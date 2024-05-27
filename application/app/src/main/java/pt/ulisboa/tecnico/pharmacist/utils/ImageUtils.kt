@@ -17,13 +17,13 @@ class ImageUtils {
             val directory = context.getDir("images", Context.MODE_PRIVATE)
 
             // Create a file within the directory
-            val imageFile = File(directory, "$imageName.png")
+            val imageFile = File(directory, "$imageName.jpg")
 
             var fos: FileOutputStream? = null
             try {
                 fos = FileOutputStream(imageFile)
                 // Compress the bitmap and write to the output stream
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos)
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 100, fos)
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -37,7 +37,7 @@ class ImageUtils {
             val directory = context.getDir("images", Context.MODE_PRIVATE)
 
             // Create a file within the directory
-            val imageFile = File(directory, "$imageName.png")
+            val imageFile = File(directory, "$imageName.jpg")
 
             return if (imageFile.exists()) {
                 BitmapFactory.decodeFile(imageFile.absolutePath)

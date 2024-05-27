@@ -34,6 +34,7 @@ abstract class MediaPickerHandlerActivity : AppCompatActivity() {
 
     protected var currentUri: Uri? = null
     private val CAMERA_PERMISSION_REQUEST_CODE = 1002
+    private val MAX_IMAGE_SIZE = 100 // in kB
 
     private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
         if (uri != null) {
@@ -129,8 +130,17 @@ abstract class MediaPickerHandlerActivity : AppCompatActivity() {
         val bitmap = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()
 
+        val maxFileSize = MAX_IMAGE_SIZE * 1024
+        var quality = 100
         val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+        // Compress the image until its size is less than the maximum
+        do {
+            byteArrayOutputStream.reset()
+            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+            quality -= 10
+        } while (byteArrayOutputStream.size() > maxFileSize && quality > 0)
+
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }

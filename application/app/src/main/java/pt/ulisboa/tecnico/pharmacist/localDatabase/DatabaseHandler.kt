@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper
 class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION) {
     companion object {
         private const val DATABASE_NAME = "pharmacistCache.db"
-        private const val DATABASE_VERSION = 3
+        private const val DATABASE_VERSION = 6
     }
 
     override fun onCreate(db: SQLiteDatabase) {
@@ -63,7 +63,7 @@ class DatabaseHandler(context: Context) : SQLiteOpenHelper(context, DATABASE_NAM
     }
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
-
+        dropAllTables(db)
         onCreate(db)
     }
 

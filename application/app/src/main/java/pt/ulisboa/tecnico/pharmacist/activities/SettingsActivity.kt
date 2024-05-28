@@ -21,11 +21,14 @@ class SettingsActivity : AppCompatActivity() {
 
     private lateinit var dataStore: DataStoreManager
 
+    private lateinit var dbHandler: DatabaseHandler
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_settings)
 
         dataStore = DataStoreManager(this@SettingsActivity)
+        dbHandler = DatabaseHandler(this)
 
         checkThemeMode()
 
@@ -55,7 +58,9 @@ class SettingsActivity : AppCompatActivity() {
         builder.setMessage("Are you sure clear the cache?")
 
         builder.setPositiveButton("Yes") { dialog, _ ->
-            // TODO - also remove database entries - pharmacies, favorites, etc
+            val db = dbHandler.writableDatabase
+            dbHandler.dropAllTables(db)
+            dbHandler.onCreate(db)
             ImageUtils.deleteAllImagesFromInternalStorage(this)
             dialog.dismiss()
         }

@@ -30,7 +30,7 @@ import java.util.Locale
 
 class MediaPickerHandler(private val activity: Activity, private val imageView: ImageView) {
 
-    private val MAX_IMAGE_SIZE = 100 // in kB
+    private val MAX_IMAGE_SIZE = 50 // in kB
     var currentUri: Uri? = null
     private val CAMERA_PERMISSION_REQUEST_CODE = 1003
 
@@ -115,21 +115,50 @@ class MediaPickerHandler(private val activity: Activity, private val imageView: 
     // Maybe useful later?
     fun encodeImageToBase64(uri: Uri?): String {
         if (uri == null) return ""
+
         val inputStream = activity.contentResolver.openInputStream(uri)
         val bitmap = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()
 
+        // Desired maximum width and height
+        val maxWidth = 1000
+        val maxHeight = 1000
+
+        // Get the original width and height of the bitmap
+        val originalWidth = bitmap.width
+        val originalHeight = bitmap.height
+
+        // Calculate the new dimensions while maintaining the aspect ratio
+        val aspectRatio: Float = originalWidth.toFloat() / originalHeight.toFloat()
+        var newWidth = originalWidth
+        var newHeight = originalHeight
+
+        if (originalWidth > maxWidth || originalHeight > maxHeight) {
+            if (originalWidth > originalHeight) {
+                newWidth = maxWidth
+                newHeight = (maxWidth / aspectRatio).toInt()
+            }
+            else {
+                newHeight = maxHeight
+                newWidth = (maxHeight * aspectRatio).toInt()
+            }
+        }
+
+        // Resize the bitmap
+        val resizedBitmap = Bitmap.createScaledBitmap(bitmap, newWidth, newHeight, true)
+
+        // Set the maximum size of the image
         val maxFileSize = MAX_IMAGE_SIZE * 1024
         var quality = 100
         val byteArrayOutputStream = ByteArrayOutputStream()
+
         // Compress the image until its size is less than the maximum
         do {
             byteArrayOutputStream.reset()
-            bitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
-            quality -= 10
+            resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, byteArrayOutputStream)
+            quality -= 5
         } while (byteArrayOutputStream.size() > maxFileSize && quality > 0)
 
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 100, byteArrayOutputStream)
         val byteArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }

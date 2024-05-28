@@ -84,7 +84,7 @@ def get_closest_pharmacies(latitude, longitude):
     try:
         cur = con.cursor()
         data = (latitude, longitude)
-        query = 'SELECT * FROM pharmacies ORDER BY ABS((latitude - %s)) + ABS((longitude - %s)) ASC LIMIT 3'
+        query = 'SELECT * FROM pharmacies ORDER BY ABS((latitude - %s)) + ABS((longitude - %s)) ASC LIMIT 15'
         cur.execute(query, data)
         pharmacies = cur.fetchall()
         return pharmacies

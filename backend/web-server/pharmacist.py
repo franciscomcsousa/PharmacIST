@@ -121,7 +121,6 @@ def login_user():
 def auto_login():
     return make_response(jsonify({'status': 200}), 200)
 
-
 @app.route('/pharmacies', methods=['GET', 'POST'])
 def get_pharmacies():
     if request.method == 'GET':
@@ -257,7 +256,6 @@ def get_medicines():
     
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
-
 @app.route('/create_medicine', methods=['POST'])
 def create_medicines():
     if request.method == 'POST':
@@ -275,8 +273,6 @@ def create_medicines():
     
     return make_response(jsonify({"status": BAD_REQUEST_STATUS}), BAD_REQUEST_STATUS)
         
-        
-
 @app.route('/medicine_location', methods=['GET', 'POST'])
 def get_medicine_location():
     if request.method == 'GET':
@@ -300,6 +296,22 @@ def get_medicine_location():
 
         return make_response(jsonify({"medicine": response}), 200)
     
+    return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
+
+@app.route('/medicine_notification', methods=['GET', 'POST'])
+def medicine_notification():
+
+    if request.method == 'GET':
+        pass
+    
+    if request.method == 'POST':
+        data = request.get_json()
+        username = data['username']
+        medicine_id = data['medicineId']
+        status = toggle_medicine_notification(username, medicine_id)
+        
+        return make_response({"status": status}, status)
+        
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 @app.route('/pharmacy_stock', methods=['GET', 'POST'])

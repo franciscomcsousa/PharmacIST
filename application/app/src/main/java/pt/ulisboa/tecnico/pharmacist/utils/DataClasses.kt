@@ -32,6 +32,10 @@ data class Medicine(
     @SerializedName("id") val id: String? = "",
     @SerializedName("name") val name: String)
 
+data class MedicineNotification(
+    @SerializedName("username") val username: String,
+    @SerializedName("medicineId") val medicineId: String)
+
 // Used to manage the stock in the AddStock and Purchase
 data class MedicineStock(
     val id: String,

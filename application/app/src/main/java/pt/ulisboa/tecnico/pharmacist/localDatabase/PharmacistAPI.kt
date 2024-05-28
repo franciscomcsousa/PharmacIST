@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.ImageUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
@@ -233,9 +234,6 @@ class PharmacistAPI(val activity: Activity) {
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("M_$medicineId", activity)
 
-        // Uncomment this to delete all cached images
-        // ImageUtils.deleteAllImagesFromInternalStorage(activity)
-
         if (bitmap != null) {
             onSuccess(bitmap)
         }
@@ -264,6 +262,27 @@ class PharmacistAPI(val activity: Activity) {
 
     fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse> {
         return retrofitAPI.getMedicineLocationRequest(medicineLocation)
+    }
+
+    fun medicineNotification(@Body medicineNotification: MedicineNotification, onSuccess: (Int) -> Unit): Call<StatusResponse> {
+
+        val call: Call<StatusResponse> = retrofitAPI.medicineNotificationRequest(medicineNotification)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onSuccess(response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
+
+        return retrofitAPI.medicineNotificationRequest(medicineNotification)
     }
 
     fun getPharmacyStock(@Body queryStock: QueryStock): Call<MedicineResponse> {

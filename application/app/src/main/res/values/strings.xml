@@ -72,5 +72,6 @@
     <string name="stock">Stock</string>
     <string name="share">Share</string>
     <string name="clear_cache">Clear Cache</string>
+    <string name="notify_me_when_medicine_available">Notify me when this medicine is available</string>
 
 </resources>

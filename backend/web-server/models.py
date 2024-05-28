@@ -407,6 +407,43 @@ def get_closest_pharmacy_with_medicine(medicine_name, latitude, longitude):
     finally:
         con.close()
 
+def toggle_medicine_notification(username, medicineId):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        
+        data = (username,)
+        query = 'SELECT user_id FROM users WHERE username = %s'
+        cur.execute(query, data)
+        user_id = cur.fetchone()
+
+        if user_id:
+            # Check if the pharmacy is already in the favorites
+            data = (user_id[0], medicineId)
+            query = 'SELECT * FROM medicine_notification WHERE user_id = %s AND medicine_id = %s'
+            cur.execute(query, data)
+            existing_favorite = cur.fetchone()
+
+            if existing_favorite:
+                # Pharmacy is already a favorite, delete it
+                query = 'DELETE FROM medicine_notification WHERE user_id = %s AND medicine_id = %s'
+                cur.execute(query, data)
+                con.commit()
+                return MEDICINE_NOTIFICATION_INACTIVE
+            else:
+                # Pharmacy is not a favorite, add it
+                query = 'INSERT INTO medicine_notification (user_id, medicine_id) VALUES (%s, %s)'
+                cur.execute(query, data)
+                con.commit()
+                return MEDICINE_NOTIFICATION_ACTIVE
+        else:
+            return USER_DOES_NOT_EXIST_STATUS
+            
+    except Exception as e:
+        return DATABASE_ERROR_STATUS
+    finally:
+        cur.close()
+        con.close()
 
 # ==================== Images ==================== #
 

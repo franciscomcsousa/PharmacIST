@@ -5,12 +5,19 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
@@ -20,6 +27,9 @@ import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdap
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
+import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -30,6 +40,8 @@ class MedicineInformationActivity : AppCompatActivity(),
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
     private val pharmacistAPI = PharmacistAPI(this)
+
+    private lateinit var dataStore: DataStoreManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +61,18 @@ class MedicineInformationActivity : AppCompatActivity(),
         // Render the nearest pharmacies recycle view
         if (medicineName != null) {
             nearestPharmacies(medicineName)
+        }
+
+        dataStore = DataStoreManager(this@MedicineInformationActivity)
+
+        // Medicine Notification button
+        val notificationButton = findViewById<Button>(R.id.medicine_notification_btn)
+        notificationButton.setOnClickListener {
+            if (medicineId != null) {
+                lifecycleScope.launch {
+                    handleNotificationButton(medicineId)
+                }
+            }
         }
     }
 
@@ -101,6 +125,21 @@ class MedicineInformationActivity : AppCompatActivity(),
             Log.d("serverResponse", "Medicine image retrieved")
         }
         pharmacistAPI.medicineImage(medicineId, onSuccess)
+    }
+
+    private suspend fun handleNotificationButton(medicineId: String) {
+        val username = dataStore.getUsername().toString()
+        val medicineNotification = MedicineNotification(username, medicineId)
+        val onSuccess: (Int) -> Unit = {responseCode ->
+            if (responseCode == 205) {
+                // TODO
+            }
+            else if (responseCode == 206) {
+                // TODO
+            }
+        }
+
+        pharmacistAPI.medicineNotification(medicineNotification, onSuccess)
     }
 
 

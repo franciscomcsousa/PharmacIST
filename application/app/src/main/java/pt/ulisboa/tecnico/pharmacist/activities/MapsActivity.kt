@@ -152,7 +152,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     // Information of pharmacy selected
     // Bottom drawer
     private fun showPharmacyDrawer(pharmacy: Pharmacy) {
-        val bottomDrawerView = layoutInflater.inflate(R.layout.drawer_pharmacy_layout, null)
+        val bottomDrawerView = layoutInflater.inflate(R.layout.drawer_pharmacy, null)
 
         // Update views with pharmacy information
         // For example:

@@ -55,6 +55,14 @@ drop table if exists medicine;
         UNIQUE KEY (pharmacy_id, medicine_id)
     );
 
+    create table medicine_notification (
+        medicine_notification_id integer AUTO_INCREMENT primary key not null,
+        user_id integer not null,
+        medicine_id integer not null,
+        foreign key (user_id) references users(user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+        foreign key (medicine_id) references medicine(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE
+    );
+
 insert into users (username, password) values ('a', 'a');
 
 insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Rossio', 'Rua Augusta 1, 1250-162 Lisboa', 38.712790, -9.137420);

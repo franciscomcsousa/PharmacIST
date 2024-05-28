@@ -1,4 +1,8 @@
+create database if not exists pharmacist;
+use pharmacist;
+
 drop table if exists favorite_pharmacies;
+drop table if exists user_tokens;
 drop table if exists users;
 drop table if exists medicine_stock;
 drop table if exists pharmacies;
@@ -15,7 +19,8 @@ drop table if exists medicine;
         device_id varchar(255), -- Unique identifier for the device
         -- maybe add the login_token (?)
         notif_token varchar(255), -- one for device
-        primary key (user_id, device_id)
+        primary key (user_id, device_id),
+        foreign key (user_id) references users(user_id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
     create table pharmacies (

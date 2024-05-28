@@ -29,17 +29,36 @@ def create_user(username,password):
     try:
         if len(user) > 0:
             cur.close()
-            return USER_ALREADY_EXISTS_STATUS
+            return [], USER_ALREADY_EXISTS_STATUS
         
         # Create the user
         data = (username, password)
-        query = 'insert into users (username, password) values (%s, %s)'
+        query = 'INSERT INTO users (username, password) VALUES (%s, %s)'
         cur.execute(query, data)
         con.commit()
         
+        # Fetch the user_id of the newly created user
+        cur.execute('SELECT LAST_INSERT_ID()')
+        user_id = cur.fetchone()[0]
+        
     finally: 
         con.close()
-    return OK_STATUS
+    return user_id, OK_STATUS
+
+def register_device(user_id, fcm_token, device_id):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        data = (user_id, fcm_token, device_id)
+        query = """INSERT INTO user_tokens (user_id, notif_token, device_id)
+                   VALUES (%s, %s, %s)
+                   ON DUPLICATE KEY UPDATE
+                   notif_token = VALUES(notif_token)"""
+        cur.execute(query, data)
+        con.commit()
+
+    finally:
+        con.close()
 
 def verify_user(username, password):
     con = connect_db()

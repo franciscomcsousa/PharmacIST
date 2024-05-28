@@ -54,17 +54,27 @@ def register_user():
         password = data['password']
         fcm_token = data['fcmToken']
         device_id = data['deviceId']
-        status = create_user(username, password)
         
-        # if register successful send token and user stays logged in!
-        # maybe also use login_user(), but for simplicity tokens do the job
+        # TODO - here or in the android part
+        # verify if the fcm_token device_id are not null!
+        user_id, status = create_user(username, password)
         
-        #token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
-        #                    + timedelta(days=1)}, app.config['SECRET_KEY'])
+        if (status == OK_STATUS):
+            
+            register_device(user_id, fcm_token, device_id) # here ?
+            
+            # if register successful send token and user stays logged in!
+            # maybe also use login_user(), but for simplicity tokens do the job
+            
+            #token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
+            #                    + timedelta(days=1)}, app.config['SECRET_KEY'])
+            
+            token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
+                    
+            return make_response(jsonify({'token': token}), status)
         
-        token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
-                
-        return make_response(jsonify({'token': token}), status)
+        return make_response(jsonify({'token': ""}), status)
+
     
     return make_response({"status":BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 

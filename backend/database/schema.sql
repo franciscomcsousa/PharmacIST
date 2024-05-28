@@ -2,6 +2,7 @@ create database if not exists pharmacist;
 use pharmacist;
 
 drop table if exists favorite_pharmacies;
+drop table if exists medicine_notification;
 drop table if exists user_tokens;
 drop table if exists users;
 drop table if exists medicine_stock;

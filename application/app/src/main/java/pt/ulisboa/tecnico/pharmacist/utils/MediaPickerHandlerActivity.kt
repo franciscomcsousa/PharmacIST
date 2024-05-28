@@ -1,8 +1,9 @@
+// MediaPickerHandler.kt
 package pt.ulisboa.tecnico.pharmacist.utils
 
 import android.Manifest
+import android.app.Activity
 import android.app.AlertDialog
-import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -15,28 +16,51 @@ import android.util.Base64
 import android.util.Log
 import android.view.View
 import android.widget.ImageView
-import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
-import pt.ulisboa.tecnico.pharmacist.R
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.io.FileOutputStream
 import java.io.IOException
 import java.util.Date
 import java.util.Locale
 
-abstract class MediaPickerHandlerActivity : AppCompatActivity() {
+class MediaPickerHandler(private val activity: Activity, private val imageView: ImageView) {
 
-    protected var currentUri: Uri? = null
-    private val CAMERA_PERMISSION_REQUEST_CODE = 1002
     private val MAX_IMAGE_SIZE = 100 // in kB
+    var currentUri: Uri? = null
+    private val CAMERA_PERMISSION_REQUEST_CODE = 1003
 
-    private val pickMedia = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+    private lateinit var pickMedia: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var takePicture: ActivityResultLauncher<Uri>
+
+    fun initializeLaunchers(pickMediaLauncher: ActivityResultLauncher<PickVisualMediaRequest>, takePictureLauncher: ActivityResultLauncher<Uri>) {
+        pickMedia = pickMediaLauncher
+        takePicture = takePictureLauncher
+    }
+
+    fun choosePhoto(view: View) {
+        val options = arrayOf("Take Photo", "Choose from Gallery")
+        AlertDialog.Builder(activity)
+            .setTitle("Select Option")
+            .setItems(options) { dialogInterface: DialogInterface, which: Int ->
+                when (which) {
+                    0 -> requestCameraPermission()
+                    1 -> pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                }
+                dialogInterface.dismiss()
+            }
+            .show()
+    }
+
+    private fun previewAddedPhoto(uri: Uri?) {
+        imageView.setImageURI(uri)
+    }
+
+    fun handlePickMediaResult(uri: Uri?) {
         if (uri != null) {
             Log.d("PhotoPicker", "Selected URI: $uri")
             currentUri = uri
@@ -46,7 +70,7 @@ abstract class MediaPickerHandlerActivity : AppCompatActivity() {
         }
     }
 
-    private val takePicture = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+    fun handleTakePictureResult(success: Boolean) {
         if (success) {
             currentUri?.let { uri ->
                 previewAddedPhoto(uri)
@@ -56,77 +80,42 @@ abstract class MediaPickerHandlerActivity : AppCompatActivity() {
         }
     }
 
-    fun choosePhoto(view: View) {
-        val options = arrayOf("Take Photo", "Choose from Gallery")
-        AlertDialog.Builder(this)
-            .setTitle("Select Option")
-            .setItems(options) { dialogInterface: DialogInterface, which: Int ->
-                when (which) {
-                    0 -> takePhoto()
-                    1 -> pickMedia.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
-                }
-                dialogInterface.dismiss()
-            }
-            .show()
-    }
-
-    private fun previewAddedPhoto(uri: Uri?) {
-        findViewById<ImageView>(R.id.add_photo_preview)?.setImageURI(uri)
-    }
-
     private fun takePhoto() {
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED
-        ) {
+        if (ContextCompat.checkSelfPermission(activity, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
             try {
                 currentUri = createImageFileUri()
                 val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, currentUri)
                 takePicture.launch(currentUri)
             } catch (ex: IOException) {
-                Log.e("MediaPickerActivity", "Error occurred while creating the file", ex)
+                Log.e("MediaPickerHandler", "Error occurred while creating the file", ex)
             }
         } else {
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA),
-                CAMERA_PERMISSION_REQUEST_CODE
-            )
+            ActivityCompat.requestPermissions(activity, arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE)
+        }
+    }
+
+    private fun requestCameraPermission() {
+        if (PermissionUtils.requestCameraPermissions(activity)) {
+            takePhoto()
         }
     }
 
     private fun createImageFileUri(): Uri {
         val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
         val imageFileName = "JPEG_${timeStamp}_"
-        val imageFile = File(filesDir, "$imageFileName.jpg")
+        val imageFile = File(activity.filesDir, "$imageFileName.jpg")
         return FileProvider.getUriForFile(
-            this,
+            activity,
             "pt.ulisboa.tecnico.pharmacist.FileProvider",
             imageFile
         )
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                takePhoto()
-            } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
     // Maybe useful later?
-    protected fun encodeImageToBase64(uri: Uri?): String {
+    fun encodeImageToBase64(uri: Uri?): String {
         if (uri == null) return ""
-        val inputStream = contentResolver.openInputStream(uri)
+        val inputStream = activity.contentResolver.openInputStream(uri)
         val bitmap = BitmapFactory.decodeStream(inputStream)
         inputStream?.close()
 
@@ -144,5 +133,4 @@ abstract class MediaPickerHandlerActivity : AppCompatActivity() {
         val byteArray = byteArrayOutputStream.toByteArray()
         return Base64.encodeToString(byteArray, Base64.DEFAULT)
     }
-
 }

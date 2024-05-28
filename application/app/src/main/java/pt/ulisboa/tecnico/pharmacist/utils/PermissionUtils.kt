@@ -5,18 +5,19 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.pm.PackageManager
 import android.os.Build
-import androidx.annotation.RequiresApi
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.LocationServices
 
 class PermissionUtils {
 
+    // good practice
     companion object {
-        private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
-        private val PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE = 1002   // good practice
+        private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001
+        private val PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE = 1002
+        private val PERMISSION_REQUEST_ACCESS_CAMERA_CODE = 1003
 
-        fun requestPermissions(activity: Activity) : Boolean {
+        fun requestLocationPermissions(activity: Activity) : Boolean {
             // verify permissions
             if (ContextCompat.checkSelfPermission(
                     activity,
@@ -31,6 +32,24 @@ class PermissionUtils {
                     activity,
                     arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
                     PERMISSION_REQUEST_ACCESS_LOCATION_CODE
+                )
+                return false
+            }
+        }
+
+        fun requestCameraPermissions(activity: Activity): Boolean {
+            if (ContextCompat.checkSelfPermission(
+                    activity,
+                    Manifest.permission.CAMERA
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                return true
+
+            } else {
+                ActivityCompat.requestPermissions(
+                    activity,
+                    arrayOf(Manifest.permission.CAMERA),
+                    PERMISSION_REQUEST_ACCESS_CAMERA_CODE
                 )
                 return false
             }
@@ -72,7 +91,5 @@ class PermissionUtils {
         }
 
     }
-
-
 
 }

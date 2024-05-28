@@ -3,14 +3,11 @@ package pt.ulisboa.tecnico.pharmacist.activities
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -23,7 +20,6 @@ import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdap
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -39,7 +35,7 @@ class MedicineInformationActivity : AppCompatActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medicine_information)
 
-        PermissionUtils.requestPermissions(this)
+        PermissionUtils.requestLocationPermissions(this)
 
         val medicineName = intent.getStringExtra("medicineName")
         val medicineId = intent.getStringExtra("medicineId")

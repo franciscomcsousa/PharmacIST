@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -8,12 +9,12 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
+import android.view.View
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.common.api.Status
@@ -31,15 +32,15 @@ import com.google.android.libraries.places.widget.listener.PlaceSelectionListene
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.BuildConfig
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
-import pt.ulisboa.tecnico.pharmacist.databinding.ActivityMapsBinding
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -68,6 +69,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
+    // used in AddPharmacy
+    private var selectedLatLng: LatLng? = null
+    private var confirmButton: Button? = null
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMapsBinding.inflate(layoutInflater)
@@ -79,17 +85,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 .findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment!!.getMapAsync(this)
 
+        confirmButton = findViewById(R.id.confirm_button)
+
+        // Check if the activity was started for location selection
+        if (intent.action == Intent.ACTION_PICK) {
+            Log.d("serverResponse", "HUAAHUA")
+            enableLocationSelection()
+        }
+
         startPlacesAPI()
     }
 
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        if (PermissionUtils.requestPermissions(this)) {
+        // used to select a place in the map
+        mMap?.setOnMapClickListener { latLng ->
+            // Handle map click event
+            handleMapClick(latLng)
+        }
+
+        if (PermissionUtils.requestLocationPermissions(this)) {
             enableUserLocation()
             centerUserLocation()
         }
 
+        // If the intent was started by the ClosestMedicineActivity, show the pharmacy only
         if (intent.hasExtra("pharmacyLatitude") && intent.hasExtra("pharmacyLongitude")) {
             val pharmacyId = intent.getStringExtra("pharmacyId")!!.toDouble().toInt().toString()
             val pharmacyName = intent.getStringExtra("pharmacyName")!!
@@ -356,6 +377,48 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         PermissionUtils.getUserLocation(locationCallback, this)
+    }
+
+    private fun handleMapClick(latLng: LatLng) {
+        // Clear previous markers and add a marker where clicked
+        mMap?.clear()
+        mMap?.addMarker(MarkerOptions().position(latLng))
+
+        // Store the selected latitude and longitude
+        selectedLatLng = latLng
+    }
+
+    private fun onConfirmClick() {
+        val selectedLatitude = mMap?.cameraPosition?.target?.latitude ?: 0.0
+        val selectedLongitude = mMap?.cameraPosition?.target?.longitude ?: 0.0
+
+        val intent = Intent()
+        intent.putExtra("latitude", selectedLatitude)
+        intent.putExtra("longitude", selectedLongitude)
+        setResult(Activity.RESULT_OK, intent)
+        finish()
+    }
+
+    private fun enableLocationSelection() {
+        mMap?.setOnMapClickListener { latLng ->
+            // Clear previous markers and add a marker where clicked
+            mMap?.clear()
+            mMap?.addMarker(MarkerOptions().position(latLng))
+
+            // Store the selected latitude and longitude
+            selectedLatLng = latLng
+        }
+
+        // Show the confirm button to confirm the selected location
+        confirmButton?.visibility = View.VISIBLE
+        confirmButton?.setOnClickListener {
+            // Pass the selected location back to the calling activity
+            val resultIntent = Intent()
+            resultIntent.putExtra("latitude", selectedLatLng?.latitude)
+            resultIntent.putExtra("longitude", selectedLatLng?.longitude)
+            setResult(Activity.RESULT_OK, resultIntent)
+            finish()
+        }
     }
 
     override fun onRequestPermissionsResult(

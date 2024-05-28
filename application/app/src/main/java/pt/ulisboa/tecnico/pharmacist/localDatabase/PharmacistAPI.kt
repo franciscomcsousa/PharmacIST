@@ -4,15 +4,11 @@ import android.app.Activity
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.util.Base64
 import android.util.Log
-import android.widget.ImageView
-import okio.ByteString.Companion.decodeBase64
-import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import pt.ulisboa.tecnico.pharmacist.utils.ImageUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
@@ -22,7 +18,6 @@ import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStock
 import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.utils.RetrofitAPI
@@ -37,7 +32,6 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Query
-import java.io.ByteArrayOutputStream
 import java.time.Instant
 
 class PharmacistAPI(val activity: Activity) {
@@ -193,9 +187,11 @@ class PharmacistAPI(val activity: Activity) {
                 call: Call<PharmaciesResponse>,
                 response: Response<PharmaciesResponse>
             ) {
-                val anyList = response.body()!!.pharmacies
-                val pharmaciesList = anyListToPharmacyList(anyList)
-                onSuccess(pharmaciesList)
+                val anyList = response.body()?.pharmacies
+                val pharmaciesList = anyList?.let { anyListToPharmacyList(it) }
+                if (pharmaciesList != null) {
+                    onSuccess(pharmaciesList)
+                }
             }
 
             override fun onFailure(call: Call<PharmaciesResponse>, t: Throwable) {

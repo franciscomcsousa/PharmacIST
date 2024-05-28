@@ -5,27 +5,45 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.EditText
+import android.widget.ImageView
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandlerActivity
+import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandler
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
-class NewMedicineActivity : MediaPickerHandlerActivity() {
+class NewMedicineActivity : AppCompatActivity() {
 
     private val pharmacistAPI = PharmacistAPI(this)
     private lateinit var medicineId: String
     private lateinit var pharmacyId: String
+    private lateinit var mediaPickerHandler: MediaPickerHandler
+    var currentUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_medicine)
         medicineId = intent.getStringExtra("medicineId").toString()
         pharmacyId = intent.getStringExtra("pharmacyId").toString()
+
+        val imageView = findViewById<ImageView>(R.id.add_photo_preview)
+
+        // Initialize MediaPickerHandler with launchers
+        mediaPickerHandler = MediaPickerHandler(this, imageView)
+        mediaPickerHandler.initializeLaunchers(
+            registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+                mediaPickerHandler.handlePickMediaResult(uri)
+            },
+            registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+                mediaPickerHandler.handleTakePictureResult(success)
+            }
+        )
 
     }
 
@@ -48,6 +66,10 @@ class NewMedicineActivity : MediaPickerHandlerActivity() {
         return listOf(formMedicineName, formQuantity, formPurpose)
     }
 
+    fun addPhotoClick(view: View) {
+        mediaPickerHandler.choosePhoto(view)
+    }
+
     fun createMedicineClick(view: View) {
         val (medicineName, quantity, purpose) = getFields()
         val (formMedicineName, formQuantity, formPurpose) = getFormLayouts()
@@ -68,7 +90,7 @@ class NewMedicineActivity : MediaPickerHandlerActivity() {
     }
 
     private fun createMedicine(medicineName: String, quantity: String, purpose: String, uri: Uri?, onSuccess: () -> Unit) {
-        val image = encodeImageToBase64(uri)
+        val image = mediaPickerHandler.encodeImageToBase64(uri)
 
         onSuccess()
 

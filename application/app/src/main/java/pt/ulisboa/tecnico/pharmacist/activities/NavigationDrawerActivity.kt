@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.pharmacist.activities
 import android.annotation.SuppressLint
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -66,23 +67,22 @@ class NavigationDrawerActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        PermissionUtils.requestPermissions(this)
-        PermissionUtils.requestNotificationPermissions(this)
+        if (PermissionUtils.requestPermissions(this) && PermissionUtils.requestNotificationPermissions(this)) {
+            val channel = NotificationChannel("pharmacies", "Pharmacies", NotificationManager.IMPORTANCE_DEFAULT)
+            val notificationManager = getSystemService(NotificationManager::class.java)
+            notificationManager.createNotificationChannel(channel)
 
-        val channel = NotificationChannel("default", "Default", NotificationManager.IMPORTANCE_DEFAULT)
-        val notificationManager = getSystemService(NotificationManager::class.java)
-        notificationManager.createNotificationChannel(channel)
-
-        timer = Timer()
-        timerTask = object : TimerTask() {
-            override fun run() {
-                handler = Handler(mainLooper)
-                handler!!.post {
-                    getNearbyPharmacies()
+            timer = Timer()
+            timerTask = object : TimerTask() {
+                override fun run() {
+                    handler = Handler(mainLooper)
+                    handler!!.post {
+                        getNearbyPharmacies()
+                    }
                 }
             }
+            timer!!.schedule(timerTask, 0, 5000)
         }
-        timer!!.schedule(timerTask, 0, 5000)
     }
 
     override fun onDestroy() {
@@ -131,13 +131,25 @@ class NavigationDrawerActivity : AppCompatActivity() {
                 previousLocation = location
 
                 val onSuccess : (List<Pharmacy>) -> Unit = { pharmaciesList ->
-                    Log.d("Pharmacies", pharmaciesList.toString())
+                    Log.d("serverResponse", "Nearby pharmacies retrieved")
                     for (pharmacy in pharmaciesList) {
-                        val notification = NotificationCompat.Builder(applicationContext, "default")
+                        val intent = Intent(this, MapsActivity::class.java)
+                        intent.putExtra("pharmacyId", pharmacy.id)
+                        intent.putExtra("pharmacyName", pharmacy.name)
+                        intent.putExtra("pharmacyAddress", pharmacy.address)
+                        intent.putExtra("pharmacyLatitude", pharmacy.latitude)
+                        intent.putExtra("pharmacyLongitude", pharmacy.longitude)
+                        val pendingIntent = PendingIntent.getActivity(this, pharmacy.id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
+                        val action = NotificationCompat.Action.Builder(androidx.loader.R.drawable.notification_bg, "Open in Map", pendingIntent).build()
+
+                        val notification = NotificationCompat.Builder(applicationContext, pharmacy.id!!)
                             .setSmallIcon(androidx.loader.R.drawable.notification_bg)
                             .setContentTitle("Nearby pharmacy")
                             .setContentText("You are near ${pharmacy.name}")
                             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                            .setContentIntent(pendingIntent)
+                            .addAction(action)
+                            .setAutoCancel(true)
                             .build()
                         NotificationManagerCompat.from(applicationContext).notify(pharmacy.id.hashCode(), notification)
                     }

@@ -24,7 +24,6 @@ class NewMedicineActivity : AppCompatActivity() {
     private lateinit var medicineId: String
     private lateinit var pharmacyId: String
     private lateinit var mediaPickerHandler: MediaPickerHandler
-    var currentUri: Uri? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -81,10 +80,10 @@ class NewMedicineActivity : AppCompatActivity() {
             formMedicineName = formMedicineName,
             formQuantity = formQuantity,
             formPurpose = formPurpose,
-            uri = currentUri) {
+            uri = mediaPickerHandler.currentUri) {
 
             // get the latitude and longitude from the place selected
-            createMedicine(medicineName, quantity, purpose, currentUri) {
+            createMedicine(medicineName, quantity, purpose, mediaPickerHandler.currentUri) {
                 navigateBack()            }
         }
     }

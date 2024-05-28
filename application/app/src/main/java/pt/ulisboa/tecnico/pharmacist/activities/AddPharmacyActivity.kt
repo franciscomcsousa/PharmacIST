@@ -38,7 +38,6 @@ import java.util.Locale
 class AddPharmacyActivity : AppCompatActivity() {
 
     private lateinit var mediaPickerHandler: MediaPickerHandler
-    var currentUri: Uri? = null
 
     val pharmacistAPI = PharmacistAPI(this)
 
@@ -96,10 +95,10 @@ class AddPharmacyActivity : AppCompatActivity() {
             latitude = latitude,
             longitude = longitude,
             formName = formName,
-            uri = currentUri) {
+            uri = mediaPickerHandler.currentUri) {
 
             // get the latitude and longitude from the place selected
-            createPharmacy(name, address, latitude, longitude, currentUri) {
+            createPharmacy(name, address, latitude, longitude, mediaPickerHandler.currentUri) {
                 navigateToNavigationDrawerActivity()
             }
             startActivity(Intent(this, NavigationDrawerActivity::class.java))

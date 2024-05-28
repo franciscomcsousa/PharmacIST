@@ -10,6 +10,14 @@ drop table if exists medicine;
         password varchar(255) not null
     );
 
+    create table user_tokens (
+        user_id integer,
+        device_id varchar(255), -- Unique identifier for the device
+        -- maybe add the login_token (?)
+        notif_token varchar(255), -- one for device
+        primary key (user_id, device_id)
+    );
+
     create table pharmacies (
         pharmacy_id integer AUTO_INCREMENT primary key not null,
         name varchar(255) not null,

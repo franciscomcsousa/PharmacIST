@@ -1,3 +1,4 @@
 mariadb
 flask
 pyjwt
+firebase_admin

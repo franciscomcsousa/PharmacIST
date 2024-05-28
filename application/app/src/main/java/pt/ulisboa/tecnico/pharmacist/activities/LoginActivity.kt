@@ -6,14 +6,15 @@ import android.util.Log
 import android.view.View
 import android.widget.EditText
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.launch
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.textfield.TextInputLayout
-import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.SignInResponse
 import pt.ulisboa.tecnico.pharmacist.utils.User
 import retrofit2.Call
@@ -25,6 +26,10 @@ import retrofit2.Response
 class LoginActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager
 
+    // Is it possible without doing it here?
+    private var fcmToken: String? = null
+    private lateinit var deviceId: String
+
     private val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -32,8 +37,13 @@ class LoginActivity : AppCompatActivity() {
         setContentView(R.layout.activity_login)
         dataStore = DataStoreManager(this@LoginActivity)
 
+        // TODO - review this logic
+        // Fetch the FCM
+        retrieveFCMToken()
+
         lifecycleScope.launch {
-            val storedToken = getUserToken()
+            deviceId = dataStore.getDeviceId()
+            val storedToken = getLoginToken()
             if (storedToken.isNotEmpty() && storedToken != "null") {
                 // If a token is stored, attempt automatic login
                 autoLogin(storedToken) {
@@ -87,7 +97,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        val user = User(username, password)
+        val user = User(username, password, fcmToken.toString(), deviceId)
+        Log.d("FCM", "FCM ??: " + fcmToken)
         val call = pharmacistAPI.sendRegister(user)
         handleRegisterResponse(call, onSuccess, onFailure)
     }
@@ -101,7 +112,7 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val token = response.body()!!.token
                     // store token in preferences datastore
-                    setToken(token)
+                    setLoginToken(token)
                     onSuccess()
                 }
                 else {
@@ -117,7 +128,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun loginUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        val user = User(username, password)
+
+        val user = User(username, password, fcmToken.toString(), deviceId)
         val call = pharmacistAPI.sendLogin(user)
         handleLoginResponse(call, onSuccess, onFailure)
     }
@@ -128,7 +140,7 @@ class LoginActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val token = response.body()!!.token
                     // store token in preferences datastore
-                    setToken(token)
+                    setLoginToken(token)
                     onSuccess()
                 }
                 else {
@@ -150,6 +162,7 @@ class LoginActivity : AppCompatActivity() {
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
         val response = pharmacistAPI.getAuth(storedToken)
         if (response.isSuccessful) {
+
             onSuccess()
         } else {
             // TODO - maybe change this to a persistent message displayed
@@ -161,6 +174,30 @@ class LoginActivity : AppCompatActivity() {
                 else -> "An error occurred. Please try again later."
             }*/
             Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_LONG).show()
+        }
+    }
+
+
+    // TODO - make a class to simplify logic in Login and also (maybe) Register
+    // Should only be fetched when there is none in the backend or its expired!
+    private fun retrieveFCMToken() {
+        // only does this if there is no FCM Token stored!
+        lifecycleScope.launch {
+            val storedFcmToken = dataStore.getFCMToken()
+            if (storedFcmToken.isNullOrEmpty()) {
+                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        val token = task.result
+                        lifecycleScope.launch {
+                            setFCMToken(token)
+                            fcmToken = token
+                            Log.d("FCM", token)
+                        }
+                    } else {
+                        Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                    }
+                })
+            }
         }
     }
 
@@ -199,9 +236,21 @@ class LoginActivity : AppCompatActivity() {
         return Pair(formUsername, formPassword)
     }
 
-    private suspend fun getUserToken(): String {
+    private suspend fun getLoginToken(): String {
         // returns "null" string if token is null
-        return dataStore.getToken().toString()
+        return dataStore.getLoginToken().toString()
+    }
+
+    private fun setLoginToken(token: String) {
+        lifecycleScope.launch {
+            dataStore.setLoginToken(token)
+        }
+    }
+
+    private fun setFCMToken(token: String) {
+        lifecycleScope.launch {
+            dataStore.setFCMToken(token)
+        }
     }
 
     private fun setUsername(username: String) {
@@ -220,9 +269,4 @@ class LoginActivity : AppCompatActivity() {
         return dataStore.getGuestName().toString()
     }
 
-    private fun setToken(token: String) {
-        lifecycleScope.launch {
-            dataStore.setToken(token)
-        }
-    }
 }

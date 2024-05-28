@@ -4,10 +4,15 @@ from flask import json
 from functools import wraps
 from models import *
 import jwt
+import firebase_admin
+from firebase_admin import credentials
 
 app = Flask(__name__)
-# used to encrypt the Jtokens, for simplicity is now here
-app.config['SECRET_KEY'] = 'manteiga de amendoim'
+
+cred = credentials.Certificate("serviceAccountKey.json")    # used for cloud messaging
+app.config['SECRET_KEY'] = 'manteiga de amendoim'           # used to encrypt the Jtokens
+
+firebase_admin.initialize_app(cred)
 
 # Decorator to require login
 # Token verification in headers
@@ -47,6 +52,8 @@ def register_user():
         data = request.get_json()
         username = data['username']
         password = data['password']
+        fcm_token = data['fcmToken']
+        device_id = data['deviceId']
         status = create_user(username, password)
         
         # if register successful send token and user stays logged in!
@@ -72,6 +79,8 @@ def login_user():
         data = request.get_json()
         username = data['username']
         password = data['password']
+        fcm_token = data['fcmToken']
+        device_id = data['deviceId']
         # in case of the guests logins: 
         # if they dont exist, create a new one
         # if they exist, simply login

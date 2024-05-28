@@ -2,6 +2,8 @@ import os
 import mariadb
 import base64
 from response_status import *
+import firebase_admin
+from firebase_admin import messaging
 
 # for now use local admin user
 def connect_db():
@@ -406,3 +408,13 @@ def get_image(id, type):
         with open(path, 'rb') as f:
             image = f.read()
             return image
+        
+        
+# ========== Send FCM notifications ============== #
+def send_notification(token, title, body):
+    message = messaging.Message(
+        notification=messaging.Notification(title=title, body=body),
+        token=token,
+    )
+    response = messaging.send(message)
+    print("Successfully sent message:", response)

@@ -35,6 +35,7 @@ google-services.json
 # Custom
 .venv
 secrets.properties
+serviceAccountKey.json
 
 # Python
 **/__pycache__/

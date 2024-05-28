@@ -5,7 +5,9 @@ import com.google.gson.annotations.SerializedName
 // Stores data types for RetrofitAPI
 data class User(
     @SerializedName("username") val username: String,
-    @SerializedName("password") val password: String)
+    @SerializedName("password") val password: String,
+    @SerializedName("fcmToken") val fcmToken: String,
+    @SerializedName("deviceId") val deviceId: String)
 
 data class ImagelessPharmacy(
     @SerializedName("id") val id: String? = null,

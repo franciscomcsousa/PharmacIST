@@ -37,12 +37,9 @@ import java.time.Instant
 class PharmacistAPI(val activity: Activity) {
 
     // A pharmacy timestamp can only be PHARMACY_EXPIRY seconds old
-    private val pharmacyExpiry = 60
+    private val pharmacyExpiry = 30
 
-    private val retrofit = Retrofit.Builder()
-        .baseUrl(DataStoreManager.getUrl())
-        .addConverterFactory(GsonConverterFactory.create())
-        .build()
+    private val retrofit = createRetrofit(DataStoreManager.getUrl())
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
     private val databaseHandler = DatabaseHandler(activity)
@@ -307,5 +304,12 @@ class PharmacistAPI(val activity: Activity) {
 
     private fun onFailureHandler(t: Throwable) {
         Log.d("serverResponse","FAILED: "+ t.message)
+    }
+
+    private fun createRetrofit(baseUrl: String): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
     }
 }

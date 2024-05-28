@@ -21,7 +21,8 @@ class DataStoreManager(val context: Context) {
 
         fun getUrl(): String {
             // for remote testing
-            return "http://172.232.42.26/"
+            // https ensures TLS
+            return "https://pharmacist.francisco-sousa.pt/"
             // for local testing
             //return "http://10.0.2.2:5000"
         }

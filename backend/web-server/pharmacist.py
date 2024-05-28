@@ -61,7 +61,7 @@ def register_user():
         
         if (status == OK_STATUS):
             
-            register_device(user_id, fcm_token, device_id) # here ?
+            register_device(user_id, fcm_token, device_id)
             
             # if register successful send token and user stays logged in!
             # maybe also use login_user(), but for simplicity tokens do the job
@@ -95,17 +95,24 @@ def login_user():
         # if they dont exist, create a new one
         # if they exist, simply login
         if username.startswith("guest_"):
-            status = login_guest(username, password)
+            status, user_id = login_guest(username, password)
         
         else:
-            status = verify_user(username, password)
+            status, user_id = verify_user(username, password)
         
-        # TODO - is sendong token even if unsucessful
-        # if register successful send token and user stays logged in!
-        # maybe also use login_user(), but for simplicity tokens do the job
-        token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
-        
-        return make_response(jsonify({'token': token}), status)
+        if (status == OK_STATUS):
+            
+            # makes sure it has been registered in the devices
+            # pbbly used when the user signs in a new device
+            register_device(user_id, fcm_token, device_id)
+            
+            # TODO - is sendong token even if unsucessful
+            # if register successful send token and user stays logged in!
+            # maybe also use login_user(), but for simplicity tokens do the job
+            token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
+            
+            return make_response(jsonify({'token': token}), status)
+        return make_response(jsonify({'token': ""}), status)
     
     return make_response({"status":BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 

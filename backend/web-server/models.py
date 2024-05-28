@@ -70,11 +70,11 @@ def verify_user(username, password):
         cur.execute(query, data)
         user = cur.fetchone()
         if user:
-            return OK_STATUS
+            return OK_STATUS, user[0]
         
     finally:
         con.close()
-    return USER_DOES_NOT_EXIST_STATUS
+    return USER_DOES_NOT_EXIST_STATUS, []
 
 def login_guest(username, password):
     con = connect_db()
@@ -86,16 +86,20 @@ def login_guest(username, password):
         cur.execute(query, data)
         user = cur.fetchone()
         if user:
-            return OK_STATUS
+            return OK_STATUS, user[0]
         # if it doesn't exist, create new user
         data = (username, password)
         query = 'insert into users (username, password) values (%s, %s)'
         cur.execute(query, data)
         con.commit()
         
+        # Fetch the user_id of the newly created user
+        cur.execute('SELECT LAST_INSERT_ID()')
+        user_id = cur.fetchone()[0]
+        
     finally:
         con.close()
-    return OK_STATUS
+    return OK_STATUS, user_id
 
 
 # ==================== Pharmacy ==================== #

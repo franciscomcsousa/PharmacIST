@@ -92,7 +92,7 @@ class ScannerActivity : AppCompatActivity() {
             if (display != null) {
                 val barcodeScanner: BarcodeScanner = BarcodeScanning.getClient(
                     BarcodeScannerOptions.Builder()
-                        .setBarcodeFormats(Barcode.FORMAT_ALL_FORMATS)
+                        .setBarcodeFormats(Barcode.FORMAT_UPC_A)
                         .build()
                 )
                 imageAnalysis = ImageAnalysis.Builder()

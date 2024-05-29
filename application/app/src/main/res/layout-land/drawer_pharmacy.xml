@@ -10,24 +10,23 @@
         android:layout_width="360dp"
         android:layout_height="227dp"
         android:scaleType="fitXY"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.148"
+        app:layout_constraintHorizontal_bias="0.043"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.021"
         app:shapeAppearanceOverlay="@style/roundCornerImageView" />
 
     <TextView
         android:id="@+id/pharmacy_name"
         android:layout_width="360dp"
         android:layout_height="60dp"
-        android:layout_marginTop="4dp"
         android:gravity="center"
         android:text="@string/pharmacy_name"
         android:textSize="28dp"
-        app:layout_constraintTop_toBottomOf="@+id/pharmacy_image"
-        tools:layout_editor_absoluteX="55dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pharmacy_image" />
 
     <TextView
         android:id="@+id/pharmacy_address"
@@ -36,57 +35,62 @@
         android:gravity="center"
         android:text="@string/pharmacy_address"
         android:textSize="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.043"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/pharmacy_name"
-        tools:layout_editor_absoluteX="55dp" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/show_pharmacy_info"
-        android:layout_width="300dp"
-        android:layout_height="50dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="start"
         android:enabled="true"
         android:text="@string/show_pharmacy_info"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.962"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.844" />
+        app:layout_constraintHorizontal_bias="0.658"
+        app:layout_constraintStart_toEndOf="@+id/pharmacy_name"
+        app:layout_constraintTop_toBottomOf="@+id/button_share"
+        app:layout_constraintVertical_bias="0.136" />
 
     <ToggleButton
         android:id="@+id/favorite_btn"
         android:layout_width="100dp"
         android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginEnd="28dp"
         android:background="@drawable/favorite_button"
         android:textOff=""
         android:textOn=""
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.467"
-        app:layout_constraintStart_toEndOf="@+id/pharmacy_image"
-        tools:layout_editor_absoluteY="135dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_navigate"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginEnd="112dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginEnd="36dp"
         android:background="@drawable/baseline_directions_24"
-        app:layout_constraintBottom_toTopOf="@+id/favorite_btn"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/favorite_btn"
+        app:layout_constraintHorizontal_bias="0.824"
+        app:layout_constraintStart_toEndOf="@+id/pharmacy_image"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="1.0" />
+        app:layout_constraintVertical_bias="0.077" />
 
     <Button
         android:id="@+id/button_share"
-        android:layout_width="125dp"
-        android:layout_height="45dp"
-        android:layout_marginTop="16dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
         android:text="@string/share"
         android:textSize="15sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.492"
-        app:layout_constraintStart_toEndOf="@+id/pharmacy_name"
-        app:layout_constraintTop_toBottomOf="@+id/favorite_btn" />
+        app:layout_constraintHorizontal_bias="0.538"
+        app:layout_constraintStart_toEndOf="@+id/pharmacy_image"
+        app:layout_constraintTop_toBottomOf="@+id/btn_navigate" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

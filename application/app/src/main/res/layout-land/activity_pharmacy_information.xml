@@ -8,62 +8,72 @@
 
     <TextView
         android:id="@+id/panel_pharmacy_name"
-        android:layout_width="match_parent"
-        android:layout_height="120dp"
+        android:layout_width="300dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="16dp"
         android:gravity="center"
         android:text="@string/default_info_panel"
         android:textSize="28sp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/pharmacy_panel_recycle_view"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="16dp" />
+        app:layout_constraintVertical_bias="0.045" />
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/pharmacy_panel_search"
-        android:layout_width="380dp"
+        android:layout_width="300dp"
         android:layout_height="wrap_content"
         android:background="@drawable/search_view_bg"
         app:iconifiedByDefault="false"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.498"
+        app:layout_constraintHorizontal_bias="0.037"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/panel_pharmacy_name"
+        app:layout_constraintVertical_bias="0.177"
         app:queryHint="@string/search_for_a_medicine" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/pharmacy_panel_recycle_view"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginBottom="268dp"
+        android:layout_width="350dp"
+        android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_search"
-        app:layout_constraintVertical_bias="0.0"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.958"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <Button
         android:id="@+id/btn_add_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="36dp"
+        android:layout_marginBottom="16dp"
         android:onClick="addStock"
         android:text="@string/btn_add_stock"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.199"
+        app:layout_constraintEnd_toStartOf="@+id/btn_purchase_stock"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_recycle_view"
-        app:layout_constraintVertical_bias="0.955" />
+        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_search"
+        app:layout_constraintVertical_bias="1.0" />
 
     <Button
         android:id="@+id/btn_purchase_stock"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginEnd="48dp"
+        android:layout_marginBottom="16dp"
         android:onClick="purchaseStock"
         android:text="@string/btn_purchase_stock"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.585"
-        app:layout_constraintStart_toEndOf="@+id/btn_add_stock"
-        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_recycle_view"
-        app:layout_constraintVertical_bias="0.955" />
+        app:layout_constraintEnd_toStartOf="@+id/pharmacy_panel_recycle_view"
+        app:layout_constraintHorizontal_bias="0.994"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/pharmacy_panel_search"
+        app:layout_constraintVertical_bias="1.0" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

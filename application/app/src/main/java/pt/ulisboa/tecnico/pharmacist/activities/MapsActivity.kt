@@ -177,6 +177,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
 
+        bottomDrawerView.findViewById<Button>(R.id.button_share).setOnClickListener {
+            val intent = Intent(Intent.ACTION_SEND)
+            intent.type = "text/plain"
+            intent.putExtra(Intent.EXTRA_TEXT, "I found this cool pharmacy ${pharmacy.name} at ${pharmacy.address}")
+            intent.setType("text/plain")
+            startActivity(Intent.createChooser(intent, "Share using"))
+        }
+
         // Show More (Pharmacy Information Panel) button
         val informationButton = bottomDrawerView.findViewById<Button>(R.id.show_pharmacy_info)
         informationButton.setOnClickListener {

@@ -98,61 +98,22 @@ class LoginActivity : AppCompatActivity() {
 
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         val user = User(username, password, fcmToken.toString(), deviceId)
-        Log.d("FCM", "FCM ??: " + fcmToken)
-        val call = pharmacistAPI.sendRegister(user)
-        handleRegisterResponse(call, onSuccess, onFailure)
-    }
-
-    private fun handleRegisterResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        call.enqueue(object : Callback<SignInResponse> {
-            override fun onResponse(
-                call: Call<SignInResponse>,
-                response: Response<SignInResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val token = response.body()!!.token
-                    // store token in preferences datastore
-                    setLoginToken(token)
-                    onSuccess()
-                }
-                else {
-                    onFailure()
-                }
-            }
-
-            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: ${t.message}")
-                onFailure()
-            }
-        })
+        Log.d("FCM", "FCM ??: $fcmToken")
+        val onStartToken : (String) -> Unit = { token ->
+            // store token in preferences datastore
+            setLoginToken(token)
+        }
+        pharmacistAPI.sendRegister(user, onSuccess, onFailure, onStartToken)
     }
 
     private fun loginUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
 
         val user = User(username, password, fcmToken.toString(), deviceId)
-        val call = pharmacistAPI.sendLogin(user)
-        handleLoginResponse(call, onSuccess, onFailure)
-    }
-
-    private fun handleLoginResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        call.enqueue(object : Callback<SignInResponse> {
-            override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
-                if (response.isSuccessful) {
-                    val token = response.body()!!.token
-                    // store token in preferences datastore
-                    setLoginToken(token)
-                    onSuccess()
-                }
-                else {
-                    onFailure()
-                }
-            }
-
-            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: ${t.message}")
-                onFailure()
-            }
-        })
+        val onStartToken : (String) -> Unit = { token ->
+            // store token in preferences datastore
+            setLoginToken(token)
+        }
+        pharmacistAPI.sendLogin(user, onSuccess, onFailure, onStartToken)
     }
 
     private fun navigateToNavigationDrawerActivity() {
@@ -160,10 +121,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
-        val response = pharmacistAPI.getAuth(storedToken)
-        if (response.isSuccessful) {
-            onSuccess()
-        } else {
+        val onExpiry : () -> Unit = {
             // TODO - maybe change this to a persistent message displayed
             // Show toast message for error messages
             /*val message = when(response.code()) {
@@ -174,6 +132,7 @@ class LoginActivity : AppCompatActivity() {
             }*/
             Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_LONG).show()
         }
+        pharmacistAPI.getAuth(storedToken, onSuccess, onExpiry)
     }
 
 

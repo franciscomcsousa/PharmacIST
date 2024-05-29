@@ -5,13 +5,6 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.util.Log
-import android.widget.Toast
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
@@ -21,9 +14,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
-import pt.ulisboa.tecnico.pharmacist.utils.MedicinePurpose
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
@@ -54,16 +45,54 @@ class PharmacistAPI(val activity: Activity) {
 
     private val databaseHandler = DatabaseHandler(activity)
 
-    fun sendRegister(@Body user: User?): Call<SignInResponse> {
-        return retrofitAPI.sendRegisterRequest(user)
+    fun sendRegister(@Body user: User?, onSuccess: () -> Unit, onFailure: () -> Unit, onStartToken : (String) -> Unit) {
+        val call = retrofitAPI.sendRegisterRequest(user)
+        call.enqueue(object : Callback<SignInResponse> {
+            override fun onResponse(
+                call: Call<SignInResponse>,
+                response: Response<SignInResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onStartToken(response.body()!!.token)
+                    onSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+                onFailureHandler(t)
+                onFailure()
+            }
+        })
     }
 
-    fun sendLogin(@Body user: User?): Call<SignInResponse> {
-        return retrofitAPI.sendLoginRequest(user)
+    fun sendLogin(@Body user: User?, onSuccess: () -> Unit, onFailure: () -> Unit, onStartToken : (String) -> Unit) {
+        val call = retrofitAPI.sendLoginRequest(user)
+        call.enqueue(object : Callback<SignInResponse> {
+            override fun onResponse(call: Call<SignInResponse>, response: Response<SignInResponse>) {
+                if (response.isSuccessful) {
+                    onStartToken(response.body()!!.token)
+                    onSuccess()
+                }
+                else {
+                    onFailure()
+                }
+            }
+            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
+                onFailureHandler(t)
+                onFailure()
+            }
+        })
     }
 
-    suspend fun getAuth(@Header("Authorization") token: String): Response<StatusResponse> {
-        return retrofitAPI.getAuthRequest(token)
+    suspend fun getAuth(@Header("Authorization") token: String, onSuccess: () -> Unit, onExpiry: () -> Unit) {
+
+        val response = retrofitAPI.getAuthRequest(token)
+        if (response.isSuccessful) {
+            onSuccess()
+        }
+        else {
+            onExpiry()
+        }
     }
 
     fun getPharmacies(@Body location: Location?, onSuccess: (List<Pharmacy>) -> Unit) {
@@ -159,9 +188,6 @@ class PharmacistAPI(val activity: Activity) {
 
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("P_$id", activity)
-
-        // Uncomment this to delete all cached images
-        // ImageUtils.deleteAllImagesFromInternalStorage(activity)
 
         if (bitmap != null) {
             onSuccess(bitmap)

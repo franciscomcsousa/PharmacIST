@@ -61,32 +61,11 @@ class RegisterActivity : AppCompatActivity() {
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
         // TODO - Error message in case fcmToken was not received. Or just try again.
         val user = User(username, password, fcmToken.toString(), deviceId)
-        val call = pharmacistAPI.sendRegister(user)
-        handleResponse(call, onSuccess, onFailure)
-    }
-
-    private fun handleResponse(call: Call<SignInResponse>, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        call.enqueue(object : Callback<SignInResponse> {
-            override fun onResponse(
-                call: Call<SignInResponse>,
-                response: Response<SignInResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val token = response.body()!!.token
-                    // store token in preferences datastore
-                    setLoginToken(token)
-                    onSuccess()
-                }
-                else {
-                    onFailure()
-                }
-            }
-
-            override fun onFailure(call: Call<SignInResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: ${t.message}")
-                onFailure()
-            }
-        })
+        val onStartToken : (String) -> Unit = { token ->
+            // store token in preferences datastore
+            setLoginToken(token)
+        }
+        pharmacistAPI.sendRegister(user, onSuccess, onFailure, onStartToken)
     }
 
 

@@ -126,7 +126,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 getFavorites()
             }
 
-            mMap!!.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(pharmacyLatitude, pharmacyLongitude), 16f))
+            Handler().postDelayed({
+                mMap?.animateCamera(CameraUpdateFactory.newLatLngZoom(LatLng(pharmacyLatitude, pharmacyLongitude), 16f))
+            }, 500) // delay to allow the map to load
 
             return
         }

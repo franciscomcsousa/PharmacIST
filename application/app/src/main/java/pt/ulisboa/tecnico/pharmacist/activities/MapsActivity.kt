@@ -40,10 +40,6 @@ import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -70,6 +66,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var pharmaciesFavorite: MutableList<Pharmacy> = mutableListOf<Pharmacy>()
 
     // used in AddPharmacy
+    private var isLocationSelectionEnabled = false
     private var selectedLatLng: LatLng? = null
     private var confirmButton: Button? = null
 
@@ -89,7 +86,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         // Check if the activity was started for location selection
         if (intent.action == Intent.ACTION_PICK) {
-            Log.d("serverResponse", "HUAAHUA")
             enableLocationSelection()
         }
 
@@ -99,10 +95,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
 
-        // used to select a place in the map
+        // Set up the map click listener
         mMap?.setOnMapClickListener { latLng ->
-            // Handle map click event
-            handleMapClick(latLng)
+            if (isLocationSelectionEnabled) {
+                // Clear previous markers and add a marker where clicked
+                mMap?.clear()
+                mMap?.addMarker(MarkerOptions().position(latLng))
+
+                // Store the selected latitude and longitude
+                selectedLatLng = latLng
+            }
         }
 
         if (PermissionUtils.requestLocationPermissions(this)) {
@@ -364,37 +366,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         }
         PermissionUtils.getUserLocation(locationCallback, this)
     }
-
-    private fun handleMapClick(latLng: LatLng) {
-        // Clear previous markers and add a marker where clicked
-        mMap?.clear()
-        mMap?.addMarker(MarkerOptions().position(latLng))
-
-        // Store the selected latitude and longitude
-        selectedLatLng = latLng
-    }
-
-    private fun onConfirmClick() {
-        val selectedLatitude = mMap?.cameraPosition?.target?.latitude ?: 0.0
-        val selectedLongitude = mMap?.cameraPosition?.target?.longitude ?: 0.0
-
-        val intent = Intent()
-        intent.putExtra("latitude", selectedLatitude)
-        intent.putExtra("longitude", selectedLongitude)
-        setResult(Activity.RESULT_OK, intent)
-        finish()
-    }
-
+    
     private fun enableLocationSelection() {
-        mMap?.setOnMapClickListener { latLng ->
-            // Clear previous markers and add a marker where clicked
-            mMap?.clear()
-            mMap?.addMarker(MarkerOptions().position(latLng))
-
-            // Store the selected latitude and longitude
-            selectedLatLng = latLng
-        }
-
+        isLocationSelectionEnabled = true
         // Show the confirm button to confirm the selected location
         confirmButton?.visibility = View.VISIBLE
         confirmButton?.setOnClickListener {

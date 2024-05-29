@@ -121,7 +121,6 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         intent.putExtra("pharmacyAddress", pharmacy.address)
         intent.putExtra("pharmacyLatitude", pharmacy.latitude)
         intent.putExtra("pharmacyLongitude", pharmacy.longitude)
-        intent.putExtra("pharmacyImage", pharmacy.image)
 
         startActivity(intent)
     }

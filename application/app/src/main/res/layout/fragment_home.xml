@@ -238,5 +238,16 @@
 
         </androidx.cardview.widget.CardView>
 
+        <Button
+            android:id="@+id/logout_button"
+            android:layout_width="130dp"
+            android:layout_height="50dp"
+            android:layout_marginBottom="70dp"
+            android:text="@string/logout"
+            android:onClick="logoutButtonClick"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

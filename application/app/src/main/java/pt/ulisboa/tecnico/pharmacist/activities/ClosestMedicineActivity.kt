@@ -25,7 +25,6 @@ class ClosestMedicineActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_closest_medicine)
 
-        // Retrieve the medicine and pharmacy from the intent
         val medicineId = intent.getStringExtra("medicineId")
         val medicineName = intent.getStringExtra("medicineName")
         val medicinePurpose = intent.getStringExtra("medicinePurpose")
@@ -34,18 +33,12 @@ class ClosestMedicineActivity : AppCompatActivity() {
         val pharmacyAddress = intent.getStringExtra("pharmacyAddress")
         val pharmacyLatitude = intent.getStringExtra("pharmacyLatitude")
         val pharmacyLongitude = intent.getStringExtra("pharmacyLongitude")
-        val pharmacyImage = intent.getStringExtra("pharmacyImage")
 
-        // TODO - Later display the medicine and pharmacy image in the activity
-
-        // Display the medicine and pharmacy in the activity
         findViewById<TextView>(R.id.medicine_name).text = medicineName
         findViewById<TextView>(R.id.medicine_purpose).text = medicinePurpose
         findViewById<TextView>(R.id.pharmacy_name).text = pharmacyName
         findViewById<TextView>(R.id.pharmacy_address).text = pharmacyAddress
 
-        // set on click listener for the navigate button, which will go to the MapsActivity
-        // and move the camera to the pharmacy location
         findViewById<TextView>(R.id.navigate_button).setOnClickListener {
             val intent = intent
             intent.setClass(this, MapsActivity::class.java)
@@ -57,8 +50,14 @@ class ClosestMedicineActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
-        // set on click listener for the share button which will share the pharmacy name, address
-        // and medicine name with other apps
+        findViewById<TextView>(R.id.medicine_info_button).setOnClickListener {
+            val intent = intent
+            intent.setClass(this, MedicineInformationActivity::class.java)
+            intent.putExtra("medicineId", medicineId)
+            intent.putExtra("medicineName", medicineName)
+            startActivity(intent)
+        }
+
         findViewById<TextView>(R.id.share_button).setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND)
             intent.type = "text/plain"
@@ -66,7 +65,8 @@ class ClosestMedicineActivity : AppCompatActivity() {
             intent.setType("text/plain")
             startActivity(Intent.createChooser(intent, "Share using"))
         }
-        // fetches medicine image and loads it
+
+        // Fetches medicine image and loads it
         medicineImage(medicineId.toString())
     }
 
@@ -79,5 +79,4 @@ class ClosestMedicineActivity : AppCompatActivity() {
         }
         pharmacistAPI.medicineImage(medicineId, onSuccess)
     }
-
 }

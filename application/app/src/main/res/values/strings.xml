@@ -73,5 +73,7 @@
     <string name="share">Share</string>
     <string name="clear_cache">Clear Cache</string>
     <string name="notify_me_when_medicine_available">Notify me when this medicine is available</string>
+    <string name="logout">Logout</string>
+    <string name="medicine_info">See Info</string>
 
 </resources>

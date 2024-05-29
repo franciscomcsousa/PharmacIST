@@ -17,12 +17,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.databinding.ActivityDrawerBinding
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
@@ -117,6 +119,16 @@ class NavigationDrawerActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    fun logoutButtonClick(view: View?) {
+        lifecycleScope.launch {
+            dataStore.setLoginToken("")
+            dataStore.setFCMToken("")
+            dataStore.setUsername("")
+        }
+        Thread.sleep(100)
+        onBackPressedDispatcher.onBackPressed()
+    }
+
     fun enterSettings(item: MenuItem) {
         val intent = Intent(this, SettingsActivity::class.java)
         startActivity(intent)
@@ -142,7 +154,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
                         val pendingIntent = PendingIntent.getActivity(this, pharmacy.id.hashCode(), intent, PendingIntent.FLAG_IMMUTABLE)
                         val action = NotificationCompat.Action.Builder(androidx.loader.R.drawable.notification_bg, "Open in Map", pendingIntent).build()
 
-                        val notification = NotificationCompat.Builder(applicationContext, pharmacy.id!!)
+                        val notification = NotificationCompat.Builder(applicationContext, "pharmacies")
                             .setSmallIcon(androidx.loader.R.drawable.notification_bg)
                             .setContentTitle("Nearby pharmacy")
                             .setContentText("You are near ${pharmacy.name}")

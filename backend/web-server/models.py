@@ -303,6 +303,10 @@ def update_pharmacy_stock(medicine_stock_list, pharmacy_id):
                     ON DUPLICATE KEY UPDATE
                     quantity = quantity + VALUES(quantity)"""
             cur.execute(query, data)
+            
+            # just sends notifications when stock is added
+            if stock > 0:
+                check_notifications(cur, entry[0], pharmacy_id)
                 
         con.commit()
 
@@ -471,10 +475,50 @@ def get_image(id, type):
         
         
 # ========== Send FCM notifications ============== #
+
+def check_notifications(cur, medicine_id, pharmacy_id):
+    # Join favorite_pharmacies with pharmacies table to get pharmacy name
+    data = (medicine_id, pharmacy_id)
+    query = """SELECT mn.user_id, m.name as medicine_name, p.name as pharmacy_name
+               FROM medicine_notification mn
+               JOIN medicine m ON mn.medicine_id = m.medicine_id
+               JOIN favorite_pharmacies fp ON mn.user_id = fp.user_id
+               JOIN pharmacies p ON fp.pharmacy_id = p.pharmacy_id
+               WHERE mn.medicine_id = %s AND fp.pharmacy_id = %s"""
+    cur.execute(query, data)
+    notifications = cur.fetchall()
+
+    for notification in notifications:
+        user_id = notification[0]
+        medicine_name = notification[1]
+        pharmacy_name = notification[2]
+
+        # Fetch the FCM tokens of the user and send notifications to all devices
+        query = """SELECT notif_token
+                   FROM user_tokens
+                   WHERE user_id = %s"""
+        cur.execute(query, (user_id,))
+        tokens = cur.fetchall()
+
+        for token_tuple in tokens:
+            notif_token = token_tuple[0]
+            # Send notification for every device
+            write_notification(notif_token, medicine_name, pharmacy_name)
+
+    return
+
+        
+        
+def write_notification(fcm_token, medicine_name, pharmacy_name):
+    title = f"{medicine_name} is now in stock!"
+    body = f"{medicine_name} you wanted, is now available at {pharmacy_name}."
+    send_notification(fcm_token, title, body)
+    
+
 def send_notification(token, title, body):
     message = messaging.Message(
         notification=messaging.Notification(title=title, body=body),
         token=token,
     )
     response = messaging.send(message)
-    print("Successfully sent message:", response)
+    print("Sent notification:", response)

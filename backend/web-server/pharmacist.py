@@ -105,7 +105,7 @@ def login_user():
             # makes sure it has been registered in the devices
             # pbbly used when the user signs in a new device
             register_device(user_id, fcm_token, device_id)
-            
+                        
             # TODO - is sendong token even if unsucessful
             # if register successful send token and user stays logged in!
             # maybe also use login_user(), but for simplicity tokens do the job
@@ -329,7 +329,7 @@ def pharmacy_stock():
         substring = data['substring']
         pharmacy_id = data['pharmacyId']
 
-        medicine, status = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)
+        medicine, status = get_pharmacy_stock(substring=substring, pharmacy_id=pharmacy_id)         
         return make_response(jsonify({"medicine": medicine}), status)
     
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
@@ -364,7 +364,6 @@ def update_stock():
         return make_response({"status": status}, status)
 
     return make_response({"status": BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
-
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', debug=True)

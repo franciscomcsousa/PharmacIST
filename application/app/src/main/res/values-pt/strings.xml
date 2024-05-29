@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">PharmacIST</string>
+    <string name="title_activity_maps">MapsActivity</string>
+    <string name="title_add_pharmacy">AddPharmacyActivity</string>
+    <string name="title_activity_add_stock">AddStockActivity</string>
+
+    <!-- Login Texts -->
+    <string name="prompt_username">Usuário</string>
+    <string name="prompt_password">Palavra-Passe</string>
+    <string name="btn_login">Entrar</string>
+    <string name="btn_register">Registar</string>
+    <string name="btn_guest">Entrar como Convidado</string>
+    <string name="login_text">Não tem conta? \nCrie uma agora, ou simplesmente entre como convidado!</string>
+
+    <!-- Home texts -->
+    <string name="home_map_title">Mapas</string>
+    <string name="home_map_subtitle">Farmácias Próximas</string>
+    <string name="home_pill_title">Medicamentos</string>
+    <string name="home_pill_subtitle">Encontrar Medicamentos</string>
+    <string name="home_add_pharmacy_title">Adicionar Farmácia</string>
+    <string name="home_add_pharmacy_subtitle">Criar nova Farmácia</string>
+    <string name="home_placeholder_title">Titulo</string>
+    <string name="home_placeholder_subtitle">Subtitulo</string>
+    <string name="title_activity_drawer">DrawerActivity</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Definições</string>
+
+    <string name="menu_home">Início</string>
+    <string name="menu_gallery">Galeria</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <!-- Pharmacy Texts -->
+    <string name="pharmacy_name">Nome</string>
+    <string name="pharmacy_address">Morada</string>
+    <string name="pharmacy_latitude">Latitude</string>
+    <string name="pharmacy_longitude">Longitude</string>
+    <string name="add_photo">Adicionar Foto</string>
+    <string name="create_pharmacy">Criar Farmácia</string>
+    <string name="search_for_a_medicine">Procurar por medicamento</string>
+    <string name="search">Procurar</string>
+    <string name="closest_pharmacy">Farmácia mais próxima:</string>
+    <string name="btn_navigate">Direções</string>
+    <string name="btn_add_stock">Adicionar Stock</string>
+    <string name="btn_purchase_stock">Comprar Stock</string>
+
+
+    <!-- Placeholder Text -->
+    <string name="placeholder_1">Placeholder 1</string>
+    <string name="placeholder_2">Placeholder 2</string>
+    <string name="placeholder_3">Placeholder 3</string>
+    <string name="placeholder_4">Placeholder 4</string>
+    <string name="show_pharmacy_info">Mostrar Informação de Farmácia</string>
+    <string name="medicine_default">Exemplo de Medicamento</string>
+    <string name="default_info_panel">Painel de Informação</string>
+    <string name="search_medicine">Procura de Medicamento</string>
+    <string name="item">Item</string>
+    <string name="light_mode">Modo Claro</string>
+    <string name="dark_mode">Modo Escuro</string>
+    <string name="medicine_name">Nome de Medicamento</string>
+    <string name="pharmacist">PharmacIST</string>
+    <string name="purpose">Porpósito/Uso Preferencial</string>
+    <string name="quantity">Quantidade a adicionar</string>
+    <string name="create_medicine">Criar medicamento</string>
+    <string name="show_on_map">Mostrar no Mapa</string>
+
+
+    <string name="closest_pharmacies">Farmácias mais Próximas</string>
+    <string name="stock">Stock</string>
+    <string name="share">Partilhar</string>
+    <string name="clear_cache">Limpar Cache</string>
+    <string name="notify_me_when_medicine_available">Notifiquem-me quando o medicamento estiver disponível</string>
+    <string name="logout">Logout</string>
+    <string name="medicine_info">Ver Info</string>
+
+</resources>

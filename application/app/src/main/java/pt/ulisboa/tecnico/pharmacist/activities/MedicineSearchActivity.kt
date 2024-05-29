@@ -61,27 +61,18 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
     private fun queryMedicines(text: String) {
         // perform a call to the server to get the list of medicines
         val medicineCall = Medicine(name = text)
-        val call: Call<MedicineResponse> = pharmacistAPI.getMedicine(medicineCall)
-        call.enqueue(object : Callback<MedicineResponse> {
-            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
-                if (response.isSuccessful) {
-                    val medicineResponse = response.body()!!.medicine
-                    val data = ArrayList<MedicineSearchViewModel>()
+        val onSuccess : (List<List<Any>>) -> Unit = {medicineResponse ->
+            val data = ArrayList<MedicineSearchViewModel>()
 
-                    for (i in medicineResponse) {
-                        val medicine = Medicine(id = i[0].toString(),name = i[1].toString())
-                        data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name, medicine.id.toString()))
-                    }
-                    val adapter = MedicineSearchAdapter(data, this@MedicineSearchActivity)
-                    val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-                    recyclerView.adapter = adapter
-                }
+            for (i in medicineResponse) {
+                val medicine = Medicine(id = i[0].toString(),name = i[1].toString())
+                data.add(MedicineSearchViewModel(R.drawable.pill, medicine.name, medicine.id.toString()))
             }
-
-            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: " + t.message)
-            }
-        })
+            val adapter = MedicineSearchAdapter(data, this@MedicineSearchActivity)
+            val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
+            recyclerView.adapter = adapter
+        }
+        pharmacistAPI.getMedicine(medicineCall, onSuccess)
     }
 
     override fun onItemClick(position: Int) {
@@ -99,29 +90,22 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
             // TODO - maybe when null use the last non-null value
             if (location != null) {
                 val medicineLocation = MedicineLocation(name = medicineName, latitude =  location.latitude, longitude =  location.longitude)
-                val call: Call<MedicineResponse> = pharmacistAPI.getMedicineLocation(medicineLocation)
-                call.enqueue(object : Callback<MedicineResponse> {
-                    override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
-                        if (response.isSuccessful) {
-                            val medicineResponse = response.body()!!.medicine
-                            Log.d("serverResponse", "Medicine found: $medicineResponse")
-                            val medicine = MedicinePurpose(id = medicineResponse[0][0].toString(), name = medicineResponse[0][1].toString(), purpose = medicineResponse[0][2].toString())
-                            val pharmacy = Pharmacy(medicineResponse[1][0].toString(), medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
-                                medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
 
-                            // Display the medicine and pharmacy in a new activity
-                            navigateToMedicineDetailsActivity(medicine, pharmacy)
-                        }
-                        else if (response.code() == 453) {
-                            Toast.makeText(this@MedicineSearchActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
-                            Log.d("serverResponse","Medicine not found")
-                        }
-                    }
+                val onSuccess : (List<List<Any>>) -> Unit = { medicineResponse ->
+                    Log.d("serverResponse", "Medicine found: $medicineResponse")
+                    val medicine = MedicinePurpose(id = medicineResponse[0][0].toString(), name = medicineResponse[0][1].toString(), purpose = medicineResponse[0][2].toString())
+                    val pharmacy = Pharmacy(medicineResponse[1][0].toString(), medicineResponse[1][1].toString(), medicineResponse[1][2].toString(),
+                        medicineResponse[1][3].toString(), medicineResponse[1][4].toString(), "")
 
-                    override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
-                        Log.d("serverResponse","FAILED: "+ t.message)
-                    }
-                })
+                    // Display the medicine and pharmacy in a new activity
+                    navigateToMedicineDetailsActivity(medicine, pharmacy)
+                }
+                // Code 453
+                val onMedicineNotFound : () -> Unit = {
+                    Toast.makeText(this@MedicineSearchActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
+                    Log.d("serverResponse","Medicine not found")
+                }
+                pharmacistAPI.getMedicineLocation(medicineLocation, onSuccess, onMedicineNotFound)
             }
         }
         PermissionUtils.getUserLocation(locationCallback, this)

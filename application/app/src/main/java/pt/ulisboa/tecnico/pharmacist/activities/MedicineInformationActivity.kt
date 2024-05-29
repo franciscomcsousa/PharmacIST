@@ -82,36 +82,26 @@ class MedicineInformationActivity : AppCompatActivity(),
             if (location != null) {
                 val medicineLocation =
                     MedicineLocation(name = medicineName, latitude = location.latitude, longitude = location.longitude)
-                val call: Call<NearestPharmaciesResponse> = pharmacistAPI.nearbyPharmacyMedicine(medicineLocation)
+
                 val pharmaciesStock: MutableList<PharmacyStock> = mutableListOf()
                 val data = ArrayList<PharmacyStockViewModel>()
-                call.enqueue(object : Callback<NearestPharmaciesResponse> {
 
-                    override fun onResponse(
-                        call: Call<NearestPharmaciesResponse>,
-                        response: Response<NearestPharmaciesResponse>
-                    ) {
-                        val pharmaciesStockResponse = response.body()!!.pharmaciesStock
-                        for (pharmacyStock in pharmaciesStockResponse) {
-                            val stock = pharmacyStock[2] as Double
-                            // TODO - should pharmacyStock[0] be used anywhere?
-                            data.add(
-                                PharmacyStockViewModel(
+                val onSuccess : (List<List<Any>>) -> Unit = {pharmaciesStockResponse ->
+                    for (pharmacyStock in pharmaciesStockResponse) {
+                        val stock = pharmacyStock[2] as Double
+                        // TODO - should pharmacyStock[0] be used anywhere?
+                        data.add(
+                            PharmacyStockViewModel(
                                 pharmacyStock[1].toString(),
                                 stock.toInt())
-                            )
-                        }
-
-                        val adapter = PharmacyStockSearchAdapter(data)
-                        val recyclerView = findViewById<RecyclerView>(R.id.medicine_panel_recycler_view)
-                        recyclerView.adapter = adapter
+                        )
                     }
 
-                    override fun onFailure(call: Call<NearestPharmaciesResponse>, t: Throwable) {
-                        Log.d("serverResponse","FAILED: "+ t.message)
-                    }
-
-                })
+                    val adapter = PharmacyStockSearchAdapter(data)
+                    val recyclerView = findViewById<RecyclerView>(R.id.medicine_panel_recycler_view)
+                    recyclerView.adapter = adapter
+                }
+                pharmacistAPI.nearbyPharmacyMedicine(medicineLocation, onSuccess)
             }
         }
         PermissionUtils.getUserLocation(locationCallback, this)
@@ -132,10 +122,10 @@ class MedicineInformationActivity : AppCompatActivity(),
         val medicineNotification = MedicineNotification(username, medicineId)
         val onSuccess: (Int) -> Unit = {responseCode ->
             if (responseCode == 205) {
-                // TODO
+                // TODO ? - Perhaps some console logs
             }
             else if (responseCode == 206) {
-                // TODO
+                // TODO ? - Perhaps some console logs
             }
         }
 

@@ -207,22 +207,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private suspend fun isPharmacyFavorite(id: String, favoriteButton: ToggleButton) {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
-        val call: Call<StatusResponse> = pharmacistAPI.isPharmacyFavorite(favoritePharmacy)
-        call.enqueue(object : Callback<StatusResponse> {
-            override fun onResponse(
-                call: Call<StatusResponse>,
-                response: Response<StatusResponse>
-            ) {
-                if (response.isSuccessful) {
-                    Log.d("serverResponse", "SUCCESSFUL: ${response.code()}")
-                    favoriteButton.isChecked = response.code() == 203
-                }
-            }
-
-            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: ${t.message}")
-            }
-        })
+        val onSuccess : (Int) -> Unit = { responseCode ->
+            Log.d("serverResponse", "SUCCESSFUL: $responseCode")
+            favoriteButton.isChecked = responseCode == 203
+        }
+        pharmacistAPI.isPharmacyFavorite(favoritePharmacy, onSuccess)
     }
 
     private fun handleShowMore(pharmacy: Pharmacy) {
@@ -324,43 +313,32 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private suspend fun handleFavoriteButton(id: String) {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
-        val call: Call<StatusResponse> = pharmacistAPI.pharmacyFavorite(favoritePharmacy)
-        call.enqueue(object : Callback<StatusResponse> {
-            override fun onResponse(
-                call: Call<StatusResponse>,
-                response: Response<StatusResponse>
-            ) {
-                if (response.isSuccessful) {
-                    Log.d("serverResponse", "UPDATED: ${response.code()}")
-                    for (pharmacy in activePharmacies) {
-                        if (pharmacy.id == id) {
-                            val marker = mMap!!.addMarker(MarkerOptions()
-                                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
-                                .title(pharmacy.name)
-                                .snippet(pharmacy.address)
-                            )
-                            marker?.tag = pharmacy
+        val onSuccess : (Int) -> Unit = { responseCode ->
+            Log.d("serverResponse", "UPDATED: ${responseCode}")
+            for (pharmacy in activePharmacies) {
+                if (pharmacy.id == id) {
+                    val marker = mMap!!.addMarker(MarkerOptions()
+                        .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                        .title(pharmacy.name)
+                        .snippet(pharmacy.address)
+                    )
+                    marker?.tag = pharmacy
 
-                            if (response.code() == 203) {
-                                marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
-                            } else {
-                                marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                            }
-                            mMap!!.setOnMarkerClickListener { clickedMarker ->
-                                val clickedPharmacy = clickedMarker.tag as Pharmacy
-                                showPharmacyDrawer(clickedPharmacy)
-                                true // Return true to indicate that the listener has consumed the event
-                            }
-                            break
-                        }
+                    if (responseCode == 203) {
+                        marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                    } else {
+                        marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     }
+                    mMap!!.setOnMarkerClickListener { clickedMarker ->
+                        val clickedPharmacy = clickedMarker.tag as Pharmacy
+                        showPharmacyDrawer(clickedPharmacy)
+                        true // Return true to indicate that the listener has consumed the event
+                    }
+                    break
                 }
             }
-
-            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                Log.d("serverResponse", "FAILED: ${t.message}")
-            }
-        })
+        }
+        pharmacistAPI.pharmacyFavorite(favoritePharmacy, onSuccess)
     }
 
     // User Location and Permissions Logic

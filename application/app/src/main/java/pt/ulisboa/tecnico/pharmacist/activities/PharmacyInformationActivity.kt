@@ -82,37 +82,27 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
 
         val stockQuery = QueryStock(substring, pharmacyId)
 
-        val call: Call<MedicineResponse> = pharmacistAPI.getPharmacyStock(stockQuery)
-        call.enqueue(object : Callback<MedicineResponse> {
-            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
-                if (response.isSuccessful) {
-                    val medicineList = response.body()?.medicine
+        val onSuccess : (List<List<Any>>) -> Unit = { medicineList ->
+            val data = ArrayList<MedicineSearchViewModel>()
 
-                    val data = ArrayList<MedicineSearchViewModel>()
-
-                    // For testing purposes
-                    if (medicineList != null) {
-                        for (medicine in medicineList) {
-                            Log.d("serverResponse", medicine[0].toString())
-                            val medicineId = medicine[0]    // id
-                            val medicineName = medicine[1]  // name
-                            data.add(MedicineSearchViewModel(R.drawable.baseline_directions_24,
-                                medicineName.toString(), medicineId.toString()))
-                        }
-                    }
-                    // Set the recycler view adapter to the created adapter
-                    val adapter = MedicineSearchAdapter(data, this@PharmacyInformationActivity)
-                    val recyclerview = findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view)
-                    recyclerview.adapter = adapter
-
-                    Log.d("serverResponse","Pharmacy stock obtained")
+            // For testing purposes
+            if (medicineList != null) {
+                for (medicine in medicineList) {
+                    Log.d("serverResponse", medicine[0].toString())
+                    val medicineId = medicine[0]    // id
+                    val medicineName = medicine[1]  // name
+                    data.add(MedicineSearchViewModel(R.drawable.baseline_directions_24,
+                        medicineName.toString(), medicineId.toString()))
                 }
             }
+            // Set the recycler view adapter to the created adapter
+            val adapter = MedicineSearchAdapter(data, this@PharmacyInformationActivity)
+            val recyclerview = findViewById<RecyclerView>(R.id.pharmacy_panel_recycle_view)
+            recyclerview.adapter = adapter
 
-            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
+            Log.d("serverResponse","Pharmacy stock obtained")
+        }
+        pharmacistAPI.getPharmacyStock(stockQuery, onSuccess)
     }
 
     fun addStock(view: View) {

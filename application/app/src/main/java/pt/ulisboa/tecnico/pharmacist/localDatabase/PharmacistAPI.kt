@@ -5,6 +5,13 @@ import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
 import android.util.Log
+import android.widget.Toast
+import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
@@ -14,7 +21,9 @@ import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
+import pt.ulisboa.tecnico.pharmacist.utils.MedicinePurpose
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
 import pt.ulisboa.tecnico.pharmacist.utils.PharmaciesResponse
@@ -131,8 +140,19 @@ class PharmacistAPI(val activity: Activity) {
         }
     }
 
-    fun createPharmacy(@Body pharmacy: Pharmacy): Call<CreatePharmacyResponse> {
-        return retrofitAPI.createPharmacyRequest(pharmacy)
+    fun createPharmacy(@Body pharmacy: Pharmacy, onSuccess: () -> Unit) {
+        val call = retrofitAPI.createPharmacyRequest(pharmacy)
+        call.enqueue(object : Callback<CreatePharmacyResponse> {
+            override fun onResponse(call: Call<CreatePharmacyResponse>, response: Response<CreatePharmacyResponse>){
+                if (response.isSuccessful) {
+                    onSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<CreatePharmacyResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
     fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit) {
@@ -169,12 +189,41 @@ class PharmacistAPI(val activity: Activity) {
         }
     }
 
-    fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse> {
-        return retrofitAPI.pharmacyFavoriteRequest(favoritePharmacy)
+    fun pharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy, onSuccess: (Int) -> Unit) {
+
+        val call = retrofitAPI.pharmacyFavoriteRequest(favoritePharmacy)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onSuccess(response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
-    fun isPharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse> {
-        return retrofitAPI.isPharmacyFavoriteRequest(favoritePharmacy)
+    fun isPharmacyFavorite(@Body favoritePharmacy: FavoritePharmacy, onSuccess: (Int) -> Unit) {
+        val call = retrofitAPI.isPharmacyFavoriteRequest(favoritePharmacy)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onSuccess(response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
     fun getFavoritePharmacies(@Body username: String, onSuccess : (List<Pharmacy>) -> Unit) {
@@ -218,16 +267,56 @@ class PharmacistAPI(val activity: Activity) {
         })
     }
 
-    fun createMedicine(@Body medicine: MedicineStock): Call<StatusResponse> {
-        return retrofitAPI.createMedicineRequest(medicine)
+    fun createMedicine(@Body medicine: MedicineStock, onSuccess: () -> Unit){
+        val call = retrofitAPI.createMedicineRequest(medicine)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>){
+                if (response.isSuccessful) {
+                    onSuccess()
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
-    fun getMedicine(@Body medicine: Medicine): Call<MedicineResponse> {
-        return retrofitAPI.getMedicineRequest(medicine)
+    fun getMedicine(@Body medicine: Medicine, onSuccess: (List<List<Any>>) -> Unit) {
+        val call = retrofitAPI.getMedicineRequest(medicine)
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onSuccess(it.medicine) }
+                }
+            }
+
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
-    fun getMedicineById(@Query("id") medicineId: String): Call<MedicineResponse> {
-        return retrofitAPI.getMedicineByIdRequest(medicineId)
+    fun getMedicineById(@Query("id") medicineId: String, onSuccess: (List<List<Any>>) -> Unit, onMedicineNotFound : () -> Unit) {
+        val call = retrofitAPI.getMedicineByIdRequest(medicineId)
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(
+                call: Call<MedicineResponse>,
+                response: Response<MedicineResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onSuccess(response.body()!!.medicine)
+                }
+                if(response.code() == 453) {
+                    onMedicineNotFound()
+                }
+            }
+
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
+
     }
 
     fun medicineImage(@Query("id") medicineId: String, onSuccess: (Bitmap) -> Unit) {
@@ -260,8 +349,21 @@ class PharmacistAPI(val activity: Activity) {
         }
     }
 
-    fun getMedicineLocation(@Body medicineLocation: MedicineLocation): Call<MedicineResponse> {
-        return retrofitAPI.getMedicineLocationRequest(medicineLocation)
+    fun getMedicineLocation(@Body medicineLocation: MedicineLocation, onSuccess: (List<List<Any>>) -> Unit, onMedicineNotFound: () -> Unit){
+        val call = retrofitAPI.getMedicineLocationRequest(medicineLocation)
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(call: Call<MedicineResponse>, response: Response<MedicineResponse>) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onSuccess(it.medicine) }
+                }
+                else if (response.code() == 453) {
+                    onMedicineNotFound()
+                }
+            }
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
+                Log.d("serverResponse","FAILED: "+ t.message)
+            }
+        })
     }
 
     fun medicineNotification(@Body medicineNotification: MedicineNotification, onSuccess: (Int) -> Unit): Call<StatusResponse> {
@@ -285,24 +387,80 @@ class PharmacistAPI(val activity: Activity) {
         return retrofitAPI.medicineNotificationRequest(medicineNotification)
     }
 
-    fun getPharmacyStock(@Body queryStock: QueryStock): Call<MedicineResponse> {
-        return retrofitAPI.getPharmacyStockRequest(queryStock)
+    fun getPharmacyStock(@Body queryStock: QueryStock, onSuccess: (List<List<Any>>) -> Unit) {
+        val call = retrofitAPI.getPharmacyStockRequest(queryStock)
+        call.enqueue(object : Callback<MedicineResponse> {
+            override fun onResponse(
+                call: Call<MedicineResponse>,
+                response: Response<MedicineResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onSuccess(it.medicine) }
+                }
+            }
+
+            override fun onFailure(call: Call<MedicineResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
-    fun getPharmacyStockId(
-        @Query("medicineId") medicineId: String,
-        @Query("pharmacyId") pharmacyId: String
-    ): Call<QueryStockResponse> {
-        return retrofitAPI.getPharmacyStockIdRequest(medicineId, pharmacyId)
+    fun getPharmacyStockId( @Query("medicineId") medicineId: String,  @Query("pharmacyId") pharmacyId: String, onSuccess: (List<String>) -> Unit) {
+        val call = retrofitAPI.getPharmacyStockIdRequest(medicineId, pharmacyId)
+        call.enqueue(object : Callback<QueryStockResponse> {
+            override fun onResponse(
+                call: Call<QueryStockResponse>,
+                response: Response<QueryStockResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onSuccess(it.stock) }
+                }
+            }
+
+            override fun onFailure(call: Call<QueryStockResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
+
     }
 
-    fun nearbyPharmacyMedicine(@Body medicineLocation: MedicineLocation): Call<NearestPharmaciesResponse> {
-        return retrofitAPI.nearbyPharmacyMedicineRequest(medicineLocation)
+    fun nearbyPharmacyMedicine(@Body medicineLocation: MedicineLocation, onSuccess: (List<List<Any>>) -> Unit) {
+        val call = retrofitAPI.nearbyPharmacyMedicineRequest(medicineLocation)
+        call.enqueue(object : Callback<NearestPharmaciesResponse> {
+            override fun onResponse(
+                call: Call<NearestPharmaciesResponse>,
+                response: Response<NearestPharmaciesResponse>
+            ) {
+                if (response.isSuccessful) {
+                    response.body()?.let { onSuccess(it.pharmaciesStock) }
+                }
+            }
+
+            override fun onFailure(call: Call<NearestPharmaciesResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
-    fun updateStock(@Body listMedicineStock: List<MedicineStock>): Call<StatusResponse> {
-        return retrofitAPI.updateStockRequest(listMedicineStock)
+    fun updateStock(@Body listMedicineStock: List<MedicineStock>, onSuccess: (Int) -> Unit) {
+        val call = retrofitAPI.updateStockRequest(listMedicineStock)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                if (response.isSuccessful) {
+                    onSuccess(response.code())
+                }
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
+
+
 
     // Auxiliary functions
     private fun anyListToPharmacyList(anyList : List<List<Any>>) : MutableList<Pharmacy> {

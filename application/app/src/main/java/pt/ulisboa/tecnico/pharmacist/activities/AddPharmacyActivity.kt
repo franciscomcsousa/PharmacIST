@@ -98,14 +98,12 @@ class AddPharmacyActivity : AppCompatActivity() {
             uri = mediaPickerHandler.currentUri) {
 
             // get the latitude and longitude from the place selected
-            createPharmacy(name, address, latitude, longitude, mediaPickerHandler.currentUri) {
-                navigateToNavigationDrawerActivity()
-            }
+            createPharmacy(name, address, latitude, longitude, mediaPickerHandler.currentUri)
             startActivity(Intent(this, NavigationDrawerActivity::class.java))
         }
     }
 
-    private fun createPharmacy(name: String, address: String, latitude: String, longitude: String, uri: Uri?, onSuccess: () -> Unit) {
+    private fun createPharmacy(name: String, address: String, latitude: String, longitude: String, uri: Uri?) {
         val image = mediaPickerHandler.encodeImageToBase64(uri)
 
         val pharmacy = Pharmacy(
@@ -114,18 +112,11 @@ class AddPharmacyActivity : AppCompatActivity() {
             latitude = latitude,
             longitude = longitude,
             image = image)
-        val call: Call<CreatePharmacyResponse> = pharmacistAPI.createPharmacy(pharmacy)
-        call.enqueue(object : Callback<CreatePharmacyResponse> {
-            override fun onResponse(call: Call<CreatePharmacyResponse>, response: Response<CreatePharmacyResponse>){
-                if (response.isSuccessful) {
-                    Log.d("serverResponse","Pharmacy added to database!")
-                }
-            }
 
-            override fun onFailure(call: Call<CreatePharmacyResponse>, t: Throwable) {
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
+        val onSuccess : () -> Unit = {
+            Log.d("serverResponse","Pharmacy added to database!")
+        }
+        pharmacistAPI.createPharmacy(pharmacy, onSuccess)
     }
 
     private fun navigateToNavigationDrawerActivity() {

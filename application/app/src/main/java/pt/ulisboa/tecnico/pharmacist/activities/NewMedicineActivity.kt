@@ -83,16 +83,13 @@ class NewMedicineActivity : AppCompatActivity() {
             uri = mediaPickerHandler.currentUri) {
 
             // get the latitude and longitude from the place selected
-            createMedicine(medicineName, quantity, purpose, mediaPickerHandler.currentUri) {
-                navigateBack()            }
+            createMedicine(medicineName, quantity, purpose, mediaPickerHandler.currentUri)
         }
     }
 
-    private fun createMedicine(medicineName: String, quantity: String, purpose: String, uri: Uri?, onSuccess: () -> Unit) {
+    private fun createMedicine(medicineName: String, quantity: String, purpose: String, uri: Uri?) {
         val image = mediaPickerHandler.encodeImageToBase64(uri)
-
-        onSuccess()
-
+        navigateBack()
         // TODO
         val medicine = MedicineStock(
             id = medicineId,
@@ -101,18 +98,10 @@ class NewMedicineActivity : AppCompatActivity() {
             purpose = purpose,
             pharmacyId = pharmacyId,
             image = image)
-        val call: Call<StatusResponse> = pharmacistAPI.createMedicine(medicine)
-        call.enqueue(object : Callback<StatusResponse> {
-            override fun onResponse(call: Call<StatusResponse>, response: Response<StatusResponse>){
-                if (response.isSuccessful) {
-                    Log.d("serverResponse","Pharmacy added to database!")
-                }
-            }
-
-            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
-                Log.d("serverResponse","FAILED: "+ t.message)
-            }
-        })
+        val onSuccess : () -> Unit = {
+            Log.d("serverResponse","Pharmacy added to database!")
+        }
+        pharmacistAPI.createMedicine(medicine, onSuccess)
     }
 
     private fun navigateBack() {

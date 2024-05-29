@@ -162,7 +162,6 @@ class LoginActivity : AppCompatActivity() {
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
         val response = pharmacistAPI.getAuth(storedToken)
         if (response.isSuccessful) {
-
             onSuccess()
         } else {
             // TODO - maybe change this to a persistent message displayed

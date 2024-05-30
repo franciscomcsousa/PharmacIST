@@ -47,7 +47,6 @@ class NavigationDrawerActivity : AppCompatActivity() {
     private var handler: Handler? = null
     private val pharmacistAPI = PharmacistAPI(this)
 
-    private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,23 +68,28 @@ class NavigationDrawerActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
 
-        if (PermissionUtils.requestLocationPermissions(this) && PermissionUtils.requestNotificationPermissions(this)) {
-            val channel = NotificationChannel("pharmacies", "Pharmacies", NotificationManager.IMPORTANCE_DEFAULT)
-            val notificationManager = getSystemService(NotificationManager::class.java)
-            notificationManager.createNotificationChannel(channel)
-
-            timer = Timer()
-            timerTask = object : TimerTask() {
-                override fun run() {
-                    handler = Handler(mainLooper)
-                    handler!!.post {
-                        getNearbyPharmacies()
-                    }
-                }
-            }
-            timer!!.schedule(timerTask, 0, 5000)
+        if (PermissionUtils.requestLocationAndNotificationPermissions(this)) {
+            setupNotificationsAndLocation()
         }
     }
+    private fun setupNotificationsAndLocation() {
+        val channel =
+            NotificationChannel("pharmacies", "Pharmacies", NotificationManager.IMPORTANCE_DEFAULT)
+        val notificationManager = getSystemService(NotificationManager::class.java)
+        notificationManager.createNotificationChannel(channel)
+
+        timer = Timer()
+        timerTask = object : TimerTask() {
+            override fun run() {
+                handler = Handler(mainLooper)
+                handler!!.post {
+                    getNearbyPharmacies()
+                }
+            }
+        }
+        timer!!.schedule(timerTask, 0, 5000)
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
@@ -172,18 +176,30 @@ class NavigationDrawerActivity : AppCompatActivity() {
         PermissionUtils.getUserLocation(locationCallback, this)
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == PERMISSION_REQUEST_ACCESS_LOCATION_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
-            else {
-                // Permission denied, redirect to login activity
-                Toast.makeText(this@NavigationDrawerActivity, "Permission denied", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this@NavigationDrawerActivity, LoginActivity::class.java))
+
+        when (requestCode) {
+            PermissionUtils.PERMISSION_REQUEST_ACCESS_LOCATION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Location permission granted
+                    if (PermissionUtils.requestNotificationPermissions(this)) {
+                        // Request notification permission if location permission is granted
+                        setupNotificationsAndLocation()
+                    }
+                } else {
+                    // Location permission denied
+                    Toast.makeText(this, "Location permission is required!", Toast.LENGTH_SHORT).show()
+                }
+            }
+            PermissionUtils.PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE -> {
+                if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    // Notification permission granted
+                    setupNotificationsAndLocation()
+                } else {
+                    // Notification permission denied
+                    //Toast.makeText(this, "Notification permission is required!", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }

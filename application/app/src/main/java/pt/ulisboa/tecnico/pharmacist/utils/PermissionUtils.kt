@@ -13,8 +13,8 @@ class PermissionUtils {
 
     // good practice
     companion object {
-        private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001
-        private val PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE = 1002
+        val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001
+        val PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE = 1002
         private val PERMISSION_REQUEST_ACCESS_CAMERA_CODE = 1003
 
         fun requestLocationPermissions(activity: Activity) : Boolean {
@@ -75,6 +75,12 @@ class PermissionUtils {
                 }
                 return false
             }
+        }
+
+        fun requestLocationAndNotificationPermissions(activity: Activity): Boolean {
+            val locationGranted = requestLocationPermissions(activity)
+            val notificationGranted = requestNotificationPermissions(activity)
+            return locationGranted && notificationGranted
         }
 
         @SuppressLint("MissingPermission")  // IDE does not consider how this function is called

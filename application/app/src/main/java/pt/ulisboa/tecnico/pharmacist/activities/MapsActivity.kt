@@ -311,10 +311,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 }
                 marker?.tag = pharmacy
 
-                mMap!!.setOnMarkerClickListener { clickedMarker ->
-                    val clickedPharmacy = clickedMarker.tag as Pharmacy
-                    showPharmacyDrawer(clickedPharmacy)
-                    true // Return true to indicate that the listener has consumed the event
+                if (!isLocationSelectionEnabled) {
+                    mMap!!.setOnMarkerClickListener { clickedMarker ->
+                        val clickedPharmacy = clickedMarker.tag as Pharmacy
+                        showPharmacyDrawer(clickedPharmacy)
+                        true // Return true to indicate that the listener has consumed the event
+                    }
                 }
             }
         }
@@ -341,10 +343,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     } else {
                         marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                     }
-                    mMap!!.setOnMarkerClickListener { clickedMarker ->
-                        val clickedPharmacy = clickedMarker.tag as Pharmacy
-                        showPharmacyDrawer(clickedPharmacy)
-                        true // Return true to indicate that the listener has consumed the event
+                    if (isLocationSelectionEnabled) {
+                        mMap!!.setOnMarkerClickListener { clickedMarker ->
+                            val clickedPharmacy = clickedMarker.tag as Pharmacy
+                            showPharmacyDrawer(clickedPharmacy)
+                            true // Return true to indicate that the listener has consumed the event
+                        }
                     }
                     break
                 }

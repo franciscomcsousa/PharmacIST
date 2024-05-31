@@ -146,11 +146,11 @@ class PharmacistAPI(val activity: Activity) {
 
         // If was able to receive pharmacies near with a recent timestamp, execute onSuccess
         // callback with local database data
-        if (pharmacies.size == 4) {
+        if (pharmacies.size == 15) {
             onSuccess(pharmacies)
         }
         // If less than min number of pharmacies, fetch from remote database
-        else if (pharmacies.size < 4) {
+        else if (pharmacies.size < 15) {
             val call: Call<PharmaciesResponse> = retrofitAPI.getPharmaciesRequest(location)
             call.enqueue(object : Callback<PharmaciesResponse> {
                 override fun onResponse(

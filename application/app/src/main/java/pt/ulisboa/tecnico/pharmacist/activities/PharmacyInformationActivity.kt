@@ -42,7 +42,6 @@ class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.R
         // Search query listener
         searchView.setOnQueryTextListener(object: SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String): Boolean {
-                // TODO - should something be here?
                 return true
             }
 

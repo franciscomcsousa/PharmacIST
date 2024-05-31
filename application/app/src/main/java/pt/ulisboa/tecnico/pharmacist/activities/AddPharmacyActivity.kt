@@ -225,7 +225,7 @@ class AddPharmacyActivity : AppCompatActivity() {
         address: String,
         latitude: String,
         longitude: String,
-        uri: Uri?, // TODO - uri can't be empty?
+        uri: Uri?,
         onSuccess: () -> Unit
     ) {
         formName.error = null

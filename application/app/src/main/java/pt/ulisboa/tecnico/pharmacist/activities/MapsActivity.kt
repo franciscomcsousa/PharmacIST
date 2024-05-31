@@ -38,6 +38,7 @@ import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.Location
+import pt.ulisboa.tecnico.pharmacist.utils.NetworkUtils
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import java.util.Timer
@@ -76,6 +77,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
         dataStore = DataStoreManager(this@MapsActivity)
+
+        println("Connected to WiFi?")
+        println(NetworkUtils.isConnectedToWiFi(this))
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager

@@ -85,7 +85,6 @@ class MedicineInformationActivity : AppCompatActivity(),
                 val onSuccess : (List<List<Any>>) -> Unit = {pharmaciesStockResponse ->
                     for (pharmacyStock in pharmaciesStockResponse) {
                         val stock = pharmacyStock[2] as Double
-                        // TODO - should pharmacyStock[0] be used anywhere?
                         data.add(
                             PharmacyStockViewModel(
                                 pharmacyStock[1].toString(),

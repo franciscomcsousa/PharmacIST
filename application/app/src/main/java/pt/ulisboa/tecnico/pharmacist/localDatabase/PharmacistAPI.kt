@@ -104,7 +104,7 @@ class PharmacistAPI(val activity: Activity) {
         val query = """
             SELECT * FROM pharmacies 
                 ORDER BY ABS((latitude - ?)) + ABS((longitude - ?))
-                ASC LIMIT 3
+                ASC LIMIT 15
         """.trimIndent()
 
         // Local database query

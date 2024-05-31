@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.User
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager
@@ -55,7 +56,6 @@ class RegisterActivity : AppCompatActivity() {
 
 
     private fun registerUser(username: String, password: String, onSuccess: () -> Unit, onFailure: () -> Unit) {
-        // TODO - Error message in case fcmToken was not received. Or just try again.
         val user = User(username, password, fcmToken.toString(), deviceId)
         val onStartToken : (String) -> Unit = { token ->
             // store token in preferences datastore
@@ -81,6 +81,9 @@ class RegisterActivity : AppCompatActivity() {
                         }
                     } else {
                         Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                        runOnUiThread {
+                            showSnackbar("Failed to get FCM token")
+                        }
                     }
                 })
             }

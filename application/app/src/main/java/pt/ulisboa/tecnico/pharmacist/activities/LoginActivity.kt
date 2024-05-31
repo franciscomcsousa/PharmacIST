@@ -62,8 +62,7 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
-        // TODO - review this logic
-        // Fetch the FCM
+        // Fetch the FCM Token
         retrieveFCMToken()
 
         // Check if there is network connection
@@ -191,6 +190,9 @@ class LoginActivity : AppCompatActivity() {
                         }
                     } else {
                         Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                        runOnUiThread {
+                            showSnackbar("Failed to get FCM token")
+                        }
                     }
                 })
             }

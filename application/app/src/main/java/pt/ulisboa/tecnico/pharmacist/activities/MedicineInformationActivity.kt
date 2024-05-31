@@ -25,8 +25,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
-class MedicineInformationActivity : AppCompatActivity(),
-    PharmacyStockSearchAdapter.RecyclerViewEvent {
+class MedicineInformationActivity : AppCompatActivity() {
 
     private val PERMISSION_REQUEST_ACCESS_LOCATION_CODE = 1001   // good practice
 
@@ -157,10 +156,6 @@ class MedicineInformationActivity : AppCompatActivity(),
             notificationButton.isChecked = responseCode == 235
         }
         pharmacistAPI.isMedicineNotification(username, medicineId, onSuccess)
-    }
-
-    override fun onItemClick(position: Int) {
-        TODO("Not yet implemented")
     }
 
     private suspend fun getUsername(): String {

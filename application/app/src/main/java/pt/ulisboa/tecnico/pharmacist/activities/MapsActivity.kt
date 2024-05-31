@@ -197,9 +197,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         val directionButton = bottomDrawerView.findViewById<Button>(R.id.btn_navigate)
 
-        // Set click listener for the toggle button
         favoriteButton.setOnClickListener {
-            // sends updated information to backend
             lifecycleScope.launch {
                 handleFavoriteButton(pharmacy.id.toString())
             }
@@ -247,13 +245,11 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             Log.d("serverResponse", "SUCCESSFUL: $responseCode")
             when(responseCode) {
                 233 -> {
-                    favoriteButton.isChecked
-                    runOnUiThread {
-                        showSnackbar("Added to favorites")
-                    }
+                    favoriteButton.isChecked = true
                 }
-                234 -> runOnUiThread { showSnackbar("Removed from favorites") }
-
+                234 -> {
+                    favoriteButton.isChecked = false
+                }
             }
         }
         pharmacistAPI.isPharmacyFavorite(favoritePharmacy, onSuccess)
@@ -397,8 +393,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
                     if (responseCode == 233) {
                         marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                        runOnUiThread {
+                            showSnackbar("Added to favorites")
+                        }
                     } else {
                         marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        runOnUiThread {
+                            showSnackbar("Removed from favorites")
+                        }
                     }
                     if (isLocationSelectionEnabled) {
                         mMap!!.setOnMarkerClickListener { clickedMarker ->

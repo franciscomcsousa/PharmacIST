@@ -72,12 +72,12 @@ class NewMedicineActivity : AppCompatActivity() {
 
         verifyForms(
             medicineName = medicineName,
-            quantity = quantity,
-            purpose = purpose,
             formMedicineName = formMedicineName,
+            quantity = quantity,
             formQuantity = formQuantity,
-            formPurpose = formPurpose,
-            uri = mediaPickerHandler.currentUri) {
+            purpose = purpose,
+            formPurpose = formPurpose
+        ) {
 
             // get the latitude and longitude from the place selected
             createMedicine(medicineName, quantity, purpose, mediaPickerHandler.currentUri)
@@ -114,7 +114,7 @@ class NewMedicineActivity : AppCompatActivity() {
         formQuantity: TextInputLayout,
         purpose: String,
         formPurpose: TextInputLayout,
-        uri: Uri?, // TODO - uri can't be empty?
+        // TODO - uri can't be empty?
         onSuccess: () -> Unit
     ) {
         formMedicineName.error = null

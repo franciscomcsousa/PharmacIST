@@ -82,8 +82,6 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
 
         // Call the server to get the medicine
         val locationCallback : (Location?) -> Unit = { location ->
-            // sometimes it might not be able to fetch
-            // TODO - maybe when null use the last non-null value
             if (location != null) {
                 val medicineLocation = MedicineLocation(name = medicineName, latitude =  location.latitude, longitude =  location.longitude)
 

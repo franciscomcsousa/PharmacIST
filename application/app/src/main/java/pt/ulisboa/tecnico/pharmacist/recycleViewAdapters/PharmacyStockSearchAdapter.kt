@@ -35,10 +35,6 @@ class PharmacyStockSearchAdapter(
         return pharmacyStockList.size
     }
 
-    interface RecyclerViewEvent {
-        fun onItemClick(position: Int)
-    }
-
     // Holds the views for adding it to image and text
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 

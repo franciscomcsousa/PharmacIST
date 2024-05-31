@@ -26,7 +26,6 @@ import java.util.concurrent.Executors
 // Called whenever an activity needs to scan barcodes
 class ScannerActivity : AppCompatActivity() {
 
-    // TODO: revisit camera stuff. Maybe change take photo to use this camera in AddPharmacy
     private lateinit var cameraSelector: CameraSelector // choose between front or rear camera
     private lateinit var cameraProviderFuture: ListenableFuture<ProcessCameraProvider>
     private lateinit var processCameraProvider: ProcessCameraProvider // instance to show the Camera Preview and Scan

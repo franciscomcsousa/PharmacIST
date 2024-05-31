@@ -86,7 +86,6 @@ class NewMedicineActivity : AppCompatActivity() {
     private fun createMedicine(medicineName: String, quantity: String, purpose: String, uri: Uri?) {
         val image = mediaPickerHandler.encodeImageToBase64(uri)
         navigateBack()
-        // TODO
         val medicine = MedicineStock(
             id = medicineId,
             name = medicineName,

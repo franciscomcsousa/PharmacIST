@@ -81,5 +81,4 @@ dependencies {
     implementation ("androidx.camera:camera-lifecycle:1.2.1")
     implementation ("androidx.camera:camera-view:1.2.1")
     implementation(platform("com.google.firebase:firebase-bom:33.0.0"))
-    // TODO: Add the dependencies for Firebase products you want to use
 }

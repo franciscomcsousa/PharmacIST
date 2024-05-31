@@ -4,14 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.activities.NewMedicineActivity
-import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 
 
 class AddStockActivity : StockActivity() {
@@ -25,8 +20,6 @@ class AddStockActivity : StockActivity() {
     // fetches the medicine that corresponds to the barcode
     override fun fetchMedicine(medId: String) {
         val onSuccess : (List<List<Any>>) -> Unit = { medicine ->
-            // TODO - change or add new method, MedicineResponse is returning
-            //  a list of lists
             if (medicine.isNotEmpty()) {
                 val medicineName = "${medicine[0][1]}"
                 val medicineId = medicine[0][0].toString()

@@ -134,7 +134,6 @@ class LoginActivity : AppCompatActivity() {
     }
 
 
-    // TODO - make a class to simplify logic in Login and also (maybe) Register
     // Should only be fetched when there is none in the backend or its expired!
     private fun retrieveFCMToken() {
         // only does this if there is no FCM Token stored!

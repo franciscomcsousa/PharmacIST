@@ -24,7 +24,6 @@ class NotificationsService : FirebaseMessagingService() {
     // Send the FCM token to the backend when it's refreshed
     override fun onNewToken(token: String) {
         super.onNewToken(token)
-        sendFcmTokenToBackend(token)
     }
 
     // Handle incoming FCM messages here
@@ -32,7 +31,6 @@ class NotificationsService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         super.onMessageReceived(remoteMessage)
 
-        // TODO - ask permission for notifications in the navDrawer
         // Check if the message contains a notification payload
         remoteMessage.notification?.let {
             // Create a notification ID
@@ -69,11 +67,6 @@ class NotificationsService : FirebaseMessagingService() {
         private const val CHANNEL_ID = "notification_channel"
     }
 
-
-    // Code to send FCM token to the backend
-    private fun sendFcmTokenToBackend(token: String) {
-        // TODO
-    }
 }
 
 class FcmService : Service() {

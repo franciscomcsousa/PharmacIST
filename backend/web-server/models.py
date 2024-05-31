@@ -291,7 +291,6 @@ def update_pharmacy_stock(medicine_stock_list, pharmacy_id):
     # medicine_stock_list -> [[medicine_id, stock], . . . ]
     con = connect_db()
     try:
-        # TODO - is it be necessary to check if the pharmacy id and medicine id are correct?
         cur = con.cursor()       
         
         for entry in medicine_stock_list:
@@ -334,7 +333,6 @@ def get_medicine_by_id(id):
 def create_medicine(medicine_id, medicine_name, quantity, purpose, pharmacy_id, image):
     con = connect_db()
     try:
-        # TODO - check for possible errors
         cur = con.cursor()
         data = (medicine_id, medicine_name, purpose)
         
@@ -478,7 +476,6 @@ def is_medicine_notification(username, medicineId):
 def save_image(image, id, type):
     decoded_image = base64.b64decode(image)
     
-    # TODO - create images dir if it doesn't exist
     path = f"images/{type}_{id}.jpg"
 
     with open(path, 'wb') as f:
@@ -487,7 +484,6 @@ def save_image(image, id, type):
 def get_image(id, type):
     path = f"images/{type}_{id}.jpg"
 
-    # TODO - make default image be loaded in the app by default
     if not os.path.exists(path=path):
         with open("images/default.jpg", 'rb') as f:
             image = f.read()

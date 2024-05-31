@@ -20,7 +20,6 @@ interface RetrofitAPI {
     @GET("authorized")
     suspend fun getAuthRequest(@Header("Authorization") token: String): Response<StatusResponse>
 
-    // TODO - add the header authorization + token to all other requests in this app
     @POST("pharmacies")
     fun getPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
 

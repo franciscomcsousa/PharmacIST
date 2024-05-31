@@ -1,5 +1,5 @@
-#Common Response Messages
-#Successful Responses: 200 - 300
+# Common Response Messages
+# Successful Responses: 200 - 300
 
 OK_STATUS = 200 
 CREATED_STATUS = 201 

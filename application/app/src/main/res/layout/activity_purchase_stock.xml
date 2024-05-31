@@ -7,7 +7,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.stock.PurchaseStockActivity">
 
-    <!-- TODO add a photo of a barcode -->
     <Button
         android:id="@+id/btn_scan"
         android:layout_width="286dp"

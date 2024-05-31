@@ -25,7 +25,6 @@ def login_required(f):
 
         try:
             data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            # TODO - maybe in the future also add user
         except jwt.ExpiredSignatureError:
             return jsonify({'error': 'Token has expired'}), TOKEN_AS_EXPIRED
         except jwt.InvalidTokenError:
@@ -47,7 +46,6 @@ def home():
 @app.route('/register', methods=['POST'])
 def register_user():
         
-    # TODO - verify if all data is correct
     if request.method == 'POST':
         data = request.get_json()
         username = data['username']
@@ -55,20 +53,13 @@ def register_user():
         fcm_token = data['fcmToken']
         device_id = data['deviceId']
         
-        # TODO - here or in the android part
-        # verify if the fcm_token device_id are not null!
         user_id, status = create_user(username, password)
         
         if (status == OK_STATUS):
             
             register_device(user_id, fcm_token, device_id)
             
-            # if register successful send token and user stays logged in!
-            # maybe also use login_user(), but for simplicity tokens do the job
-            
-            #token_encode = jwt.encode({'username': username, 'exp': datetime.utcnow() 
-            #                    + timedelta(days=1)}, app.config['SECRET_KEY'])
-            
+            # if register successful send token and user stays logged in!            
             token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
                     
             return make_response(jsonify({'token': token}), status)
@@ -79,12 +70,9 @@ def register_user():
     return make_response({"status":BAD_REQUEST_STATUS}, BAD_REQUEST_STATUS)
 
 
-# TODO 
-# verify here if parameters are not null
 @app.route('/login', methods=['POST'])
 def login_user():
         
-    # TODO - verify if all data is correct
     if request.method == 'POST':
         data = request.get_json()
         username = data['username']
@@ -106,9 +94,6 @@ def login_user():
             # pbbly used when the user signs in a new device
             register_device(user_id, fcm_token, device_id)
                         
-            # TODO - is sendong token even if unsucessful
-            # if register successful send token and user stays logged in!
-            # maybe also use login_user(), but for simplicity tokens do the job
             token = jwt.encode({'exp': datetime.utcnow() + timedelta(days=1)}, app.config['SECRET_KEY'])
             
             return make_response(jsonify({'token': token}), status)
@@ -241,7 +226,7 @@ def get_favorite_pharmacies():
 @app.route('/medicine', methods=['GET', 'POST'])
 def get_medicines():
     if request.method == 'GET':
-        # TODO - further verification?
+
         medicine_id = request.args.get("id")
         medicine, status = get_medicine_by_id(medicine_id)
         return make_response(jsonify({"medicine": medicine}), status)
@@ -324,7 +309,6 @@ def medicine_notification():
 @app.route('/pharmacy_stock', methods=['GET', 'POST'])
 def pharmacy_stock():
     if request.method == 'GET':
-        # TODO - further verification?
         medicine_id = request.args.get("medicineId")
         pharmacy_id = request.args.get("pharmacyId")
         result, status = get_pharmacy_stock_id(medicine_id, pharmacy_id)

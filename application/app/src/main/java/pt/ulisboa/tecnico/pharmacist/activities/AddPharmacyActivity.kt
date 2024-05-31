@@ -12,7 +12,6 @@ import android.view.View
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.common.api.Status
@@ -29,6 +28,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandler
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 import java.util.Locale
 
 class AddPharmacyActivity : AppCompatActivity() {
@@ -111,6 +111,9 @@ class AddPharmacyActivity : AppCompatActivity() {
 
         val onSuccess : () -> Unit = {
             Log.d("serverResponse","Pharmacy added to database!")
+            runOnUiThread {
+                showSnackbar("Pharmacy created!")
+            }
         }
         pharmacistAPI.createPharmacy(pharmacy, onSuccess)
     }
@@ -131,6 +134,9 @@ class AddPharmacyActivity : AppCompatActivity() {
 
             override fun onError(status: Status) {
                 Log.d("placesError", "An error occurred: $status")
+                runOnUiThread {
+                    showSnackbar("Something went wrong.. Please, select the address again.")
+                }
             }
 
             override fun onPlaceSelected(place: Place) {
@@ -235,15 +241,17 @@ class AddPharmacyActivity : AppCompatActivity() {
         }
         if (address.isEmpty()) {
             Log.e("serverResponse", "Address not selected")
-            TODO("Show error message to user")
+            runOnUiThread { showSnackbar("Address not selected") }
         }
         if (latitude.isEmpty()) {
             Log.e("serverResponse", "latitude not selected")
-            TODO("Show error message to user")
+            runOnUiThread { showSnackbar("Something went wrong.. Please, select the address again.") }
+
         }
         if (longitude.isEmpty()) {
             Log.e("serverResponse", "longitude not selected")
-            TODO("Show error message to user")
+            runOnUiThread { showSnackbar("Something went wrong.. Please, select the address again.") }
+
         }
         if (name.isNotEmpty() && address.isNotEmpty() && latitude.isNotEmpty() && longitude.isNotEmpty()) {
             onSuccess()
@@ -264,7 +272,9 @@ class AddPharmacyActivity : AppCompatActivity() {
                 }*/
             } else {
                 // Permission denied, redirect to NavigationDrawer activity
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    showSnackbar("Permission denied")
+                }
                 startActivity(Intent(this, NavigationDrawerActivity::class.java))
             }
         }

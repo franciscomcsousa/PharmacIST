@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import android.widget.ToggleButton
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -24,6 +23,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
 import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 class MedicineInformationActivity : AppCompatActivity(),
     PharmacyStockSearchAdapter.RecyclerViewEvent {
@@ -117,10 +117,14 @@ class MedicineInformationActivity : AppCompatActivity(),
         val medicineNotification = MedicineNotification(username, medicineId)
         val onSuccess: (Int) -> Unit = {responseCode ->
             if (responseCode == 235) {
-                // TODO ? - Perhaps some console logs
+                runOnUiThread {
+                    showSnackbar("You will be notified when stock is added!")
+                }
             }
             else if (responseCode == 236) {
-                // TODO ? - Perhaps some console logs
+                runOnUiThread {
+                    showSnackbar("You will no longer be notified.")
+                }
             }
         }
 
@@ -138,7 +142,9 @@ class MedicineInformationActivity : AppCompatActivity(),
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
             else {
                 // Permission denied, redirect to NavigationDrawer activity
-                Toast.makeText(this@MedicineInformationActivity, "Permission denied", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    showSnackbar("Permission denied")
+                }
                 startActivity(Intent(this@MedicineInformationActivity, NavigationDrawerActivity::class.java))
             }
         }

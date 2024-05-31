@@ -6,17 +6,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.mlkit.vision.barcode.common.Barcode
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineBarcodeAdapter
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.RecyclerViewEvent  {
     protected val CAMERA_PERMISSION_REQUEST_CODE = 1002
@@ -126,7 +126,7 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
 
     private fun notifyMaxStockReached(medicineName: String) {
         runOnUiThread {
-            Toast.makeText(this, "Max stock reached for $medicineName", Toast.LENGTH_SHORT).show()
+            showSnackbar("Max stock reached for $medicineName")
         }
     }
 
@@ -157,7 +157,9 @@ abstract class StockActivity : AppCompatActivity(), MedicineBarcodeAdapter.Recyc
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 startScanner()
             } else {
-                Toast.makeText(this, "Permission denied", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    showSnackbar("Permission denied")
+                }
             }
         }
     }

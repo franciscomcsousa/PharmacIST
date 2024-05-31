@@ -41,6 +41,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.NetworkUtils
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -225,7 +226,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val favoritePharmacy = FavoritePharmacy(username,id)
         val onSuccess : (Int) -> Unit = { responseCode ->
             Log.d("serverResponse", "SUCCESSFUL: $responseCode")
-            favoriteButton.isChecked = responseCode == 233
+            when(responseCode) {
+                233 -> {
+                    favoriteButton.isChecked
+                    runOnUiThread {
+                        showSnackbar("Added to favorites")
+                    }
+                }
+                234 -> runOnUiThread { showSnackbar("Removed from favorites") }
+
+            }
         }
         pharmacistAPI.isPharmacyFavorite(favoritePharmacy, onSuccess)
     }
@@ -281,6 +291,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             override fun onError(status: Status) {
                 Log.d("placesError", "An error occurred: $status")
+                runOnUiThread {
+                    showSnackbar("Something went wrong.. Please, select the address again.")
+                }
             }
 
             override fun onPlaceSelected(place: Place) {

@@ -13,7 +13,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
-import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
@@ -34,6 +33,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 import java.util.Timer
 import java.util.TimerTask
 import kotlin.math.abs
@@ -166,7 +166,9 @@ class NavigationDrawerActivity : AppCompatActivity() {
                 }
                 Thread.sleep(100)
                 onBackPressedDispatcher.onBackPressed()
-                Toast.makeText(this, "User logged out", Toast.LENGTH_SHORT).show()
+                runOnUiThread {
+                    showSnackbar("Successfully logged out!")
+                }
             }
         }
     }
@@ -227,7 +229,9 @@ class NavigationDrawerActivity : AppCompatActivity() {
                     }
                 } else {
                     // Location permission denied
-                    Toast.makeText(this, "Location permission is required!", Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        showSnackbar("Permission for accessing location is required!")
+                    }
                 }
             }
             PermissionUtils.PERMISSION_REQUEST_ACCESS_NOTIFICATION_CODE -> {

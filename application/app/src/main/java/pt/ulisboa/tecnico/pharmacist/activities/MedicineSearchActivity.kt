@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,6 +18,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.MedicinePurpose
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 
@@ -98,7 +98,9 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
                 }
                 // Code 453
                 val onMedicineNotFound : () -> Unit = {
-                    Toast.makeText(this@MedicineSearchActivity, "Medicine not found", Toast.LENGTH_SHORT).show()
+                    runOnUiThread {
+                        showSnackbar("Medicine not found")
+                    }
                     Log.d("serverResponse","Medicine not found")
                 }
                 pharmacistAPI.getMedicineLocation(medicineLocation, onSuccess, onMedicineNotFound)
@@ -130,9 +132,11 @@ class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.Recycl
         if (requestCode == PERMISSION_REQUEST_ACCESS_LOCATION_CODE) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED)
                 else {
-                // Permission denied, redirect to NavigationDrawer activity
-                Toast.makeText(this@MedicineSearchActivity, "Permission denied", Toast.LENGTH_SHORT).show()
-                startActivity(Intent(this@MedicineSearchActivity, NavigationDrawerActivity::class.java))
+                    runOnUiThread {
+                        showSnackbar("Permission denied")
+                    }
+                    // Permission denied, redirect to NavigationDrawer activity
+                    startActivity(Intent(this@MedicineSearchActivity, NavigationDrawerActivity::class.java))
             }
         }
     }

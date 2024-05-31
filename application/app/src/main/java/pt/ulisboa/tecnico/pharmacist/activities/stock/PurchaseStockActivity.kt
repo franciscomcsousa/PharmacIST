@@ -4,13 +4,9 @@ package pt.ulisboa.tecnico.pharmacist.activities.stock
 import android.os.Bundle
 import android.util.Log
 import android.view.View
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
-import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 class PurchaseStockActivity : StockActivity() {
 
@@ -24,7 +20,6 @@ class PurchaseStockActivity : StockActivity() {
     // and is currently available in the pharmacy
     override fun fetchMedicine(medId: String) {
         val onSuccess : (List<String>) -> Unit = { stock ->
-            // TODO - Add more error handling
             if (stock.isNotEmpty()) {
                 val medicineName = stock[1]
                 val maxStock = stock[0].toIntOrNull()
@@ -49,6 +44,9 @@ class PurchaseStockActivity : StockActivity() {
 
         val onSuccess : (Int) -> Unit = { responseCode ->
             Log.d("serverResponse", responseCode.toString())
+            runOnUiThread {
+                showSnackbar("Medicine purchased!")
+            }
             resetMedicineStock()
         }
         pharmacistAPI.updateStock(updatedMedicines, onSuccess)

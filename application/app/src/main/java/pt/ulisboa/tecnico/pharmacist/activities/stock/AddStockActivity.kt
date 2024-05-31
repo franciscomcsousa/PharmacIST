@@ -7,6 +7,7 @@ import android.view.View
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.activities.NewMedicineActivity
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 
 class AddStockActivity : StockActivity() {
@@ -35,6 +36,9 @@ class AddStockActivity : StockActivity() {
             }
         }
         val onMedicineNotFound : () -> Unit = {
+            runOnUiThread{
+                showSnackbar("No medicine found with that barcode. Create a new one, or try again.")
+            }
             val intent = Intent(applicationContext, NewMedicineActivity::class.java)
             intent.putExtra("medicineId", medId)
             intent.putExtra("pharmacyId", pharmacyId)
@@ -47,6 +51,9 @@ class AddStockActivity : StockActivity() {
     fun addStockButton(view: View) {
         val onSuccess : (Int) -> Unit = { responseCode ->
             Log.d("serverResponse", responseCode.toString())
+            runOnUiThread {
+                showSnackbar("Stock added!")
+            }
             resetMedicineStock()
         }
         pharmacistAPI.updateStock(medicines, onSuccess)

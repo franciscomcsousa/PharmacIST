@@ -13,6 +13,7 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandler
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 class NewMedicineActivity : AppCompatActivity() {
 
@@ -94,6 +95,9 @@ class NewMedicineActivity : AppCompatActivity() {
             pharmacyId = pharmacyId,
             image = image)
         val onSuccess : () -> Unit = {
+            runOnUiThread {
+                showSnackbar("Medicine is now registered and added to pharmacy stock")
+            }
             Log.d("serverResponse","Pharmacy added to database!")
         }
         pharmacistAPI.createMedicine(medicine, onSuccess)

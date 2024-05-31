@@ -20,6 +20,7 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.User
+import pt.ulisboa.tecnico.pharmacist.utils.showSnackbar
 
 
 // possible change this to jetpack compose
@@ -156,15 +157,9 @@ class LoginActivity : AppCompatActivity() {
 
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {
         val onExpiry : () -> Unit = {
-            // TODO - maybe change this to a persistent message displayed
-            // Show toast message for error messages
-            /*val message = when(response.code()) {
-                600 -> "Token is missing."
-                601 -> "Token has expired."
-                602 -> "Invalid token."
-                else -> "An error occurred. Please try again later."
-            }*/
-            Toast.makeText(this@LoginActivity, "Session expired!", Toast.LENGTH_LONG).show()
+            runOnUiThread {
+                showSnackbar("Session expired! Please login again.")
+            }
         }
         pharmacistAPI.getAuth(storedToken, onSuccess, onExpiry)
     }

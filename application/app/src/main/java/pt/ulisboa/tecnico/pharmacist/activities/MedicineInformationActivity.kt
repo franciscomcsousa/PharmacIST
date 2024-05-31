@@ -3,6 +3,7 @@ package pt.ulisboa.tecnico.pharmacist.activities
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.widget.ImageView
@@ -102,13 +103,24 @@ class MedicineInformationActivity : AppCompatActivity() {
     }
 
     private fun medicineImage(medicineId: String) {
-        val onSuccess : (Bitmap) -> Unit = {bitmap ->
+        val onSuccess : (Bitmap?) -> Unit = {bitmap ->
             // Set the bitmap to the ImageView
-            findViewById<ImageView>(R.id.panel_medicine_image).setImageBitmap(bitmap)
+            val imageView = findViewById<ImageView>(R.id.panel_medicine_image)
+
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap)
+            }
+            else {
+                val bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.default_pharmacy)
+                imageView.setImageBitmap(bitmapDefault)
+            }
 
             Log.d("serverResponse", "Medicine image retrieved")
         }
-        pharmacistAPI.medicineImage(medicineId, onSuccess)
+        lifecycleScope.launch {
+            val dataMode = dataStore.getDataMode()
+            pharmacistAPI.medicineImage(medicineId, dataMode, onSuccess)
+        }
     }
 
     private suspend fun handleNotificationButton(medicineId: String) {

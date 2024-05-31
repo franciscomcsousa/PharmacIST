@@ -80,5 +80,7 @@
     <string name="some_features_may_not_function_properly">Some features may not function properly</string>
     <string name="continue_msg">CONTINUE</string>
     <string name="retry">RETRY</string>
+    <string name="data_saver_mode">Data Saver Mode</string>
+    <string name="scan_barcode">Scan barcode</string>
 
 </resources>

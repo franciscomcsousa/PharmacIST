@@ -27,7 +27,7 @@
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="nav_header_title">Android Studio</string>
     <string name="nav_header_subtitle">android.studio@android.com</string>
-    <string name="nav_header_desc">Navigation header</string>
+    <string name="nav_header_desc">Cabeçalho de Navegação</string>
     <string name="action_settings">Definições</string>
 
     <string name="menu_home">Início</string>
@@ -74,8 +74,14 @@
     <string name="share">Partilhar</string>
     <string name="clear_cache">Limpar Cache</string>
     <string name="notify_me_when_medicine_available">Notifiquem-me quando o medicamento estiver disponível</string>
-    <string name="logout">Logout</string>
+    <string name="logout">Sair</string>
     <string name="medicine_info">Ver Info</string>
     <string name="guest_user">Usuário Convidado</string>
+    <string name="no_internet_connection">Sem conecção à Internet</string>
+    <string name="some_features_may_not_function_properly">Algumas funções podem não funcionar devidamente</string>
+    <string name="continue_msg">CONTINUAR</string>
+    <string name="retry">TENTAR NOVAMENTE</string>
+    <string name="data_saver_mode">Modo Poupança de Dados</string>
+    <string name="scan_barcode">Scanear Código Barras</string>
 
 </resources>

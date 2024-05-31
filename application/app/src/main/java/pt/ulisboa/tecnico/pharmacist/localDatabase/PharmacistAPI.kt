@@ -4,7 +4,9 @@ import android.app.Activity
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.util.Log
+import androidx.datastore.dataStore
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
@@ -184,7 +186,7 @@ class PharmacistAPI(val activity: Activity) {
         })
     }
 
-    fun pharmacyImage(@Body id: String, onSuccess: (Bitmap) -> Unit) {
+    fun pharmacyImage(@Body id: String, dataMode: Boolean, onSuccess: (Bitmap?) -> Unit) {
 
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("P_$id", activity)
@@ -194,24 +196,29 @@ class PharmacistAPI(val activity: Activity) {
         }
 
         else {
-            val call: Call<ImageResponse> = retrofitAPI.pharmacyImageRequest(id)
-            call.enqueue(object : Callback<ImageResponse> {
-                override fun onResponse(
-                    call: Call<ImageResponse>,
-                    response: Response<ImageResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        b64Image = response.body()!!.image
-                        val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
-                        ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
-                        onSuccess(bitmap)
+            if (dataMode) {
+                onSuccess(null)
+            }
+            else {
+                val call: Call<ImageResponse> = retrofitAPI.pharmacyImageRequest(id)
+                call.enqueue(object : Callback<ImageResponse> {
+                    override fun onResponse(
+                        call: Call<ImageResponse>,
+                        response: Response<ImageResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            b64Image = response.body()!!.image
+                            val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
+                            ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
+                            onSuccess(bitmap)
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-                    onFailureHandler(t)
-                }
-            })
+                    override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+                        onFailureHandler(t)
+                    }
+                })
+            }
         }
     }
 
@@ -345,7 +352,7 @@ class PharmacistAPI(val activity: Activity) {
 
     }
 
-    fun medicineImage(@Query("id") medicineId: String, onSuccess: (Bitmap) -> Unit) {
+    fun medicineImage(@Query("id") medicineId: String, dataMode: Boolean, onSuccess: (Bitmap?) -> Unit) {
         var b64Image = ""
         var bitmap = ImageUtils.loadImageFromInternalStorage("M_$medicineId", activity)
 
@@ -354,24 +361,29 @@ class PharmacistAPI(val activity: Activity) {
         }
 
         else {
-            val call: Call<ImageResponse> = retrofitAPI.medicineImageRequest(medicineId)
-            call.enqueue(object : Callback<ImageResponse> {
-                override fun onResponse(
-                    call: Call<ImageResponse>,
-                    response: Response<ImageResponse>
-                ) {
-                    if (response.isSuccessful) {
-                        b64Image = response.body()!!.image
-                        val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
-                        ImageUtils.saveImageToInternalStorage(bitmap, "M_$medicineId", activity)
-                        onSuccess(bitmap)
+            if (dataMode) {
+                onSuccess(null)
+            }
+            else {
+                val call: Call<ImageResponse> = retrofitAPI.medicineImageRequest(medicineId)
+                call.enqueue(object : Callback<ImageResponse> {
+                    override fun onResponse(
+                        call: Call<ImageResponse>,
+                        response: Response<ImageResponse>
+                    ) {
+                        if (response.isSuccessful) {
+                            b64Image = response.body()!!.image
+                            val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
+                            ImageUtils.saveImageToInternalStorage(bitmap, "M_$medicineId", activity)
+                            onSuccess(bitmap)
+                        }
                     }
-                }
 
-                override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
-                    onFailureHandler(t)
-                }
-            })
+                    override fun onFailure(call: Call<ImageResponse>, t: Throwable) {
+                        onFailureHandler(t)
+                    }
+                })
+            }
         }
     }
 

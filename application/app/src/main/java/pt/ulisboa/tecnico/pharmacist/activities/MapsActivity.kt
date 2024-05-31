@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
@@ -79,9 +80,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding!!.root)
         dataStore = DataStoreManager(this@MapsActivity)
-
-        println("Connected to WiFi?")
-        println(NetworkUtils.isConnectedToWiFi(this))
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         val mapFragment = supportFragmentManager
@@ -276,6 +274,16 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     activePharmacies = pharmaciesList.toMutableList()
                     Log.d("serverResponse", "Pharmacies retrieved")
 
+                    // Pre fetch images if user is connected to Wi-Fi
+                    if (NetworkUtils.isConnectedToWiFi(this)) {
+                        for (pharmacy in activePharmacies) {
+                            val onSuccessSon: (Bitmap?) -> Unit = {
+                                Log.d("serverResponse", "Pre fetched Pharmacy image from Wi-Fi")
+                            }
+                            pharmacy.id?.let { pharmacistAPI.pharmacyImage(it, false, onSuccessSon) }
+                        }
+                    }
+
                     // only fetch favorites if there is an internet connection
                     if (hasNetworkConnection()) {
                         lifecycleScope.launch {
@@ -308,12 +316,20 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     }
 
     private fun pharmacyImage(id: String, imageView: ImageView) {
-        val onSuccess: (Bitmap) -> Unit = {bitmapImage ->
-            imageView.setImageBitmap(bitmapImage)
-            //pharmacyImages[id] = bitmapImage
+        val onSuccess: (Bitmap?) -> Unit = {bitmapImage ->
+            if (bitmapImage != null) {
+                imageView.setImageBitmap(bitmapImage)
+            }
+            else {
+                val bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.default_pharmacy)
+                imageView.setImageBitmap(bitmapDefault)
+            }
             Log.d("serverResponse", "Pharmacy image retrieved")
         }
-        pharmacistAPI.pharmacyImage(id, onSuccess)
+        lifecycleScope.launch {
+            val dataMode = dataStore.getDataMode()
+            pharmacistAPI.pharmacyImage(id, dataMode, onSuccess)
+        }
     }
 
     private fun startPlacesAPI() {

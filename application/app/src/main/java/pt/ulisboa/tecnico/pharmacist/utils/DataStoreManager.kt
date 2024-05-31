@@ -21,13 +21,14 @@ class DataStoreManager(val context: Context) {
         val GUESTNAME = stringPreferencesKey("guestname")
         val DARKMODE = booleanPreferencesKey("dark_mode")
         val DEVICE_ID = stringPreferencesKey("device_id")
+        val DATAMODE = booleanPreferencesKey("data_mode")
 
         fun getUrl(): String {
             // for remote testing
             // https ensures TLS
-            return "https://pharmacist.francisco-sousa.pt/"
+            //return "https://pharmacist.francisco-sousa.pt/"
             // for local testing
-            //return "http://10.0.2.2:5000"
+            return "http://10.0.2.2:5000"
         }
     }
 
@@ -84,6 +85,17 @@ class DataStoreManager(val context: Context) {
     suspend fun getTheme(): Boolean {
         val values = context.dataStore.data.first()
         return values[DARKMODE] ?: false
+    }
+
+    suspend fun setDataMode(isDataMode: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[DATAMODE] = isDataMode
+        }
+    }
+
+    suspend fun getDataMode(): Boolean {
+        val values = context.dataStore.data.first()
+        return values[DATAMODE] ?: false
     }
 
     suspend fun setDeviceId() {

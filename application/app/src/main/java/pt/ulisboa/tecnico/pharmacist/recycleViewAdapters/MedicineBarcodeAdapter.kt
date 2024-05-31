@@ -1,13 +1,12 @@
 package pt.ulisboa.tecnico.pharmacist.recycleViewAdapters
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.snackbar.Snackbar
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
 
@@ -39,8 +38,8 @@ class MedicineBarcodeAdapter(
         private val buttonDecrease: Button = itemView.findViewById(R.id.button_decrease)
 
         init {
-            buttonIncrease.setOnClickListener { updateStock(adapterPosition, 1, itemView.context) }
-            buttonDecrease.setOnClickListener { updateStock(adapterPosition, -1, itemView.context) }
+            buttonIncrease.setOnClickListener { updateStock(adapterPosition, 1, itemView) }
+            buttonDecrease.setOnClickListener { updateStock(adapterPosition, -1, itemView) }
         }
 
         fun bind(medicine: MedicineStock) {
@@ -51,11 +50,11 @@ class MedicineBarcodeAdapter(
 
     }
 
-    private fun updateStock(position: Int, delta: Int, context: Context) {
+    private fun updateStock(position: Int, delta: Int, itemView: View) {
         val medicine = medicines[position]
         val newStock = (medicine.stock + delta).coerceAtLeast(0)
         if (delta > 0 && medicine.maxStock != null && newStock > medicine.maxStock!!) {
-            notifyMaxStockReached(medicine.name, context)
+            notifyMaxStockReached(medicine.name, itemView)
         } else {
             if (newStock != medicine.stock) {
                 if (newStock == 0) {
@@ -70,9 +69,8 @@ class MedicineBarcodeAdapter(
         }
     }
 
-    private fun notifyMaxStockReached(medicineName: String, context: Context) {
-        // TODO - maybe not a TOAST
-        Toast.makeText(context, "Max stock reached for $medicineName", Toast.LENGTH_SHORT).show()
+    private fun notifyMaxStockReached(medicineName: String, itemView: View) {
+        Snackbar.make(itemView, "Max stock reached for $medicineName", Snackbar.LENGTH_SHORT).show()
     }
 
 

@@ -114,7 +114,6 @@ class NewMedicineActivity : AppCompatActivity() {
         formQuantity: TextInputLayout,
         purpose: String,
         formPurpose: TextInputLayout,
-        // TODO - uri can't be empty?
         onSuccess: () -> Unit
     ) {
         formMedicineName.error = null

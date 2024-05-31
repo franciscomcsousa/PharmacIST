@@ -2,20 +2,13 @@ package pt.ulisboa.tecnico.pharmacist.activities
 
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Bundle
-import android.util.Base64
 import android.util.Log
 import android.widget.ImageView
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.ImageResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class ClosestMedicineActivity : AppCompatActivity() {
 

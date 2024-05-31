@@ -5,23 +5,17 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.TextView
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
-import pt.ulisboa.tecnico.pharmacist.utils.QueryStock
-import pt.ulisboa.tecnico.pharmacist.utils.QueryStockResponse
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.activities.stock.AddStockActivity
 import pt.ulisboa.tecnico.pharmacist.activities.stock.PurchaseStockActivity
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
+import pt.ulisboa.tecnico.pharmacist.utils.QueryStock
 
 class PharmacyInformationActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 

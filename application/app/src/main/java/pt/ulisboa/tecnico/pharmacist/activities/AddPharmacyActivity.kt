@@ -25,14 +25,10 @@ import com.google.android.material.textfield.TextInputLayout
 import pt.ulisboa.tecnico.pharmacist.BuildConfig
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.Location
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandler
 import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.Locale
 
 class AddPharmacyActivity : AppCompatActivity() {

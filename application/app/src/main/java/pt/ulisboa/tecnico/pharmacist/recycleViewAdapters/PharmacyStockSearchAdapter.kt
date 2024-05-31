@@ -5,8 +5,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 
 class PharmacyStockSearchAdapter(
     val pharmacyStockList: List<PharmacyStockViewModel>

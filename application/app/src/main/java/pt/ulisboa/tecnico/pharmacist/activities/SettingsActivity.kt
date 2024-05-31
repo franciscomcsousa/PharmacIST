@@ -1,11 +1,7 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
-import android.content.Intent
-import android.database.sqlite.SQLiteDatabase
 import android.os.Bundle
-import android.view.MenuItem
 import android.view.View
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate

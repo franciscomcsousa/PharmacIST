@@ -5,7 +5,6 @@ import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -14,26 +13,17 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.launch
-import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
-import pt.ulisboa.tecnico.pharmacist.utils.NearestPharmaciesResponse
-import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
-import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
-import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.PharmacyStockSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
+import pt.ulisboa.tecnico.pharmacist.utils.Location
+import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
-import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStock
+import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 
 class MedicineInformationActivity : AppCompatActivity(),
     PharmacyStockSearchAdapter.RecyclerViewEvent {

@@ -13,10 +13,6 @@ import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.MediaPickerHandler
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineStock
-import pt.ulisboa.tecnico.pharmacist.utils.StatusResponse
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class NewMedicineActivity : AppCompatActivity() {
 

@@ -9,20 +9,16 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import pt.ulisboa.tecnico.pharmacist.R
+import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
+import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.Location
-import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Medicine
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineLocation
 import pt.ulisboa.tecnico.pharmacist.utils.MedicinePurpose
-import pt.ulisboa.tecnico.pharmacist.utils.MedicineResponse
-import pt.ulisboa.tecnico.pharmacist.recycleViewAdapters.MedicineSearchAdapter
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineSearchViewModel
+import pt.ulisboa.tecnico.pharmacist.utils.PermissionUtils
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
-import pt.ulisboa.tecnico.pharmacist.R
-import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class MedicineSearchActivity : AppCompatActivity(), MedicineSearchAdapter.RecyclerViewEvent {
 

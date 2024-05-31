@@ -14,11 +14,7 @@ import kotlinx.coroutines.launch
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
-import pt.ulisboa.tecnico.pharmacist.utils.SignInResponse
 import pt.ulisboa.tecnico.pharmacist.utils.User
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 
 class RegisterActivity : AppCompatActivity() {
     private lateinit var dataStore: DataStoreManager

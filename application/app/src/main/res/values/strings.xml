@@ -82,5 +82,7 @@
     <string name="retry">RETRY</string>
     <string name="data_saver_mode">Data Saver Mode</string>
     <string name="scan_barcode">Scan barcode</string>
-
+    <string name="are_you_sure">Are you sure clear the cache?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

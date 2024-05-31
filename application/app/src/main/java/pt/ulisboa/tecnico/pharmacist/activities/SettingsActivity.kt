@@ -61,10 +61,10 @@ class SettingsActivity : AppCompatActivity() {
 
     private fun confirmCacheDeletion() {
         val builder = AlertDialog.Builder(this)
-        builder.setTitle("Clear Cache")
-        builder.setMessage("Are you sure clear the cache?")
+        builder.setTitle(getString(R.string.clear_cache))
+        builder.setMessage(getString(R.string.are_you_sure))
 
-        builder.setPositiveButton("Yes") { dialog, _ ->
+        builder.setPositiveButton(getString(R.string.yes)) { dialog, _ ->
             val db = dbHandler.writableDatabase
             dbHandler.dropAllTables(db)
             dbHandler.onCreate(db)
@@ -72,7 +72,7 @@ class SettingsActivity : AppCompatActivity() {
             dialog.dismiss()
         }
 
-        builder.setNegativeButton("No") { dialog, _ ->
+        builder.setNegativeButton(getString(R.string.no)) { dialog, _ ->
             dialog.dismiss()
         }
 

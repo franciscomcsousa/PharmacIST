@@ -83,5 +83,8 @@
     <string name="retry">TENTAR NOVAMENTE</string>
     <string name="data_saver_mode">Modo Poupança de Dados</string>
     <string name="scan_barcode">Scanear Código Barras</string>
+    <string name="are_you_sure">Tem a certeza que quer apagar a cache?</string>
+    <string name="yes">Sim</string>
+    <string name="no">Não</string>
 
 </resources>

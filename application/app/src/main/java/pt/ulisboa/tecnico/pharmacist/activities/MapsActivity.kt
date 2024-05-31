@@ -332,7 +332,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val username = getUsername()
         val favoritePharmacy = FavoritePharmacy(username,id)
         val onSuccess : (Int) -> Unit = { responseCode ->
-            Log.d("serverResponse", "UPDATED: ${responseCode}")
+            Log.d("serverResponse", "UPDATED: $responseCode")
             for (pharmacy in activePharmacies) {
                 if (pharmacy.id == id) {
                     val marker = mMap!!.addMarker(MarkerOptions()
@@ -342,7 +342,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     )
                     marker?.tag = pharmacy
 
-                    if (responseCode == 203) {
+                    if (responseCode == 233) {
                         marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
                     } else {
                         marker?.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))

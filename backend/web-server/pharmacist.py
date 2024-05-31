@@ -147,6 +147,9 @@ def get_pharmacy_image():
         id = int(float(data))
         image = get_image(str(id), "P")
 
+    if (image == ""):
+        return make_response(jsonify({"image": ""}), IMAGE_NOT_EXIST)
+
     return make_response(jsonify({"image": base64.b64encode(image).decode()}), OK_STATUS)
 
 @app.route('/medicine_image', methods=['GET'])
@@ -155,6 +158,9 @@ def get_medicine_image():
     if request.method == 'GET':
         id = int(float(request.args.get("id")))
         image = get_image(str(id), "M")
+
+    if image == "":
+        return make_response(jsonify({"image": ""}), IMAGE_NOT_EXIST)
 
     return make_response(jsonify({"image": base64.b64encode(image).decode()}), OK_STATUS)
 

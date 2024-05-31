@@ -485,9 +485,7 @@ def get_image(id, type):
     path = f"images/{type}_{id}.jpg"
 
     if not os.path.exists(path=path):
-        with open("images/default.jpg", 'rb') as f:
-            image = f.read()
-            return image
+        return ""
     else:
         with open(path, 'rb') as f:
             image = f.read()

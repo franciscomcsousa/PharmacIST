@@ -207,10 +207,15 @@ class PharmacistAPI(val activity: Activity) {
                         response: Response<ImageResponse>
                     ) {
                         if (response.isSuccessful) {
-                            b64Image = response.body()!!.image
-                            val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
-                            ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
-                            onSuccess(bitmap)
+                            if (response.code() == 240) {
+                                onSuccess(null)
+                            }
+                            else {
+                                b64Image = response.body()!!.image
+                                val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
+                                ImageUtils.saveImageToInternalStorage(bitmap, "P_$id", activity)
+                                onSuccess(bitmap)
+                            }
                         }
                     }
 
@@ -372,10 +377,19 @@ class PharmacistAPI(val activity: Activity) {
                         response: Response<ImageResponse>
                     ) {
                         if (response.isSuccessful) {
-                            b64Image = response.body()!!.image
-                            val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
-                            ImageUtils.saveImageToInternalStorage(bitmap, "M_$medicineId", activity)
-                            onSuccess(bitmap)
+                            if (response.code() == 240) {
+                                onSuccess(null)
+                            }
+                            else {
+                                b64Image = response.body()!!.image
+                                val bitmap = ImageUtils.b64ImageToBitmap(b64Image)
+                                ImageUtils.saveImageToInternalStorage(
+                                    bitmap,
+                                    "M_$medicineId",
+                                    activity
+                                )
+                                onSuccess(bitmap)
+                            }
                         }
                     }
 

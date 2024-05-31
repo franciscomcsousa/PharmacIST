@@ -111,7 +111,7 @@ def get_pharmacies():
     if request.method == 'GET':
         pass
 
-    # Get a list with the 3 closest pharmacies to the user location
+    # Get a list with the closest pharmacies to the user location
     if request.method == 'POST':
         data = request.get_json()
         latitude = data['latitude']

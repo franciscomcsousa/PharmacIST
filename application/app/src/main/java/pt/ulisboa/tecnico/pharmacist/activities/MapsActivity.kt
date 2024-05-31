@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.ConnectivityManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
@@ -117,7 +118,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             centerUserLocation()
         }
 
-        // If the intent was started by the ClosestMedicineActivity, show the pharmacy only
+        // If the intent was started with parameters, show the pharmacy only
         if (intent.hasExtra("pharmacyLatitude") && intent.hasExtra("pharmacyLongitude")) {
             val pharmacyId = intent.getStringExtra("pharmacyId")!!.toDouble().toInt().toString()
             val pharmacyName = intent.getStringExtra("pharmacyName")!!
@@ -127,8 +128,26 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
             activePharmacies = mutableListOf(Pharmacy(pharmacyId, pharmacyName, pharmacyAddress, pharmacyLatitude.toString(), pharmacyLongitude.toString(), ""))
 
-            lifecycleScope.launch {
-                getFavorites()
+            if (hasNetworkConnection()) {
+                lifecycleScope.launch {
+                    getFavorites()
+                }
+            }
+            else {
+                val marker = mMap?.addMarker(MarkerOptions()
+                    .position(LatLng(pharmacyLatitude, pharmacyLongitude))
+                    .title(pharmacyName)
+                    .snippet(pharmacyAddress)
+                )
+                marker?.tag = activePharmacies[0]
+
+                if (!isLocationSelectionEnabled) {
+                    mMap!!.setOnMarkerClickListener { clickedMarker ->
+                        val clickedPharmacy = clickedMarker.tag as Pharmacy
+                        showPharmacyDrawer(clickedPharmacy)
+                        true // Return true to indicate that the listener has consumed the event
+                    }
+                }
             }
 
             Handler().postDelayed({
@@ -261,8 +280,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                     activePharmacies = pharmaciesList.toMutableList()
                     Log.d("serverResponse", "Pharmacies retrieved")
 
-                    lifecycleScope.launch {
-                        getFavorites()
+                    // only fetch favorites if there is an internet connection
+                    if (hasNetworkConnection()) {
+                        lifecycleScope.launch {
+                            getFavorites()
+                        }
+                    }
+                    else {
+                        for (pharmacy in activePharmacies) {
+                            val marker = mMap?.addMarker(MarkerOptions()
+                                .position(LatLng(pharmacy.latitude.toDouble(), pharmacy.longitude.toDouble()))
+                                .title(pharmacy.name)
+                                .snippet(pharmacy.address)
+                            )
+                            marker?.tag = pharmacy
+
+                            if (!isLocationSelectionEnabled) {
+                                mMap!!.setOnMarkerClickListener { clickedMarker ->
+                                    val clickedPharmacy = clickedMarker.tag as Pharmacy
+                                    showPharmacyDrawer(clickedPharmacy)
+                                    true // Return true to indicate that the listener has consumed the event
+                                }
+                            }
+                        }
                     }
                 }
                 pharmacistAPI.getPharmacies(location, onSuccess)
@@ -372,6 +412,17 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
         }
         pharmacistAPI.pharmacyFavorite(favoritePharmacy, onSuccess)
+    }
+
+    private fun hasNetworkConnection(): Boolean {
+        try {
+            val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connectivityManager.getActiveNetworkInfo()
+            return networkInfo != null && networkInfo.isConnected()
+        } catch (e: Exception) {
+            Log.e("Network Error", e.toString())
+        }
+        return false
     }
 
     // User Location and Permissions Logic

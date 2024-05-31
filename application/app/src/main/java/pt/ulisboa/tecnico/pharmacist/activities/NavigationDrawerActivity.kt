@@ -12,7 +12,9 @@ import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -53,6 +55,7 @@ class NavigationDrawerActivity : AppCompatActivity() {
 
         binding = ActivityDrawerBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        enableEdgeToEdge()
         dataStore = DataStoreManager(this@NavigationDrawerActivity)
 
         setSupportActionBar(binding.appBarDrawer.toolbar)
@@ -63,15 +66,45 @@ class NavigationDrawerActivity : AppCompatActivity() {
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(setOf(
-            R.id.nav_home, R.id.nav_gallery, R.id.nav_slideshow
+            R.id.nav_home
         ), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+
+        displayUsername(navView)
+
+        navView.menu.findItem(R.id.nav_logout).setOnMenuItemClickListener { menuItem ->
+            handleLogoutButtonClick(menuItem)
+            true
+        }
 
         if (PermissionUtils.requestLocationAndNotificationPermissions(this)) {
             setupNotificationsAndLocation()
         }
     }
+
+    override fun onResume() {
+        super.onResume()
+        val navView: NavigationView = binding.navView
+        displayUsername(navView)
+    }
+
+    private fun displayUsername(navView: NavigationView) {
+        lifecycleScope.launch {
+            val headerView = navView.getHeaderView(0)
+            val headerTitle = headerView.findViewById<TextView>(R.id.nav_header_title)
+            val username = dataStore.getUsername().toString()
+            if (headerTitle != null) {
+                if (!username.equals("")) {
+                    headerTitle.text = dataStore.getUsername().toString()
+                }
+                else {
+                    headerTitle.text = getString(R.string.guest_user)
+                }
+            }
+        }
+    }
+
     private fun setupNotificationsAndLocation() {
         val channel =
             NotificationChannel("pharmacies", "Pharmacies", NotificationManager.IMPORTANCE_DEFAULT)
@@ -123,14 +156,19 @@ class NavigationDrawerActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    fun logoutButtonClick(view: View?) {
-        lifecycleScope.launch {
-            dataStore.setLoginToken("")
-            dataStore.setFCMToken("")
-            dataStore.setUsername("")
+    private fun handleLogoutButtonClick(menuItem: MenuItem) {
+        when (menuItem.itemId) {
+            R.id.nav_logout -> {
+                lifecycleScope.launch {
+                    dataStore.setLoginToken("")
+                    dataStore.setFCMToken("")
+                    dataStore.setUsername("")
+                }
+                Thread.sleep(100)
+                onBackPressedDispatcher.onBackPressed()
+                Toast.makeText(this, "User logged out", Toast.LENGTH_SHORT).show()
+            }
         }
-        Thread.sleep(100)
-        onBackPressedDispatcher.onBackPressed()
     }
 
     fun enterSettings(item: MenuItem) {

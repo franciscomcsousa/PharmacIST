@@ -44,6 +44,8 @@ class MedicineInformationActivity : AppCompatActivity() {
         val medicineName = intent.getStringExtra("medicineName")
         val medicineId = intent.getStringExtra("medicineId")
 
+        dataStore = DataStoreManager(this@MedicineInformationActivity)
+
         findViewById<TextView>(R.id.panel_medicine_text)?.text = medicineName
         medicineImage(medicineId.toString())
         // Get recycler view
@@ -109,7 +111,7 @@ class MedicineInformationActivity : AppCompatActivity() {
                 imageView.setImageBitmap(bitmap)
             }
             else {
-                val bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.default_pharmacy)
+                val bitmapDefault = BitmapFactory.decodeResource(resources, R.drawable.default_medicine)
                 imageView.setImageBitmap(bitmapDefault)
             }
 

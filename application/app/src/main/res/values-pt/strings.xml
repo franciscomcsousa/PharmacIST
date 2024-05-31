@@ -10,7 +10,7 @@
     <string name="prompt_password">Palavra-Passe</string>
     <string name="btn_login">Entrar</string>
     <string name="btn_register">Registar</string>
-    <string name="btn_guest">Entrar como Convidado</string>
+    <string name="btn_guest">Entre Convidado</string>
     <string name="login_text">Não tem conta? \nCrie uma agora, ou simplesmente entre como convidado!</string>
 
     <!-- Home texts -->

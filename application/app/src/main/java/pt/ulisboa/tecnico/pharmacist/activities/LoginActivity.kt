@@ -1,9 +1,12 @@
 package pt.ulisboa.tecnico.pharmacist.activities
 
+import android.app.Dialog
 import android.content.Intent
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -27,6 +30,8 @@ class LoginActivity : AppCompatActivity() {
     private var fcmToken: String? = null
     private lateinit var deviceId: String
 
+    private lateinit var dialog: Dialog
+
     private val pharmacistAPI = PharmacistAPI(this)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,10 +40,41 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         dataStore = DataStoreManager(this@LoginActivity)
 
+        dialog = Dialog(this)
+        dialog.setContentView(R.layout.network_dialog_box)
+        dialog.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialog.setCancelable(false)
+
+        val continueButton = dialog.findViewById<View>(R.id.network_continue_button)
+        continueButton.setOnClickListener {
+            setLoginToken("")
+            navigateToNavigationDrawerActivity()
+            dialog.dismiss()
+        }
+
+        val retryButton = dialog.findViewById<View>(R.id.network_retry_button)
+        retryButton.setOnClickListener {
+            if (hasNetworkConnection()) {
+                attemptUserAutoLogin()
+                dialog.dismiss()
+            }
+        }
+
         // TODO - review this logic
         // Fetch the FCM
         retrieveFCMToken()
 
+        // Check if there is network connection
+        if (!hasNetworkConnection()) {
+            dialog.show()
+        }
+        else {
+            attemptUserAutoLogin()
+        }
+    }
+
+    private fun attemptUserAutoLogin() {
         lifecycleScope.launch {
             deviceId = dataStore.getDeviceId()
             val storedToken = getLoginToken()
@@ -133,6 +169,16 @@ class LoginActivity : AppCompatActivity() {
         pharmacistAPI.getAuth(storedToken, onSuccess, onExpiry)
     }
 
+    private fun hasNetworkConnection(): Boolean {
+        try {
+            val connectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+            val networkInfo = connectivityManager.getActiveNetworkInfo()
+            return networkInfo != null && networkInfo.isConnected()
+        } catch (e: Exception) {
+            Log.e("Network Error", e.toString())
+        }
+        return false
+    }
 
     // Should only be fetched when there is none in the backend or its expired!
     private fun retrieveFCMToken() {

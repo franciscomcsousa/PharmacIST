@@ -28,6 +28,7 @@ import pt.ulisboa.tecnico.pharmacist.utils.PharmacyStockViewModel
 import pt.ulisboa.tecnico.pharmacist.R
 import pt.ulisboa.tecnico.pharmacist.localDatabase.PharmacistAPI
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
+import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
 import pt.ulisboa.tecnico.pharmacist.utils.MedicineNotification
 import pt.ulisboa.tecnico.pharmacist.utils.Pharmacy
 import retrofit2.Call
@@ -66,12 +67,17 @@ class MedicineInformationActivity : AppCompatActivity(),
         dataStore = DataStoreManager(this@MedicineInformationActivity)
 
         // Medicine Notification button
-        val notificationButton = findViewById<Button>(R.id.medicine_notification_btn)
+        val notificationButton = findViewById<ToggleButton>(R.id.medicine_notification_btn)
         notificationButton.setOnClickListener {
             if (medicineId != null) {
                 lifecycleScope.launch {
                     handleNotificationButton(medicineId)
                 }
+            }
+        }
+        lifecycleScope.launch {
+            if (medicineId != null) {
+                isMedicineNotification(medicineId, notificationButton)
             }
         }
     }
@@ -121,10 +127,10 @@ class MedicineInformationActivity : AppCompatActivity(),
         val username = dataStore.getUsername().toString()
         val medicineNotification = MedicineNotification(username, medicineId)
         val onSuccess: (Int) -> Unit = {responseCode ->
-            if (responseCode == 205) {
+            if (responseCode == 235) {
                 // TODO ? - Perhaps some console logs
             }
-            else if (responseCode == 206) {
+            else if (responseCode == 236) {
                 // TODO ? - Perhaps some console logs
             }
         }
@@ -149,8 +155,22 @@ class MedicineInformationActivity : AppCompatActivity(),
         }
     }
 
+    private suspend fun isMedicineNotification(medicineId: String, notificationButton: ToggleButton) {
+        val username = getUsername()
+        val onSuccess : (Int) -> Unit = { responseCode ->
+            Log.d("serverResponse", "SUCCESSFUL: $responseCode")
+            notificationButton.isChecked = responseCode == 235
+        }
+        pharmacistAPI.isMedicineNotification(username, medicineId, onSuccess)
+    }
+
     override fun onItemClick(position: Int) {
         TODO("Not yet implemented")
+    }
+
+    private suspend fun getUsername(): String {
+        // returns "null" string if token is null
+        return dataStore.getUsername().toString()
     }
 
 }

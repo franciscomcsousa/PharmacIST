@@ -302,9 +302,16 @@ def get_medicine_location():
 def medicine_notification():
 
     if request.method == 'GET':
-        pass
+        print("HELLO GET")
+        username = request.args.get('username')
+        medicine_id = request.args.get('medicineId')
+        status = is_medicine_notification(username, medicine_id)
+
+        return make_response({"status": status}, status)
+
     
     if request.method == 'POST':
+        print("HELLO POST")
         data = request.get_json()
         username = data['username']
         medicine_id = data['medicineId']

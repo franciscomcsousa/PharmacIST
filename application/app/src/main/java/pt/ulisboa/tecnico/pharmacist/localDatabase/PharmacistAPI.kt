@@ -393,7 +393,6 @@ class PharmacistAPI(val activity: Activity) {
     }
 
     fun medicineNotification(@Body medicineNotification: MedicineNotification, onSuccess: (Int) -> Unit): Call<StatusResponse> {
-
         val call: Call<StatusResponse> = retrofitAPI.medicineNotificationRequest(medicineNotification)
         call.enqueue(object : Callback<StatusResponse> {
             override fun onResponse(
@@ -411,6 +410,24 @@ class PharmacistAPI(val activity: Activity) {
         })
 
         return retrofitAPI.medicineNotificationRequest(medicineNotification)
+    }
+
+    fun isMedicineNotification(@Query("username") username: String,
+                               @Query("medicineId") medicineId: String,
+                               onSuccess : (Int) -> Unit) {
+        val call = retrofitAPI.isMedicineNotificationRequest(username, medicineId)
+        call.enqueue(object : Callback<StatusResponse> {
+            override fun onResponse(
+                call: Call<StatusResponse>,
+                response: Response<StatusResponse>
+            ) {
+                onSuccess(response.code())
+            }
+
+            override fun onFailure(call: Call<StatusResponse>, t: Throwable) {
+                onFailureHandler(t)
+            }
+        })
     }
 
     fun getPharmacyStock(@Body queryStock: QueryStock, onSuccess: (List<List<Any>>) -> Unit) {

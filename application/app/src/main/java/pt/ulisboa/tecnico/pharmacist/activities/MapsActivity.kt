@@ -221,7 +221,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val favoritePharmacy = FavoritePharmacy(username,id)
         val onSuccess : (Int) -> Unit = { responseCode ->
             Log.d("serverResponse", "SUCCESSFUL: $responseCode")
-            favoriteButton.isChecked = responseCode == 203
+            favoriteButton.isChecked = responseCode == 233
         }
         pharmacistAPI.isPharmacyFavorite(favoritePharmacy, onSuccess)
     }

@@ -24,7 +24,7 @@ interface RetrofitAPI {
     @POST("pharmacies")
     fun getPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
 
-    @POST("/nearby_pharmacies")
+    @POST("nearby_pharmacies")
     fun getNearbyPharmaciesRequest(@Body location: Location?): Call<PharmaciesResponse>
 
     @POST("create_pharmacy")
@@ -33,13 +33,13 @@ interface RetrofitAPI {
     @POST("pharmacy_image")
     fun pharmacyImageRequest(@Body id: String): Call<ImageResponse>
 
-    @POST("/pharmacy_favorite")
+    @POST("pharmacy_favorite")
     fun pharmacyFavoriteRequest(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
 
-    @POST("/is_pharmacy_favorite")
+    @POST("is_pharmacy_favorite")
     fun isPharmacyFavoriteRequest(@Body favoritePharmacy: FavoritePharmacy): Call<StatusResponse>
 
-    @POST("/get_favorite_pharmacies")
+    @POST("get_favorite_pharmacies")
     fun getFavoritePharmaciesRequest(@Body username: String): Call<PharmaciesResponse>
 
     @POST("medicine")
@@ -57,7 +57,11 @@ interface RetrofitAPI {
     @POST("medicine_location")
     fun getMedicineLocationRequest(@Body medicineLocation: MedicineLocation): Call<MedicineResponse>
 
-    @POST("/medicine_notification")
+    @GET("medicine_notification")
+    fun isMedicineNotificationRequest(@Query("username") username: String,
+                                      @Query("medicineId") medicineId: String): Call<StatusResponse>
+
+    @POST("medicine_notification")
     fun medicineNotificationRequest(@Body medicineNotification: MedicineNotification): Call<StatusResponse>
 
     @POST("pharmacy_stock")

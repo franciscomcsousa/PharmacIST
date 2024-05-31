@@ -449,6 +449,30 @@ def toggle_medicine_notification(username, medicineId):
         cur.close()
         con.close()
 
+def is_medicine_notification(username, medicineId):
+    con = connect_db()
+    try:
+        cur = con.cursor()
+        
+        data = (username,)
+        query = 'SELECT user_id FROM users WHERE username = %s'
+        cur.execute(query, data)
+        user_id = cur.fetchone()
+        
+        if user_id:
+            data = (user_id[0], medicineId)
+            query = 'SELECT * FROM medicine_notification WHERE user_id = %s AND medicine_id = %s'
+            cur.execute(query, data)
+            favorite = cur.fetchone()
+            if favorite:
+                return MEDICINE_NOTIFICATION_ACTIVE
+            else:
+                return MEDICINE_NOTIFICATION_INACTIVE
+        else:
+            return USER_DOES_NOT_EXIST_STATUS
+    finally:
+        con.close()
+
 # ==================== Images ==================== #
 
 def save_image(image, id, type):

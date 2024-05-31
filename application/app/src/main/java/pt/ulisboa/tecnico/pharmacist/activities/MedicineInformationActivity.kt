@@ -37,6 +37,7 @@ class MedicineInformationActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_medicine_information)
+        dataStore = DataStoreManager(this@MedicineInformationActivity)
 
         PermissionUtils.requestLocationPermissions(this)
 
@@ -53,8 +54,6 @@ class MedicineInformationActivity : AppCompatActivity() {
         if (medicineName != null) {
             nearestPharmacies(medicineName)
         }
-
-        dataStore = DataStoreManager(this@MedicineInformationActivity)
 
         // Medicine Notification button
         val notificationButton = findViewById<ToggleButton>(R.id.medicine_notification_btn)
@@ -79,7 +78,6 @@ class MedicineInformationActivity : AppCompatActivity() {
                 val medicineLocation =
                     MedicineLocation(name = medicineName, latitude = location.latitude, longitude = location.longitude)
 
-                val pharmaciesStock: MutableList<PharmacyStock> = mutableListOf()
                 val data = ArrayList<PharmacyStockViewModel>()
 
                 val onSuccess : (List<List<Any>>) -> Unit = {pharmaciesStockResponse ->

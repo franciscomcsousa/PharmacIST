@@ -85,4 +85,7 @@
     <string name="are_you_sure">Are you sure clear the cache?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
+    <string name="maintenance_title">Under Maintenance</string>
+    <string name="maintenance_message">App is not available at the moment</string>
+    <string name="close">CLOSE</string>
 </resources>

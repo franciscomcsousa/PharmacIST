@@ -31,7 +31,8 @@ class LoginActivity : AppCompatActivity() {
     private var fcmToken: String? = null
     private lateinit var deviceId: String
 
-    private lateinit var dialog: Dialog
+    private lateinit var dialogConn: Dialog
+    private lateinit var dialogMaintenance : Dialog
 
     private val pharmacistAPI = PharmacistAPI(this)
 
@@ -41,37 +42,60 @@ class LoginActivity : AppCompatActivity() {
         enableEdgeToEdge()
         dataStore = DataStoreManager(this@LoginActivity)
 
-        dialog = Dialog(this)
-        dialog.setContentView(R.layout.network_dialog_box)
-        dialog.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        dialog.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
-        dialog.setCancelable(false)
+        dialogConn = Dialog(this)
+        dialogConn.setContentView(R.layout.network_dialog_box)
+        dialogConn.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialogConn.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialogConn.setCancelable(false)
 
-        val continueButton = dialog.findViewById<View>(R.id.network_continue_button)
+        dialogMaintenance = Dialog(this)
+        dialogMaintenance.setContentView(R.layout.maintenance_dialog_box)
+        dialogMaintenance.window?.setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+        dialogMaintenance.window?.setBackgroundDrawableResource(R.drawable.dialog_bg)
+        dialogMaintenance.setCancelable(false)
+
+        val continueButton = dialogConn.findViewById<View>(R.id.network_continue_button)
         continueButton.setOnClickListener {
             setLoginToken("")
             navigateToNavigationDrawerActivity()
-            dialog.dismiss()
+            dialogConn.dismiss()
         }
 
-        val retryButton = dialog.findViewById<View>(R.id.network_retry_button)
+        val retryButton = dialogConn.findViewById<View>(R.id.network_retry_button)
         retryButton.setOnClickListener {
             if (hasNetworkConnection()) {
                 attemptUserAutoLogin()
-                dialog.dismiss()
+                dialogConn.dismiss()
             }
         }
 
-        // Fetch the FCM Token
-        retrieveFCMToken()
+        val closeButton = dialogMaintenance.findViewById<View>(R.id.maintenance_close_button)
+        closeButton.setOnClickListener {
+            dialogMaintenance.dismiss()
+            finish()
+        }
 
-        // Check if there is network connection
-        if (!hasNetworkConnection()) {
-            dialog.show()
-        }
-        else {
-            attemptUserAutoLogin()
-        }
+        Thread {
+            // Check if it can connect to the backend
+            val connected: Boolean = pharmacistAPI.canConnect()
+            this@LoginActivity.runOnUiThread(Runnable {
+                if (!connected) {
+                    dialogMaintenance.show()
+                }
+                else {
+                    // Fetch the FCM Token
+                    retrieveFCMToken()
+
+                    // Check if there is network connection
+                    if (!hasNetworkConnection()) {
+                        dialogConn.show()
+                    }
+                    else {
+                        attemptUserAutoLogin()
+                    }
+                }
+            })
+        }.start()
     }
 
     private fun attemptUserAutoLogin() {

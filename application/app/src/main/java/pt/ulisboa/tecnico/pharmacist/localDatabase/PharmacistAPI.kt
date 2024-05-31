@@ -4,9 +4,7 @@ import android.app.Activity
 import android.content.ContentValues
 import android.database.sqlite.SQLiteDatabase
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.util.Log
-import androidx.datastore.dataStore
 import pt.ulisboa.tecnico.pharmacist.utils.CreatePharmacyResponse
 import pt.ulisboa.tecnico.pharmacist.utils.DataStoreManager
 import pt.ulisboa.tecnico.pharmacist.utils.FavoritePharmacy
@@ -35,7 +33,9 @@ import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.Header
 import retrofit2.http.Query
+import java.net.URL
 import java.time.Instant
+
 
 class PharmacistAPI(val activity: Activity) {
 
@@ -46,6 +46,19 @@ class PharmacistAPI(val activity: Activity) {
     private val retrofitAPI = retrofit.create(RetrofitAPI::class.java)
 
     private val databaseHandler = DatabaseHandler(activity)
+
+    fun canConnect(): Boolean {
+        return try {
+            val myUrl = URL(DataStoreManager.getUrl())
+            val connection = myUrl.openConnection()
+            connection.connectTimeout = 2000
+            connection.connect()
+            true
+        } catch (e: Exception) {
+            e.printStackTrace()
+            false
+        }
+    }
 
     fun sendRegister(@Body user: User?, onSuccess: () -> Unit, onFailure: () -> Unit, onStartToken : (String) -> Unit) {
         val call = retrofitAPI.sendRegisterRequest(user)

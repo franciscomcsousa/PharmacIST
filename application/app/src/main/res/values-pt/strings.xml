@@ -86,5 +86,7 @@
     <string name="are_you_sure">Tem a certeza que quer apagar a cache?</string>
     <string name="yes">Sim</string>
     <string name="no">Não</string>
-
+    <string name="maintenance_title">Em Manutenção</string>
+    <string name="maintenance_message">App não está disponível de momento</string>
+    <string name="close">FECHAR</string>
 </resources>

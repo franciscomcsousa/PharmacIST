@@ -151,7 +151,10 @@ class LoginActivity : AppCompatActivity() {
     }
 
     private fun navigateToNavigationDrawerActivity() {
-        startActivity(Intent(this, NavigationDrawerActivity::class.java))
+        val intent = Intent(this, NavigationDrawerActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        startActivity(intent)
     }
 
     private suspend fun autoLogin(storedToken: String, onSuccess: () -> Unit) {

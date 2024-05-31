@@ -89,6 +89,10 @@ class NavigationDrawerActivity : AppCompatActivity() {
         displayUsername(navView)
     }
 
+    override fun onBackPressed() {
+        super.onBackPressed()
+    }
+
     private fun displayUsername(navView: NavigationView) {
         lifecycleScope.launch {
             val headerView = navView.getHeaderView(0)

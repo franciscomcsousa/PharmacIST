@@ -46,7 +46,10 @@ class RegisterActivity : AppCompatActivity() {
         verifyForms(username, formUsername, password, formPassword) {
             registerUser(username, password,
             {
-                startActivity(Intent(this, NavigationDrawerActivity::class.java))
+                val intent = Intent(this, NavigationDrawerActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                startActivity(intent)
                 setUsername(username)
             },
             { formUsername.error = "User already exists!" }

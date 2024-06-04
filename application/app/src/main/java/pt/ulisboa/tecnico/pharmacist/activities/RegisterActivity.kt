@@ -70,27 +70,36 @@ class RegisterActivity : AppCompatActivity() {
 
     // Should only be fetched when there is none in the backend or its expired!
     private fun retrieveFCMToken() {
-        // only does this if there is no FCM Token stored!
         lifecycleScope.launch {
-            val storedFcmToken = dataStore.getFCMToken()
-            if (storedFcmToken.isNullOrEmpty()) {
-                FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val token = task.result
-                        lifecycleScope.launch {
-                            setFCMToken(token)
-                            fcmToken = token
-                            Log.d("FCM", token)
-                        }
-                    } else {
-                        Log.w("FCM", "Fetching FCM registration token failed", task.exception)
-                        runOnUiThread {
-                            showSnackbar("Failed to get FCM token")
-                        }
+            FirebaseMessaging.getInstance().deleteToken().addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    getNewFCMToken()
+                } else {
+                    Log.w("FCM", "Deleting FCM token failed", task.exception)
+                    runOnUiThread {
+                        showSnackbar("Failed to refresh FCM token")
                     }
-                })
+                }
             }
         }
+    }
+
+    private fun getNewFCMToken() {
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+            if (task.isSuccessful) {
+                val token = task.result
+                lifecycleScope.launch {
+                    setFCMToken(token)
+                    fcmToken = token
+                    Log.d("FCM", token)
+                }
+            } else {
+                Log.w("FCM", "Fetching FCM registration token failed", task.exception)
+                runOnUiThread {
+                    showSnackbar("Failed to get FCM token")
+                }
+            }
+        })
     }
 
     private fun verifyForms(

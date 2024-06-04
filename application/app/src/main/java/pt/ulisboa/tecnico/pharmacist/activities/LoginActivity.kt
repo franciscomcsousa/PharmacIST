@@ -75,27 +75,27 @@ class LoginActivity : AppCompatActivity() {
             finish()
         }
 
-        Thread {
-            // Check if it can connect to the backend
-            val connected: Boolean = pharmacistAPI.canConnect()
-            this@LoginActivity.runOnUiThread(Runnable {
-                if (!connected) {
-                    dialogMaintenance.show()
-                }
-                else {
-                    // Fetch the FCM Token
-                    retrieveFCMToken()
+        // Check if there is network connection
+        if (!hasNetworkConnection()) {
+            dialogConn.show()
+        }
 
-                    // Check if there is network connection
-                    if (!hasNetworkConnection()) {
-                        dialogConn.show()
-                    }
-                    else {
+        else {
+            Thread {
+                // Check if it can connect to the backend
+                val connected: Boolean = pharmacistAPI.canConnect()
+                this@LoginActivity.runOnUiThread(Runnable {
+                    if (!connected) {
+                        dialogMaintenance.show()
+                    } else {
+                        // Fetch the FCM Token
+                        retrieveFCMToken()
+
                         attemptUserAutoLogin()
                     }
-                }
-            })
-        }.start()
+                })
+            }.start()
+        }
     }
 
     private fun attemptUserAutoLogin() {

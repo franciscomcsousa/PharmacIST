@@ -6,7 +6,7 @@ def pad_to_12_digits(medicine_id):
     return str(medicine_id).zfill(11)  #digit n0 12 will be the checksum
 
 # generates 10 barcodes from 1 to 10
-medicine_ids = range(1, 11)
+medicine_ids = range(1, 36)
 
 barcode_format = 'upca'
 

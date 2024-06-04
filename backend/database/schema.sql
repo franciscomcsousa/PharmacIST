@@ -64,20 +64,63 @@ drop table if exists medicine;
         foreign key (medicine_id) references medicine(medicine_id) ON DELETE CASCADE ON UPDATE CASCADE
     );
 
-insert into users (username, password) values ('a', 'a');
+insert into pharmacies (name, address, latitude, longitude) values 
+('Farmácia Rossio', 'Rua Augusta 1, 1250-162 Lisboa', 38.712790, -9.137420),
+('Farmácia Marquês', 'Rua do Marquês de Pombal 1, 1251-162 Lisboa', 38.728467, -9.148590),
+('Farmácia Bandeira', 'Rua Sá da Bandeira 1, 1252-162 Lisboa', 38.724075, -9.150967),
+('Farmácia Avenida', 'Avenida da Liberdade 1, 1253-162 Lisboa', 38.725360, -9.148243),
+('Farmácia Oriente', 'Rua do Oriente 1, 1990-096 Lisboa', 38.768256, -9.098214);
 
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Rossio', 'Rua Augusta 1, 1250-162 Lisboa', 38.712790, -9.137420);
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Marquês', 'Rua do Marquês de Pombal 1, 1251-162 Lisboa', 38.728467, -9.148590);
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Bandeira', 'Rua Sá da Bandeira 1, 1252-162 Lisboa', 38.724075, -9.150967);
-insert into pharmacies (name, address, latitude, longitude) values ('Farmácia Avenida', 'Avenida da Liberdade 1, 1253-162 Lisboa', 38.725360, -9.148243);
+-- Insert 25 unique medicines into the medicine table
+insert into medicine (name, purpose) values 
+('Paracetamol', 'Painkiller'),
+('Ibuprofen', 'Anti-inflammatory'),
+('Zyrtec', 'Antihistamine'),
+('Amoxicillin', 'Antibiotic'),
+('Ciprofloxacin', 'Antibiotic'),
+('Metformin', 'Diabetes'),
+('Amlodipine', 'Hypertension'),
+('Simvastatin', 'Cholesterol'),
+('Omeprazole', 'Acid reflux'),
+('Losartan', 'Hypertension'),
+('Azithromycin', 'Antibiotic'),
+('Doxycycline', 'Antibiotic'),
+('Lisinopril', 'Hypertension'),
+('Levothyroxine', 'Hypothyroidism'),
+('Atorvastatin', 'Cholesterol'),
+('Albuterol', 'Asthma'),
+('Prednisone', 'Anti-inflammatory'),
+('Warfarin', 'Blood thinner'),
+('Gabapentin', 'Nerve pain'),
+('Hydrochlorothiazide', 'Diuretic'),
+('Tramadol', 'Pain relief'),
+('Montelukast', 'Asthma'),
+('Clindamycin', 'Antibiotic'),
+('Hydrocodone', 'Pain relief'),
+('Citalopram', 'Antidepressant');
 
-insert into favorite_pharmacies (user_id, pharmacy_id) values (1, 1);
+-- Assigning medicines to each pharmacy with at least 5 different from each other
+insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
+(1, 1, 50), (1, 2, 50), (1, 3, 50), (1, 4, 50), (1, 5, 50), 
+(1, 6, 50), (1, 7, 50), (1, 8, 50), (1, 9, 50), (1, 10, 50), 
+(1, 11, 50), (1, 12, 50), (1, 13, 50), (1, 14, 50), (1, 15, 50);
 
-insert into medicine (medicine_id, name, purpose) values (1, 'Paracetamol', 'Painkiller');
-insert into medicine (medicine_id, name, purpose) values (2, 'Ibuprofen', 'Anti-inflammatory');
-insert into medicine (medicine_id, name, purpose) values (3, 'Zyrtec', 'Antihistamine');
+insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
+(2, 6, 50), (2, 7, 50), (2, 8, 50), (2, 9, 50), (2, 10, 50), 
+(2, 11, 50), (2, 12, 50), (2, 13, 50), (2, 14, 50), (2, 15, 50), 
+(2, 16, 50), (2, 17, 50), (2, 18, 50), (2, 19, 50), (2, 20, 50);
 
-insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (4, 1, 50);
-insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (4, 2, 30);
-insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (3, 3, 25);
-insert into medicine_stock (pharmacy_id, medicine_id, quantity) values (2, 2, 40);
+insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
+(3, 1, 50), (3, 2, 50), (3, 3, 50), (3, 4, 50), (3, 5, 50), 
+(3, 16, 50), (3, 17, 50), (3, 18, 50), (3, 19, 50), (3, 20, 50), 
+(3, 21, 50), (3, 22, 50), (3, 23, 50), (3, 24, 50), (3, 25, 50);
+
+insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
+(4, 1, 50), (4, 2, 50), (4, 6, 50), (4, 7, 50), (4, 8, 50), 
+(4, 9, 50), (4, 10, 50), (4, 11, 50), (4, 12, 50), (4, 13, 50), 
+(4, 14, 50), (4, 15, 50), (4, 21, 50), (4, 22, 50), (4, 23, 50);
+
+insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
+(5, 3, 50), (5, 4, 50), (5, 5, 50), (5, 16, 50), (5, 17, 50), 
+(5, 18, 50), (5, 19, 50), (5, 20, 50), (5, 21, 50), (5, 22, 50), 
+(5, 23, 50), (5, 24, 50), (5, 25, 50), (5, 1, 50), (5, 2, 50);

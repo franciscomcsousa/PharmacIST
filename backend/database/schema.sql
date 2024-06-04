@@ -71,33 +71,33 @@ insert into pharmacies (name, address, latitude, longitude) values
 ('Farmácia Avenida', 'Avenida da Liberdade 1, 1253-162 Lisboa', 38.725360, -9.148243),
 ('Farmácia Oriente', 'Rua do Oriente 1, 1990-096 Lisboa', 38.768256, -9.098214);
 
--- Insert 25 unique medicines into the medicine table
-insert into medicine (name, purpose) values 
-('Paracetamol', 'Painkiller'),
-('Ibuprofen', 'Anti-inflammatory'),
-('Zyrtec', 'Antihistamine'),
-('Amoxicillin', 'Antibiotic'),
-('Ciprofloxacin', 'Antibiotic'),
-('Metformin', 'Diabetes'),
-('Amlodipine', 'Hypertension'),
-('Simvastatin', 'Cholesterol'),
-('Omeprazole', 'Acid reflux'),
-('Losartan', 'Hypertension'),
-('Azithromycin', 'Antibiotic'),
-('Doxycycline', 'Antibiotic'),
-('Lisinopril', 'Hypertension'),
-('Levothyroxine', 'Hypothyroidism'),
-('Atorvastatin', 'Cholesterol'),
-('Albuterol', 'Asthma'),
-('Prednisone', 'Anti-inflammatory'),
-('Warfarin', 'Blood thinner'),
-('Gabapentin', 'Nerve pain'),
-('Hydrochlorothiazide', 'Diuretic'),
-('Tramadol', 'Pain relief'),
-('Montelukast', 'Asthma'),
-('Clindamycin', 'Antibiotic'),
-('Hydrocodone', 'Pain relief'),
-('Citalopram', 'Antidepressant');
+-- Insert 25 unique medicines into the medicine table with explicit IDs
+insert into medicine (medicine_id, name, purpose) values 
+(1, 'Paracetamol', 'Painkiller'),
+(2, 'Ibuprofen', 'Anti-inflammatory'),
+(3, 'Zyrtec', 'Antihistamine'),
+(4, 'Amoxicillin', 'Antibiotic'),
+(5, 'Ciprofloxacin', 'Antibiotic'),
+(6, 'Metformin', 'Diabetes'),
+(7, 'Amlodipine', 'Hypertension'),
+(8, 'Simvastatin', 'Cholesterol'),
+(9, 'Omeprazole', 'Acid reflux'),
+(10, 'Losartan', 'Hypertension'),
+(11, 'Azithromycin', 'Antibiotic'),
+(12, 'Doxycycline', 'Antibiotic'),
+(13, 'Lisinopril', 'Hypertension'),
+(14, 'Levothyroxine', 'Hypothyroidism'),
+(15, 'Atorvastatin', 'Cholesterol'),
+(16, 'Albuterol', 'Asthma'),
+(17, 'Prednisone', 'Anti-inflammatory'),
+(18, 'Warfarin', 'Blood thinner'),
+(19, 'Gabapentin', 'Nerve pain'),
+(20, 'Hydrochlorothiazide', 'Diuretic'),
+(21, 'Tramadol', 'Pain relief'),
+(22, 'Montelukast', 'Asthma'),
+(23, 'Clindamycin', 'Antibiotic'),
+(24, 'Hydrocodone', 'Pain relief'),
+(25, 'Citalopram', 'Antidepressant');
 
 -- Assigning medicines to each pharmacy with at least 5 different from each other
 insert into medicine_stock (pharmacy_id, medicine_id, quantity) values 
